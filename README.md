@@ -139,8 +139,9 @@ npm install  # 如果 package.json 有变化
 
 | 场景 | 路由 |
 |---|---|
-| 主调度 (sisyphus) | Kimi K2.6 |
-| 架构/复盘 (oracle/hephaestus/prometheus/momus/ultrabrain) | DeepSeek V4-Pro |
-| 规划/通用编码 (metis/atlas/sisyphus-junior/deep/artistry/writing) | GLM-5.1 |
-| 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-turbo |
+| 主调度 (sisyphus) | DeepSeek V4-Pro |
+| 架构/深度推理 (oracle/hephaestus/prometheus/momus/metis/plan/ultrabrain/deep/artistry/unspecified-high) | DeepSeek V4-Pro |
+| 通用编码 (atlas/sisyphus-junior/writing) | GLM-5.1 |
+| 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-Turbo |
 | 检索/轻量 (librarian/explore/quick) | DeepSeek V4-Flash |
+| 轻量通用 (unspecified-low) | GLM-5-Turbo |
