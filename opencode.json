@@ -3,7 +3,7 @@
   "customInstructions": "始终使用中文（简体）回答用户的所有问题。所有的解释、说明、代码注释都应使用中文。",
   "model": "zhipuai-coding-plan/glm-5.1",
   "theme": "tokyonight",
-  "plugin": ["oh-my-openagent@latest"],
+  "plugin": ["oh-my-openagent@latest", "opencode-pty"],
   "provider": {
     "volcengine-plan": {
       "npm": "@ai-sdk/openai-compatible",
