@@ -1,6 +1,5 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
-  "model_fallback": true,
   "runtime_fallback": {
     "enabled": true,
     "retry_on_errors": [429, 500, 502, 503, 504],
@@ -20,6 +19,7 @@
     },
     "hephaestus": {
       "model": "volcengine-plan/deepseek-v4-pro",
+      "allow_non_gpt_model": true,
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "zhipuai-coding-plan/glm-5.1",
@@ -30,8 +30,8 @@
       "model": "zhipuai-coding-plan/glm-5.1",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "oracle": {
@@ -47,15 +47,15 @@
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m2.7"
       ]
     },
     "momus": {
       "model": "volcengine-plan/kimi-k2.6",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
-        "zhipuai-coding-plan/glm-5.1",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m3",
+        "zhipuai-coding-plan/glm-5.1"
       ]
     },
     "atlas": {
@@ -63,7 +63,7 @@
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m2.7"
       ]
     },
     "librarian": {
@@ -95,7 +95,7 @@
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m2.7"
       ]
     }
   },
@@ -112,8 +112,8 @@
       "model": "volcengine-plan/deepseek-v4-pro",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5.1",
-        "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "artistry": {
@@ -128,8 +128,8 @@
       "model": "zhipuai-coding-plan/glm-5.1",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "quick": {
@@ -152,8 +152,8 @@
       "model": "zhipuai-coding-plan/glm-5.1",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "writing": {

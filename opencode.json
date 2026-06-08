@@ -13,8 +13,8 @@
         "ark-code-latest": {
           "name": "ark-code-latest",
           "limit": {
-            "context": 256000,
-            "output": 32000
+            "context": 1000000,
+            "output": 384000
           },
           "modalities": {
             "input": ["text", "image"],
@@ -25,7 +25,7 @@
           "name": "doubao-seed-code",
           "limit": {
             "context": 256000,
-            "output": 32000
+            "output": 32768
           },
           "modalities": {
             "input": ["text", "image"],
@@ -45,7 +45,7 @@
           "options": {
             "thinking": {
               "type": "enabled",
-              "budgetTokens": 16384
+              "budget_tokens": 16384
             }
           }
         },
@@ -69,13 +69,19 @@
           "modalities": {
             "input": ["text"],
             "output": ["text"]
+          },
+          "options": {
+            "thinking": {
+              "type": "enabled",
+              "budget_tokens": 16384
+            }
           }
         },
         "doubao-seed-2.0-code": {
           "name": "doubao-seed-2.0-code",
           "limit": {
             "context": 256000,
-            "output": 128000
+            "output": 32768
           },
           "modalities": {
             "input": ["text", "image"],
@@ -86,7 +92,7 @@
           "name": "doubao-seed-2.0-pro",
           "limit": {
             "context": 256000,
-            "output": 128000
+            "output": 32768
           },
           "modalities": {
             "input": ["text", "image"],
@@ -97,7 +103,7 @@
           "name": "doubao-seed-2.0-lite",
           "limit": {
             "context": 256000,
-            "output": 128000
+            "output": 32768
           },
           "modalities": {
             "input": ["text", "image"],
@@ -107,23 +113,35 @@
         "minimax-m2.7": {
           "name": "minimax-m2.7",
           "limit": {
-            "context": 200000,
+            "context": 204800,
             "output": 131072
           },
           "modalities": {
             "input": ["text"],
             "output": ["text"]
+          },
+          "options": {
+            "thinking": {
+              "type": "enabled",
+              "budget_tokens": 8192
+            }
           }
         },
         "minimax-m3": {
           "name": "minimax-m3",
           "limit": {
-            "context": 512000,
+            "context": 800000,
             "output": 131072
           },
           "modalities": {
             "input": ["text", "image"],
             "output": ["text"]
+          },
+          "options": {
+            "thinking": {
+              "type": "enabled",
+              "budget_tokens": 16384
+            }
           }
         },
         "kimi-k2.6": {
