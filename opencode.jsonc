@@ -43,7 +43,8 @@
     "chrome-mcp": {
       "type": "remote",
       "url": "http://127.0.0.1:12306/mcp",
-      "description": "Chrome浏览器自动化控制服务"
+      "description": "Chrome 浏览器自动化 - 需先全局安装 mcp-chrome-bridge 并启动服务",
+      "enabled": false
     },
     "codegraph": {
       "type": "local",

@@ -3,7 +3,7 @@
   "model_fallback": true,
   "runtime_fallback": {
     "enabled": true,
-    "retry_on_errors": [400, 429, 503, 529],
+    "retry_on_errors": [429, 500, 502, 503, 504],
     "max_fallback_attempts": 3,
     "cooldown_seconds": 60,
     "timeout_seconds": 30,
@@ -27,9 +27,9 @@
       ]
     },
     "prometheus": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.1",
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3"
       ]
@@ -51,11 +51,11 @@
       ]
     },
     "momus": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "volcengine-plan/kimi-k2.6",
       "fallback_models": [
-        "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3",
-        "zhipuai-coding-plan/glm-5.1"
+        "volcengine-plan/deepseek-v4-pro",
+        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/minimax-m3"
       ]
     },
     "atlas": {
@@ -63,7 +63,7 @@
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/glm-5.1"
+        "volcengine-plan/minimax-m3"
       ]
     },
     "librarian": {
@@ -86,15 +86,16 @@
       "model": "zhipuai-coding-plan/glm-5v-turbo",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-code"
+        "volcengine-plan/doubao-seed-code",
+        "zhipuai-coding-plan/glm-4.6v"
       ]
     },
     "sisyphus-junior": {
       "model": "zhipuai-coding-plan/glm-5.1",
       "fallback_models": [
-        "volcengine-plan/glm-5.1",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/deepseek-v4-pro"
+        "volcengine-plan/deepseek-v4-pro",
+        "volcengine-plan/minimax-m3"
       ]
     }
   },
@@ -136,7 +137,7 @@
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite",
-        "zhipuai-coding-plan/glm-4.5-air"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "unspecified-low": {

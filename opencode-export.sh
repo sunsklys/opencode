@@ -79,7 +79,7 @@ opencode --version
 ## 配置文件清单
 - opencode.json   - provider 定义 + 模型 limit
 - opencode.jsonc  - MCP 服务 + plugin
-- oh-my-openagent.json - 17 角色路由
+- oh-my-openagent.json - 11 agent + 8 category 路由
 - package.json    - OMO 依赖锁
 - tui.json        - 主题
 EOF

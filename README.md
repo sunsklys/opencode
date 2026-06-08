@@ -1,14 +1,14 @@
 # opencode 个人配置仓库
 
-我的 opencode 配置 + 17 角色路由（智谱 + 火山均衡版）。
+我的 opencode 配置（智谱 + 火山引擎 + 国产全模型路由）。
 
 ## 包含什么
 
 | 文件 | 说明 |
 |---|---|
-| `opencode.json` | provider 定义（火山引擎 11 模型 + output 16384 限制） |
+| `opencode.json` | provider 定义（火山引擎 11 模型，limit 对齐官方文档） |
 | `opencode.jsonc` | MCP 服务（zai-mcp-server）+ plugin（@oh-my-openagent/plugin） |
-| `oh-my-openagent.json` | 17 角色路由（sisyphus / oracle / metis 等跨厂家 fallback） |
+| `oh-my-openagent.json` | 11 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
 | `package.json` | OMO 依赖版本锁（^4.7.5） |
 | `package-lock.json` | npm 精确依赖版本 |
