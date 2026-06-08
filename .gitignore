@@ -1,0 +1,41 @@
+# opencode 配置仓库 .gitignore
+# ====================================
+
+# === 依赖与构建产物（新机器 npm install 重建） ===
+node_modules/
+
+# === 敏感凭证（绝对不能提交！） ===
+.env
+.env.local
+.env.*.local
+auth.json
+
+# === 运行时数据 ===
+*.db
+*.db-shm
+*.db-wal
+log/
+logs/
+tool-output/
+snapshot/
+
+# === 缓存 ===
+.cache/
+*.log
+
+# === macOS 系统文件 ===
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# === 编辑器 ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === 临时文件 ===
+*.tmp
+*.bak
+.tmp/
