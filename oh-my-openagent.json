@@ -1,5 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
+  "hashline_edit": true,
+  "team_mode": {
+    "enabled": true
+  },
   "runtime_fallback": {
     "enabled": true,
     "retry_on_errors": [429, 500, 502, 503, 504],
@@ -10,64 +14,88 @@
   },
   "agents": {
     "sisyphus": {
-      "model": "volcengine-plan/kimi-k2.6",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 32768 },
       "fallback_models": [
         "zhipuai-coding-plan/glm-5.1",
-        "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "hephaestus": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "allow_non_gpt_model": true,
+      "reasoningEffort": "medium",
+      "thinking": { "type": "enabled", "budgetTokens": 16384 },
       "fallback_models": [
-        "volcengine-plan/minimax-m3",
         "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6"
       ]
     },
     "prometheus": {
-      "model": "zhipuai-coding-plan/glm-5.1",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 32768 },
       "fallback_models": [
-        "volcengine-plan/deepseek-v4-pro",
+        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
+      ]
+    },
+    "plan": {
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "fallback_models": [
+        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6"
       ]
     },
     "oracle": {
       "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "max",
+      "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "volcengine-plan/minimax-m3",
         "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6"
       ]
     },
     "metis": {
-      "model": "zhipuai-coding-plan/glm-5.1",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 32768 },
       "fallback_models": [
-        "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m2.7"
+        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "momus": {
-      "model": "volcengine-plan/kimi-k2.6",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "max",
+      "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "volcengine-plan/deepseek-v4-pro",
+        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
-        "zhipuai-coding-plan/glm-5.1"
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "atlas": {
       "model": "zhipuai-coding-plan/glm-5.1",
+      "reasoningEffort": "medium",
       "fallback_models": [
-        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m2.7"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "librarian": {
       "model": "volcengine-plan/deepseek-v4-flash",
+      "reasoningEffort": "low",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-code",
@@ -76,6 +104,7 @@
     },
     "explore": {
       "model": "volcengine-plan/deepseek-v4-flash",
+      "reasoningEffort": "low",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-code",
@@ -86,16 +115,17 @@
       "model": "zhipuai-coding-plan/glm-5v-turbo",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-code",
+        "volcengine-plan/doubao-seed-2.0-code",
         "zhipuai-coding-plan/glm-4.6v"
       ]
     },
     "sisyphus-junior": {
       "model": "zhipuai-coding-plan/glm-5.1",
+      "reasoningEffort": "medium",
       "fallback_models": [
-        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m2.7"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/kimi-k2.6"
       ]
     }
   },
@@ -105,11 +135,13 @@
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code",
-        "volcengine-plan/doubao-seed-code"
+        "volcengine-plan/deepseek-v4-pro"
       ]
     },
     "ultrabrain": {
       "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "max",
+      "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
         "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
@@ -117,23 +149,29 @@
       ]
     },
     "artistry": {
-      "model": "zhipuai-coding-plan/glm-5.1",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "temperature": 0.7,
+      "thinking": { "type": "enabled", "budgetTokens": 32768 },
       "fallback_models": [
-        "volcengine-plan/kimi-k2.6",
+        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/deepseek-v4-pro"
+        "volcengine-plan/kimi-k2.6"
       ]
     },
     "deep": {
-      "model": "zhipuai-coding-plan/glm-5.1",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "max",
+      "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "volcengine-plan/deepseek-v4-pro",
+        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6"
       ]
     },
     "quick": {
       "model": "volcengine-plan/deepseek-v4-flash",
+      "reasoningEffort": "minimal",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite",
@@ -141,23 +179,26 @@
       ]
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-4.5-air",
+      "model": "zhipuai-coding-plan/glm-5-turbo",
+      "reasoningEffort": "low",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-flash",
-        "volcengine-plan/doubao-seed-2.0-code",
-        "zhipuai-coding-plan/glm-5-turbo"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "unspecified-high": {
-      "model": "zhipuai-coding-plan/glm-5.1",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 32768 },
       "fallback_models": [
-        "volcengine-plan/deepseek-v4-pro",
+        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6"
       ]
     },
     "writing": {
       "model": "zhipuai-coding-plan/glm-5.1",
+      "temperature": 0.7,
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3"
