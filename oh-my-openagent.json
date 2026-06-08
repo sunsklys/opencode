@@ -20,6 +20,7 @@
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
       "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "prompt_append": "始终使用中文（简体）回答。所有解释、说明、代码注释用中文。",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
