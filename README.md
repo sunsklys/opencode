@@ -6,11 +6,10 @@
 
 | 文件 | 说明 |
 |---|---|
-| `opencode.json` | provider 定义（火山引擎 11 模型，limit 对齐官方文档） |
-| `opencode.jsonc` | MCP 服务（zai-mcp-server）+ plugin（@oh-my-openagent/plugin） |
+| `opencode.json` | provider 定义（火山引擎 11 模型）+ MCP 服务 + plugin |
 | `oh-my-openagent.json` | 11 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
-| `package.json` | OMO 依赖版本锁（^4.7.5） |
+| `package.json` | OMO 依赖版本锁（^4.7.5）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `.env.example` | 环境变量模板（不含真实值） |
 
@@ -55,6 +54,10 @@ cd opencode
 ```bash
 npm install
 # 会自动拉 oh-my-openagent ^4.7.5 + claude-mermaid 等所有依赖
+
+# postinstall 会自动安装全局依赖（claude-mermaid, codegraph）
+# 如果 postinstall 失败，手动安装：
+# npm i -g claude-mermaid @anthropic-ai/codegraph
 ```
 
 ### 4. 配置 API key
@@ -132,6 +135,10 @@ npm install  # 如果 package.json 有变化
 ### npm install 卡住
 → 国内网络问题。
 → 解决：`npm config set registry https://registry.npmmirror.com`
+
+### MCP 服务报错（mermaid / codegraph 不可用）
+→ 全局依赖未安装。检查 `which claude-mermaid` 和 `which codegraph`。
+→ 解决：`npm i -g claude-mermaid @anthropic-ai/codegraph`
 
 ---
 
