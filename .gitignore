@@ -18,6 +18,7 @@ log/
 logs/
 tool-output/
 snapshot/
+.omo/
 
 # === 缓存 ===
 .cache/

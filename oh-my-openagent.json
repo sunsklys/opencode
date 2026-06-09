@@ -17,21 +17,21 @@
   },
   "agents": {
     "sisyphus": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.1",
       "reasoningEffort": "high",
       "thinking": { "type": "enabled", "budgetTokens": 32768 },
       "prompt_append": "始终使用中文（简体）回答。所有解释、说明、代码注释用中文。",
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
-        "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/deepseek-v4-pro",
+        "volcengine-plan/minimax-m3"
       ]
     },
     "hephaestus": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "allow_non_gpt_model": true,
       "reasoningEffort": "medium",
-      "thinking": { "type": "enabled", "budgetTokens": 16384 },
+      "thinking": { "type": "enabled", "budgetTokens": 32768 },
       "fallback_models": [
         "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
@@ -139,7 +139,7 @@
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code",
-        "volcengine-plan/deepseek-v4-pro"
+        "zhipuai-coding-plan/glm-4.6v"
       ]
     },
     "ultrabrain": {
@@ -204,6 +204,7 @@
       "model": "zhipuai-coding-plan/glm-5.1",
       "temperature": 0.7,
       "fallback_models": [
+        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3"
       ]
