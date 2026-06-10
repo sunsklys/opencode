@@ -1,7 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "zhipuai-coding-plan/glm-5.1",
-  "theme": "tokyonight",
   "plugin": ["oh-my-openagent@latest"],
   "provider": {
     "volcengine-plan": {
@@ -20,10 +18,7 @@
         "deepseek-v4-flash": {
           "name": "deepseek-v4-flash",
           "limit": { "context": 1000000, "output": 384000 },
-          "modalities": { "input": ["text"], "output": ["text"] },
-          "options": {
-            "thinking": { "type": "enabled", "budget_tokens": 16384 }
-          }
+          "modalities": { "input": ["text"], "output": ["text"] }
         },
         "deepseek-v4-pro": {
           "name": "deepseek-v4-pro",

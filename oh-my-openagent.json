@@ -17,45 +17,45 @@
   },
   "agents": {
     "sisyphus": {
-      "model": "zhipuai-coding-plan/glm-5.1",
+      "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "hephaestus": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "allow_non_gpt_model": true,
-      "reasoningEffort": "medium",
-      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "prometheus": {
       "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "reasoningEffort": "max",
+      "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "plan": {
       "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "reasoningEffort": "max",
+      "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "oracle": {
@@ -63,19 +63,19 @@
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "metis": {
       "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "reasoningEffort": "max",
+      "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "momus": {
@@ -83,18 +83,19 @@
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "atlas": {
-      "model": "zhipuai-coding-plan/glm-5.1",
-      "reasoningEffort": "medium",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/kimi-k2.6",
+        "zhipuai-coding-plan/glm-5.1"
       ]
     },
     "librarian": {
@@ -102,8 +103,7 @@
       "reasoningEffort": "low",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
-        "volcengine-plan/doubao-seed-2.0-code",
-        "zhipuai-coding-plan/glm-5.1"
+        "volcengine-plan/doubao-seed-2.0-lite"
       ]
     },
     "explore": {
@@ -111,25 +111,24 @@
       "reasoningEffort": "low",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
-        "volcengine-plan/doubao-seed-2.0-code",
-        "zhipuai-coding-plan/glm-5.1"
+        "volcengine-plan/doubao-seed-2.0-lite"
       ]
     },
     "multimodal-looker": {
       "model": "zhipuai-coding-plan/glm-5v-turbo",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-2.0-code",
-        "zhipuai-coding-plan/glm-4.6v"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "sisyphus-junior": {
-      "model": "zhipuai-coding-plan/glm-5.1",
-      "reasoningEffort": "medium",
+      "model": "volcengine-plan/deepseek-v4-pro",
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
-        "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/kimi-k2.6",
+        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/minimax-m3"
       ]
     }
   },
@@ -138,8 +137,7 @@
       "model": "zhipuai-coding-plan/glm-5v-turbo",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-2.0-code",
-        "zhipuai-coding-plan/glm-4.6v"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "ultrabrain": {
@@ -147,30 +145,30 @@
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "artistry": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
       "temperature": 0.7,
-      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "deep": {
       "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "max",
-      "thinking": { "type": "enabled", "budgetTokens": 65536 },
+      "reasoningEffort": "high",
+      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "zhipuai-coding-plan/glm-5.1"
       ]
     },
     "quick": {
@@ -178,26 +176,25 @@
       "reasoningEffort": "minimal",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
-        "volcengine-plan/doubao-seed-2.0-lite",
-        "volcengine-plan/doubao-seed-2.0-code"
+        "volcengine-plan/doubao-seed-2.0-lite"
       ]
     },
     "unspecified-low": {
-      "model": "zhipuai-coding-plan/glm-5-turbo",
+      "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "low",
       "fallback_models": [
-        "volcengine-plan/deepseek-v4-flash",
-        "volcengine-plan/doubao-seed-2.0-code"
+        "zhipuai-coding-plan/glm-5-turbo",
+        "volcengine-plan/doubao-seed-2.0-lite"
       ]
     },
     "unspecified-high": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 32768 },
+      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
-        "zhipuai-coding-plan/glm-5.1",
+        "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/kimi-k2.6"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "writing": {

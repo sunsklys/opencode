@@ -69,9 +69,20 @@ cp .env.example .env
 # 编辑填入真实 key
 vim .env  # 或 nano .env
 
-# 让 shell 自动加载（重要！）
-# 在 ~/.zshrc 末尾添加这一行：
+# === 方案 A: .zshenv（推荐，所有 zsh 实例均生效）===
+# 创建 ~/.zshenv，无论交互/非交互、登录/非登录 shell 都会 source
+cat > ~/.zshenv << 'EOF'
+set -a
+[ -f ~/.config/opencode/.env ] && source ~/.config/opencode/.env
+set +a
+EOF
+
+# === 方案 B: .zshrc（仅交互式 shell 生效，需配合 launchctl）===
+# 在 ~/.zshrc 末尾添加：
 echo 'set -a; [ -f ~/.config/opencode/.env ] && source ~/.config/opencode/.env; set +a' >> ~/.zshrc
+# 如果从 macOS GUI 启动 nvim/opencode，还需让 GUI 应用也能继承变量：
+echo 'launchctl setenv VOLC_API_KEY "$VOLC_API_KEY" 2>/dev/null' >> ~/.zshrc
+echo 'launchctl setenv Z_AI_API_KEY "$Z_AI_API_KEY" 2>/dev/null' >> ~/.zshrc
 
 # 立即生效
 source ~/.zshrc
@@ -80,6 +91,10 @@ source ~/.zshrc
 echo $VOLC_API_KEY
 echo $Z_AI_API_KEY
 ```
+
+> **为什么需要 .zshenv / launchctl？**
+> 从 LazyVim 等 GUI 启动的终端可能不走交互式 shell，
+> `.zshenv` 确保所有 zsh 实例都能加载，`launchctl setenv` 确保 GUI 应用也能继承。
 
 ### 5. 登录 opencode 凭证
 
@@ -126,7 +141,8 @@ npm install  # 如果 package.json 有变化
 
 ### `opencode` 启动报 "missing apiKey"
 → 环境变量没加载。检查 `echo $VOLC_API_KEY` 是否为空。
-→ 解决：`source ~/.zshrc` 或重开终端。
+→ 解决：确认 `~/.zshenv` 存在且内容正确，然后 `source ~/.zshrc` 或重开终端。
+→ 如果从 LazyVim/Neovim GUI 启动，还需确认 `launchctl getenv VOLC_API_KEY` 有值。
 
 ### 智谱模型调不通
 → 没执行 `opencode auth login zhipuai-coding-plan`。
