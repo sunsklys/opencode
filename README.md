@@ -6,10 +6,10 @@
 
 | 文件 | 说明 |
 |---|---|
-| `opencode.json` | provider 定义（火山引擎 11 模型）+ MCP 服务 + plugin |
-| `oh-my-openagent.json` | 11 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
+| `opencode.json` | provider 定义（火山引擎 6 模型）+ MCP 服务 + plugin |
+| `oh-my-openagent.json` | 12 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
-| `package.json` | OMO 依赖版本锁（^4.7.5）+ postinstall 全局依赖 |
+| `package.json` | OMO 依赖版本锁（^4.8.1）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `.env.example` | 环境变量模板（不含真实值） |
 
@@ -53,11 +53,11 @@ cd opencode
 
 ```bash
 npm install
-# 会自动拉 oh-my-openagent ^4.7.5 + claude-mermaid 等所有依赖
+# 会自动拉 oh-my-openagent ^4.8.1 + claude-mermaid 等所有依赖
 
 # postinstall 会自动安装全局依赖（claude-mermaid, codegraph）
 # 如果 postinstall 失败，手动安装：
-# npm i -g claude-mermaid @anthropic-ai/codegraph
+# npm i -g claude-mermaid @colbymchenry/codegraph
 ```
 
 ### 4. 配置 API key
@@ -132,8 +132,10 @@ git add . && git commit -m "update: xxx" && git push
 # 另一台机器拉新版
 cd ~/.config/opencode
 git pull
-npm install  # 如果 package.json 有变化
-```
+rm -rf node_modules package-lock.json  # 依赖有变化时全量重装
+npm install
+# 清理旧版 codegraph（如果之前装过错误的包名）
+npm uninstall -g @anthropic-ai/codegraph 2>/dev/null
 
 ---
 
@@ -154,7 +156,7 @@ npm install  # 如果 package.json 有变化
 
 ### MCP 服务报错（mermaid / codegraph 不可用）
 → 全局依赖未安装。检查 `which claude-mermaid` 和 `which codegraph`。
-→ 解决：`npm i -g claude-mermaid @anthropic-ai/codegraph`
+→ 解决：`npm i -g claude-mermaid @colbymchenry/codegraph`
 
 ---
 
@@ -163,8 +165,8 @@ npm install  # 如果 package.json 有变化
 | 场景 | 路由 |
 |---|---|
 | 主调度 (sisyphus) | DeepSeek V4-Pro |
-| 架构/深度推理 (oracle/hephaestus/prometheus/momus/metis/plan/ultrabrain/deep/artistry/unspecified-high) | DeepSeek V4-Pro |
-| 通用编码 (atlas/sisyphus-junior/writing) | GLM-5.1 |
+| 架构/深度推理 (oracle/prometheus/momus/metis/plan/ultrabrain/deep/artistry/unspecified-high) | DeepSeek V4-Pro |
+| 编码实现 (hephaestus/atlas/sisyphus-junior) | DeepSeek V4-Pro |
 | 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-Turbo |
-| 检索/轻量 (librarian/explore/quick) | DeepSeek V4-Flash |
-| 轻量通用 (unspecified-low) | GLM-5-Turbo |
+| 检索/轻量 (librarian/explore/quick/unspecified-low) | DeepSeek V4-Flash |
+| 写作 (writing) | GLM-5.1 |
