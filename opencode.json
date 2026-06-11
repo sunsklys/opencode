@@ -30,7 +30,7 @@
           "limit": { "context": 800000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] },
           "options": {
-            "thinking": { "type": "enabled", "budget_tokens": 16384 }
+            "thinking": { "type": "enabled", "budgetTokens": 16384 }
           }
         },
         "doubao-seed-2.0-code": {
@@ -87,7 +87,6 @@
     "chrome-mcp": {
       "type": "remote",
       "url": "http://127.0.0.1:12306/mcp",
-      "description": "Chrome 浏览器自动化 - 需先全局安装 mcp-chrome-bridge 并启动服务",
       "enabled": false
     },
     "codegraph": {

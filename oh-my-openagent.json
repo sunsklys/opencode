@@ -29,7 +29,6 @@
     },
     "hephaestus": {
       "model": "volcengine-plan/deepseek-v4-pro",
-      "allow_non_gpt_model": true,
       "reasoningEffort": "high",
       "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
