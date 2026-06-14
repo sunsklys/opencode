@@ -17,7 +17,7 @@
   },
   "agents": {
     "sisyphus": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "high",
       "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
@@ -38,7 +38,7 @@
       ]
     },
     "prometheus": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
@@ -48,7 +48,7 @@
       ]
     },
     "plan": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
@@ -58,7 +58,7 @@
       ]
     },
     "oracle": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
@@ -68,7 +68,7 @@
       ]
     },
     "metis": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
@@ -78,7 +78,7 @@
       ]
     },
     "momus": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
@@ -94,7 +94,7 @@
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6",
-        "zhipuai-coding-plan/glm-5.1"
+        "zhipuai-coding-plan/glm-5.2"
       ]
     },
     "librarian": {
@@ -126,7 +126,7 @@
       "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
-        "zhipuai-coding-plan/glm-5.1",
+        "zhipuai-coding-plan/glm-5.2",
         "volcengine-plan/minimax-m3"
       ]
     }
@@ -140,7 +140,7 @@
       ]
     },
     "ultrabrain": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
       "thinking": { "type": "enabled", "budgetTokens": 65536 },
       "fallback_models": [
@@ -161,13 +161,13 @@
       ]
     },
     "deep": {
-      "model": "volcengine-plan/deepseek-v4-pro",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "high",
       "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
-        "zhipuai-coding-plan/glm-5.1"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "quick": {
@@ -197,7 +197,7 @@
       ]
     },
     "writing": {
-      "model": "zhipuai-coding-plan/glm-5.1",
+      "model": "zhipuai-coding-plan/glm-5.2",
       "temperature": 0.7,
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",

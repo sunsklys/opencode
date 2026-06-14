@@ -25,6 +25,7 @@ trap "rm -rf $TMP" EXIT
 mkdir -p "$TMP/config/opencode"
 cp "$CONFIG_DIR"/*.json "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR"/*.jsonc "$TMP/config/opencode/" 2>/dev/null || true
+cp "$CONFIG_DIR"/*.sh "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR/.gitignore" "$TMP/config/opencode/" 2>/dev/null || true
 # package-lock.json 一起带上保证依赖一致
 [[ -f "$CONFIG_DIR/package-lock.json" ]] && cp "$CONFIG_DIR/package-lock.json" "$TMP/config/opencode/"
@@ -72,14 +73,18 @@ npm install
 # 3. 若未带 auth.json，需重新登录
 opencode auth login zhipuai-coding-plan
 
-# 4. 验证
+# 4. 安装飞书 CLI（可选，Bot 身份无需审批）
+# ⚠️ 必须先设置 FEISHU_APP_SECRET，否则脚本会报错退出
+export FEISHU_APP_SECRET='你的App Secret'
+bash ~/.config/opencode/setup-feishu-cli.sh
+
+# 5. 验证
 opencode --version
-```
 
 ## 配置文件清单
-- opencode.json   - provider 定义 + 模型 limit
-- opencode.jsonc  - MCP 服务 + plugin
-- oh-my-openagent.json - 11 agent + 8 category 路由
+- opencode.json   - provider 定义 + MCP 服务 + plugin
+- oh-my-openagent.json - 12 agent + 8 category 路由
+- setup-feishu-cli.sh - 飞书 CLI 一键安装（Bot 身份，无需审批）
 - package.json    - OMO 依赖锁
 - tui.json        - 主题
 EOF

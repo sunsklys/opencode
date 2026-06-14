@@ -9,12 +9,10 @@
 | `opencode.json` | provider 定义（火山引擎 6 模型）+ MCP 服务 + plugin |
 | `oh-my-openagent.json` | 12 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
+| `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
 | `package.json` | OMO 依赖版本锁（^4.8.1）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
-| `.env.example` | 环境变量模板（不含真实值） |
-
 **不包含**（已被 .gitignore 排除）：
-- `.env` - 含真实 API key（敏感！）
 - `auth.json` - opencode 登录凭证
 - `node_modules/` - 依赖（新机器 npm install 重建）
 - `opencode.db` - 会话历史
@@ -63,48 +61,51 @@ npm install
 ### 4. 配置 API key
 
 ```bash
-# 复制模板
-cp .env.example .env
-
-# 编辑填入真实 key
-vim .env  # 或 nano .env
-
-# === 方案 A: .zshenv（推荐，所有 zsh 实例均生效）===
-# 创建 ~/.zshenv，无论交互/非交互、登录/非登录 shell 都会 source
+# 创建 ~/.zshenv（所有 zsh 实例均生效，非交互 shell 也会加载）
 cat > ~/.zshenv << 'EOF'
-set -a
-[ -f ~/.config/opencode/.env ] && source ~/.config/opencode/.env
-set +a
+# 火山引擎 Ark API
+export VOLC_API_KEY='ark-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
+# 智谱 AI API
+export Z_AI_API_KEY='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxx'
+
+# 飞书 CLI App Secret（可选）
+export FEISHU_APP_SECRET='你的App Secret'
 EOF
 
-# === 方案 B: .zshrc（仅交互式 shell 生效，需配合 launchctl）===
-# 在 ~/.zshrc 末尾添加：
-echo 'set -a; [ -f ~/.config/opencode/.env ] && source ~/.config/opencode/.env; set +a' >> ~/.zshrc
-# 如果从 macOS GUI 启动 nvim/opencode，还需让 GUI 应用也能继承变量：
-echo 'launchctl setenv VOLC_API_KEY "$VOLC_API_KEY" 2>/dev/null' >> ~/.zshrc
-echo 'launchctl setenv Z_AI_API_KEY "$Z_AI_API_KEY" 2>/dev/null' >> ~/.zshrc
-
 # 立即生效
-source ~/.zshrc
+source ~/.zshenv
 
-# 验证环境变量已加载
+# 验证
 echo $VOLC_API_KEY
 echo $Z_AI_API_KEY
 ```
 
-> **为什么需要 .zshenv / launchctl？**
-> 从 LazyVim 等 GUI 启动的终端可能不走交互式 shell，
-> `.zshenv` 确保所有 zsh 实例都能加载，`launchctl setenv` 确保 GUI 应用也能继承。
+> 如果从 macOS GUI 启动 opencode，还需让 GUI 应用也能继承变量：
+> ```bash
+> launchctl setenv VOLC_API_KEY "$VOLC_API_KEY"
+> launchctl setenv Z_AI_API_KEY "$Z_AI_API_KEY"
+> ```
+### 5. 安装飞书 CLI（可选）
 
-### 5. 登录 opencode 凭证
+```bash
+# 设置环境变量（App Secret 请从飞书开放平台获取）
+export FEISHU_APP_SECRET='你的App Secret'
+bash setup-feishu-cli.sh
+# 脚本会自动：安装 CLI → 安装 27 个 SKILL → 配置凭证 → 登录授权
+```
 
+> 飞书 CLI 用于在 OpenCode 中操作飞书文档、表格、日历、IM、邮件等。
+> Bot 身份无需审批即可读取文档，脚本不会触发权限申请。
+
+### 6. 登录 opencode 凭证
 ```bash
 # 智谱 Coding Plan（必需，否则 9 个角色 fallback 全失效）
 opencode auth login zhipuai-coding-plan
 # 选择 zhipuai-coding-plan，输入对应 token
 ```
 
-### 6. 验证
+### 7. 验证
 
 ```bash
 opencode
@@ -158,6 +159,13 @@ npm uninstall -g @anthropic-ai/codegraph 2>/dev/null
 → 全局依赖未安装。检查 `which claude-mermaid` 和 `which codegraph`。
 → 解决：`npm i -g claude-mermaid @colbymchenry/codegraph`
 
+### 飞书 CLI 读文档报权限错误
+→ Bot 身份不需要审批，直接用 `--as bot` 即可。
+→ 用户身份敏感权限（多维表格、审批等）需要管理员审批。
+→ 解决：`lark-cli auth status` 查看当前状态。
+
+### 飞书 CLI 在新电脑上提示未配置
+→ 运行 `bash setup-feishu-cli.sh`（需先设置 `FEISHU_APP_SECRET` 环境变量）。
 ---
 
 ## 角色路由速查
