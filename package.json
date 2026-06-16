@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@opencode-ai/plugin": "1.16.2",
-    "oh-my-openagent": "^4.7.5"
+    "oh-my-openagent": "^4.10.0"
   },
   "scripts": {
     "postinstall": "echo 'Installing global MCP deps...' && npm i -g claude-mermaid 2>/dev/null || echo 'WARN: claude-mermaid install failed, run: npm i -g claude-mermaid' && npm i -g @colbymchenry/codegraph 2>/dev/null || echo 'WARN: codegraph install failed, run: npm i -g @colbymchenry/codegraph' && echo 'Global deps done'"
