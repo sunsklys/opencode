@@ -5,21 +5,75 @@
     "locale": "zh"
   },
   "team_mode": {
-    "enabled": true
+    "enabled": true,
+    "max_parallel_members": 4,
+    "max_members": 8,
+    "tmux_visualization": false,
+    "max_messages_per_run": 10000,
+    "max_wall_clock_minutes": 120,
+    "max_member_turns": 500
   },
   "runtime_fallback": {
     "enabled": true,
-    "retry_on_errors": [429, 500, 502, 503, 504],
+    "retry_on_errors": [400, 401, 403, 404, 429, 500, 502, 503, 504, 529],
     "max_fallback_attempts": 3,
-    "cooldown_seconds": 60,
-    "timeout_seconds": 30,
+    "cooldown_seconds": 15,
+    "timeout_seconds": 10,
     "notify_on_fallback": true
+  },
+  "model_capabilities": {
+    "enabled": true,
+    "auto_refresh_on_start": true,
+    "refresh_timeout_ms": 5000
+  },
+  "background_task": {
+    "defaultConcurrency": 5,
+    "staleTimeoutMs": 180000,
+    "providerConcurrency": {
+      "volcengine-plan": 5,
+      "zhipuai-coding-plan": 3
+    },
+    "modelConcurrency": {
+      "volcengine-plan/deepseek-v4-pro": 3,
+      "volcengine-plan/deepseek-v4-flash": 5,
+      "zhipuai-coding-plan/glm-5.2": 2,
+      "zhipuai-coding-plan/glm-5-turbo": 3
+    }
+  },
+  "experimental": {
+    "task_system": true,
+    "aggressive_truncation": false,
+    "auto_resume": false,
+    "dynamic_context_pruning": {
+      "enabled": false,
+      "notification": "detailed",
+      "turn_protection": { "enabled": true, "turns": 3 },
+      "protected_tools": [
+        "task", "todowrite", "todoread",
+        "lsp_rename", "session_read", "session_search"
+      ],
+      "strategies": {
+        "deduplication": { "enabled": true },
+        "supersede_writes": { "enabled": true, "aggressive": false },
+        "purge_errors": { "enabled": true, "turns": 5 }
+      }
+    }
+  },
+  "sisyphus_agent": {
+    "disabled": false,
+    "default_builder_enabled": false,
+    "planner_enabled": true,
+    "replace_plan": true,
+    "tdd": true
+  },
+  "default_mode": {
+    "ultrawork": false,
+    "ralph_loop": false
   },
   "agents": {
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 49152 },
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
@@ -30,7 +84,7 @@
     "hephaestus": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 49152 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6",
@@ -40,7 +94,7 @@
     "prometheus": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
-      "thinking": { "type": "enabled", "budgetTokens": 65536 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
@@ -50,7 +104,7 @@
     "plan": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
-      "thinking": { "type": "enabled", "budgetTokens": 65536 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6",
@@ -60,7 +114,7 @@
     "oracle": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
-      "thinking": { "type": "enabled", "budgetTokens": 65536 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6",
@@ -70,7 +124,7 @@
     "metis": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
-      "thinking": { "type": "enabled", "budgetTokens": 65536 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
@@ -80,7 +134,7 @@
     "momus": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
-      "thinking": { "type": "enabled", "budgetTokens": 65536 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6",
@@ -90,7 +144,7 @@
     "atlas": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 49152 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/kimi-k2.6",
@@ -123,7 +177,7 @@
     "sisyphus-junior": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 49152 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "zhipuai-coding-plan/glm-5.2",
@@ -142,7 +196,7 @@
     "ultrabrain": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "max",
-      "thinking": { "type": "enabled", "budgetTokens": 65536 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
@@ -153,7 +207,7 @@
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
       "temperature": 0.7,
-      "thinking": { "type": "enabled", "budgetTokens": 49152 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
@@ -163,7 +217,7 @@
     "deep": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 49152 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
@@ -189,7 +243,7 @@
     "unspecified-high": {
       "model": "volcengine-plan/deepseek-v4-pro",
       "reasoningEffort": "high",
-      "thinking": { "type": "enabled", "budgetTokens": 49152 },
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/minimax-m3",
@@ -205,5 +259,22 @@
         "volcengine-plan/minimax-m3"
       ]
     }
+  },
+  "git_master": {
+    "commit_footer": true,
+    "include_co_authored_by": true
+  },
+  "disabled_hooks": [
+    "auto-update-checker"
+  ],
+  "tmux": {
+    "enabled": false,
+    "layout": "main-vertical",
+    "main_pane_size": 60,
+    "main_pane_min_width": 120,
+    "agent_pane_min_width": 40
+  },
+  "keyword_detector": {
+    "enabled_expansions": []
   }
 }
