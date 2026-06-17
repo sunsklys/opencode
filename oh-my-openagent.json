@@ -11,11 +11,14 @@
     "tmux_visualization": false,
     "max_messages_per_run": 10000,
     "max_wall_clock_minutes": 120,
-    "max_member_turns": 500
+    "max_member_turns": 500,
+    "message_payload_max_bytes": 32768,
+    "recipient_unread_max_bytes": 262144,
+    "mailbox_poll_interval_ms": 3000
   },
   "runtime_fallback": {
     "enabled": true,
-    "retry_on_errors": [400, 401, 403, 404, 429, 500, 502, 503, 504, 529],
+    "retry_on_errors": [429, 500, 502, 503, 504, 529],
     "max_fallback_attempts": 3,
     "cooldown_seconds": 60,
     "timeout_seconds": 30,
@@ -43,7 +46,6 @@
   "experimental": {
     "task_system": true,
     "aggressive_truncation": false,
-    "auto_resume": false,
     "dynamic_context_pruning": {
       "enabled": false,
       "notification": "detailed",
@@ -262,7 +264,8 @@
   },
   "git_master": {
     "commit_footer": true,
-    "include_co_authored_by": true
+    "include_co_authored_by": true,
+    "git_env_prefix": "GIT_MASTER=1"
   },
   "disabled_hooks": [
     "auto-update-checker"
@@ -272,9 +275,10 @@
     "layout": "main-vertical",
     "main_pane_size": 60,
     "main_pane_min_width": 120,
-    "agent_pane_min_width": 40
+    "agent_pane_min_width": 40,
+    "isolation": "inline"
   },
   "keyword_detector": {
-    "enabled_expansions": []
+    "enabled_expansions": ["ultrawork", "team", "hyperplan", "hyperplan-ultrawork"]
   }
 }
