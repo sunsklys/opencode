@@ -20,6 +20,7 @@ tool-output/
 snapshot/
 .omo/
 .sisyphus/
+tasks/
 
 # === 缓存 ===
 .cache/
@@ -36,6 +37,10 @@ snapshot/
 *.swp
 *.swo
 *~
+.claude/
+.codebuddy/
+.junie/
+.lingma/
 
 # === 临时文件 ===
 *.tmp
