@@ -132,6 +132,18 @@
     "auto": true,
     "reserved": 10000
   },
+  "small_model": "volcengine-plan/deepseek-v4-flash",
+  "tool_output": {
+    "max_lines": 2000,
+    "max_bytes": 524288
+  },
+  "attachment": {
+    "image": {
+      "auto_resize": true,
+      "max_width": 1600,
+      "max_height": 1600
+    }
+  },
   "watcher": {
     "ignore": [
       "node_modules/**",
