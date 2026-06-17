@@ -10,7 +10,8 @@ npm install -g @larksuite/cli
 
 echo ""
 echo "=== 2/4 安装飞书 SKILL（27 个） ==="
-npx -y skills add https://open.feishu.cn --skill -y
+# -g 安装到用户级（~/.agents/），避免污染当前项目目录
+npx -y skills add https://open.feishu.cn --skill -g -y
 
 echo ""
 echo "=== 3/4 配置应用凭证 ==="
