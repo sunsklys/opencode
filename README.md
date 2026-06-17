@@ -58,41 +58,52 @@ npm install
 # npm i -g claude-mermaid @colbymchenry/codegraph
 ```
 
-### 4. 配置 API key
+### 4. 配置环境变量（直接写入 `~/.zshrc`）
+
+> 不再使用 `.env` 文件中转。所有 API key 直接 export 到 `~/.zshrc`。
 
 ```bash
-# 创建 ~/.zshenv（所有 zsh 实例均生效，非交互 shell 也会加载）
-cat > ~/.zshenv << 'EOF'
-# 火山引擎 Ark API
+# 编辑 ~/.zshrc，在末尾追加：
+cat >> ~/.zshrc << 'EOF'
+
+# opencode 环境变量
 export VOLC_API_KEY='ark-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-
-# 智谱 AI API
 export Z_AI_API_KEY='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxx'
-
-# 飞书 CLI App Secret（可选）
 export FEISHU_APP_SECRET='你的App Secret'
+# 同步给 macOS GUI 应用（IDE/从 Dock 启动的 opencode 也能继承）
+launchctl setenv VOLC_API_KEY "$VOLC_API_KEY" 2>/dev/null
+launchctl setenv Z_AI_API_KEY "$Z_AI_API_KEY" 2>/dev/null
+launchctl setenv FEISHU_APP_SECRET "$FEISHU_APP_SECRET" 2>/dev/null
 EOF
 
 # 立即生效
-source ~/.zshenv
+source ~/.zshrc
 
 # 验证
 echo $VOLC_API_KEY
 echo $Z_AI_API_KEY
+echo $FEISHU_APP_SECRET
 ```
 
-> 如果从 macOS GUI 启动 opencode，还需让 GUI 应用也能继承变量：
+> **为什么用 `.zshrc` 而不是 `.zshenv`？**
+> `.zshrc` 是交互式 shell 配置，opencode 从终端启动时会加载。
+> 对于从 macOS GUI / IDE 启动的场景，上面的 `launchctl setenv` 会把变量
+> 写入 launchd 进程环境，GUI 子进程能继承——所以两者结合覆盖全部场景。
+
+> **GUI 应用继承**：上面 `launchctl setenv` 三行已经覆盖了从 Dock / IDE
+> GUI 启动 opencode 的场景，无需额外操作。如果变量未同步，手动执行：
 > ```bash
 > launchctl setenv VOLC_API_KEY "$VOLC_API_KEY"
 > launchctl setenv Z_AI_API_KEY "$Z_AI_API_KEY"
+> launchctl setenv FEISHU_APP_SECRET "$FEISHU_APP_SECRET"
 > ```
 ### 5. 安装飞书 CLI（可选）
 
+> `FEISHU_APP_SECRET` 已在第 4 步写入 `~/.zshrc`，直接跑脚本即可。
+
 ```bash
-# 设置环境变量（App Secret 请从飞书开放平台获取）
-export FEISHU_APP_SECRET='你的App Secret'
 bash setup-feishu-cli.sh
-# 脚本会自动：安装 CLI → 安装 27 个 SKILL → 配置凭证 → 登录授权
+# 脚本会自动：安装 CLI → 安装 27 个 SKILL → 配置凭证 → 验证状态
 ```
 
 > 飞书 CLI 用于在 OpenCode 中操作飞书文档、表格、日历、IM、邮件等。
@@ -120,6 +131,7 @@ opencode
 |---|---|---|
 | `VOLC_API_KEY` | 火山引擎 Ark | https://console.volcengine.com/ark |
 | `Z_AI_API_KEY` | 智谱 BigModel | https://www.bigmodel.cn/usercenter/apikeys |
+| `FEISHU_APP_SECRET` | 飞书开放平台 App Secret | https://open.feishu.cn/app/cli_aaa482d9dcb8dbcd
 
 ---
 
@@ -144,7 +156,7 @@ npm uninstall -g @anthropic-ai/codegraph 2>/dev/null
 
 ### `opencode` 启动报 "missing apiKey"
 → 环境变量没加载。检查 `echo $VOLC_API_KEY` 是否为空。
-→ 解决：确认 `~/.zshenv` 存在且内容正确，然后 `source ~/.zshrc` 或重开终端。
+→ 解决：确认 `~/.zshrc` 里的 `export VOLC_API_KEY=...` 存在且正确，然后 `source ~/.zshrc` 或重开终端。
 → 如果从 LazyVim/Neovim GUI 启动，还需确认 `launchctl getenv VOLC_API_KEY` 有值。
 
 ### 智谱模型调不通
@@ -165,7 +177,7 @@ npm uninstall -g @anthropic-ai/codegraph 2>/dev/null
 → 解决：`lark-cli auth status` 查看当前状态。
 
 ### 飞书 CLI 在新电脑上提示未配置
-→ 运行 `bash setup-feishu-cli.sh`（需先设置 `FEISHU_APP_SECRET` 环境变量）。
+→ 运行 `bash setup-feishu-cli.sh`（`FEISHU_APP_SECRET` 需已在 `~/.zshrc` 中配置）。
 ---
 
 ## 角色路由速查
