@@ -6,11 +6,11 @@
 
 | 文件 | 说明 |
 |---|---|
-| `opencode.json` | provider 定义（火山引擎 6 模型）+ MCP 服务 + plugin |
+| `opencode.json` | provider 定义（火山引擎 8 模型）+ MCP 服务 + plugin |
 | `oh-my-openagent.json` | 12 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | OMO 依赖版本锁（^4.8.1）+ postinstall 全局依赖 |
+| `package.json` | OMO 依赖版本锁（^4.10.0）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 **不包含**（已被 .gitignore 排除）：
 - `auth.json` - opencode 登录凭证
@@ -51,7 +51,7 @@ cd opencode
 
 ```bash
 npm install
-# 会自动拉 oh-my-openagent ^4.8.1 + claude-mermaid 等所有依赖
+# 会自动拉 oh-my-openagent ^4.10.0 + claude-mermaid 等所有依赖
 
 # postinstall 会自动安装全局依赖（claude-mermaid, codegraph）
 # 如果 postinstall 失败，手动安装：
@@ -184,9 +184,13 @@ npm uninstall -g @anthropic-ai/codegraph 2>/dev/null
 
 | 场景 | 路由 |
 |---|---|
-| 主调度 (sisyphus) | DeepSeek V4-Pro |
-| 架构/深度推理 (oracle/prometheus/momus/metis/plan/ultrabrain/deep/artistry/unspecified-high) | DeepSeek V4-Pro |
-| 编码实现 (hephaestus/atlas/sisyphus-junior) | DeepSeek V4-Pro |
+| 主调度 (sisyphus) | GLM-5.2 (zhipu, high) |
+| 架构/深度推理 (oracle/prometheus/momus/metis/plan) | GLM-5.2 (zhipu, max) |
+| 高难度自主 (ultrabrain/deep) | GLM-5.2 (zhipu) |
+| 创意/非常规 (artistry) | DeepSeek V4-Pro (high) |
+| 编码实现 (hephaestus/atlas/sisyphus-junior/unspecified-high) | DeepSeek V4-Pro (high) |
 | 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-Turbo |
-| 检索/轻量 (librarian/explore/quick/unspecified-low) | DeepSeek V4-Flash |
-| 写作 (writing) | GLM-5.1 |
+| 检索/轻量 (librarian/explore/quick/unspecified-low) | DeepSeek V4-Flash (low) |
+| 写作 (writing) | GLM-5.2 |
+
+> 所有 GLM-5.2 主模型均已配置 `volcengine-plan/glm-5.2` 作同模型跨 provider fallback（zhipuai 宕机先走火山通道保持模型一致，再退化到异构模型）。`max_fallback_attempts=4`。
