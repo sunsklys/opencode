@@ -1,9 +1,13 @@
 {
   "dependencies": {
-    "@opencode-ai/plugin": "^1.17.7",
-    "oh-my-openagent": "^4.10.0"
+    "@opencode-ai/plugin": "^1.17.8",
+    "oh-my-openagent": "^4.11.0"
   },
   "scripts": {
-    "postinstall": "echo 'Installing global MCP deps...' && npm i -g claude-mermaid 2>/dev/null || echo 'WARN: claude-mermaid install failed, run: npm i -g claude-mermaid' && npm i -g @colbymchenry/codegraph 2>/dev/null || echo 'WARN: codegraph install failed, run: npm i -g @colbymchenry/codegraph' && echo 'Global deps done'"
+    "postinstall": "patch-package && echo 'Installing global MCP deps...' && npm i -g claude-mermaid 2>/dev/null || echo 'WARN: claude-mermaid install failed, run: npm i -g claude-mermaid' && npm i -g @colbymchenry/codegraph 2>/dev/null || echo 'WARN: codegraph install failed, run: npm i -g @colbymchenry/codegraph' && echo 'Global deps done'"
+  },
+  "devDependencies": {
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0"
   }
 }

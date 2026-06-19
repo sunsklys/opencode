@@ -34,12 +34,12 @@
     "staleTimeoutMs": 180000,
     "providerConcurrency": {
       "volcengine-plan": 5,
-      "zhipuai-coding-plan": 3
+      "zhipuai-coding-plan": 5
     },
     "modelConcurrency": {
       "volcengine-plan/deepseek-v4-pro": 3,
       "volcengine-plan/deepseek-v4-flash": 5,
-      "zhipuai-coding-plan/glm-5.2": 3,
+      "zhipuai-coding-plan/glm-5.2": 5,
       "zhipuai-coding-plan/glm-5-turbo": 3
     },
     "circuitBreaker": {
@@ -80,23 +80,22 @@
   "agents": {
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "reasoningEffort": "high",
+      "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "hephaestus": {
-      "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
+      "model": "zhipuai-coding-plan/glm-5.2",
+      "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
+        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-2.0-pro",
-        "zhipuai-coding-plan/glm-5.2"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "prometheus": {
@@ -105,9 +104,8 @@
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "plan": {
@@ -116,9 +114,8 @@
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "oracle": {
@@ -127,9 +124,8 @@
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "metis": {
@@ -138,9 +134,8 @@
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "momus": {
@@ -149,19 +144,18 @@
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "atlas": {
-      "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
+      "model": "zhipuai-coding-plan/glm-5.2",
+      "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
+        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-2.0-pro",
-        "zhipuai-coding-plan/glm-5.2"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "librarian": {
@@ -188,13 +182,13 @@
       ]
     },
     "sisyphus-junior": {
-      "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
+      "model": "zhipuai-coding-plan/glm-5.2",
+      "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
-        "volcengine-plan/doubao-seed-2.0-pro",
-        "zhipuai-coding-plan/glm-5.2",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/deepseek-v4-pro",
+        "volcengine-plan/minimax-m3",
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     }
   },
@@ -212,31 +206,29 @@
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "artistry": {
-      "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
+      "model": "zhipuai-coding-plan/glm-5.2",
+      "reasoningEffort": "max",
       "temperature": 0.7,
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
-        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
-        "zhipuai-coding-plan/glm-5.2"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "deep": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "reasoningEffort": "high",
+      "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "quick": {
@@ -256,13 +248,13 @@
       ]
     },
     "unspecified-high": {
-      "model": "volcengine-plan/deepseek-v4-pro",
-      "reasoningEffort": "high",
+      "model": "zhipuai-coding-plan/glm-5.2",
+      "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
-        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
-        "zhipuai-coding-plan/glm-5.2"
+        "volcengine-plan/doubao-seed-2.0-code"
       ]
     },
     "writing": {
@@ -270,9 +262,8 @@
       "temperature": 0.7,
       "fallback_models": [
         "volcengine-plan/glm-5.2",
-        "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/kimi-k2.6",
-        "volcengine-plan/minimax-m3"
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     }
   },
