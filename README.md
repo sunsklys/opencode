@@ -21,6 +21,50 @@
 
 ---
 
+---
+
+## 配置文件结构
+
+> 本节是「字段地图」，帮你快速定位配置。详细字段值请直接看源文件，README 不逐字段穷举。
+
+### `opencode.json`（opencode 主配置）
+
+| 类别 | 关键字段 | 说明 |
+|---|---|---|
+| **插件/扩展** | `plugin` / `mcp` / `lsp` | 2 plugin + 8 MCP + LSP（true = 自动检测内置） |
+| **模型路由** | `provider` / `small_model` | 火山引擎 9 模型 + deepseek-v4-flash 作 small |
+| **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / notify / auto |
+| **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
+| **安全** | `permission.read` / `permission.bash` / `watcher.ignore` | deny 列表 + 文件监听忽略 |
+
+### `oh-my-openagent.json`（OMO 框架配置）
+
+| 类别 | 关键字段 | 说明 |
+|---|---|---|
+| **角色定义** | `agents` / `categories` | 12 agent + 8 category + fallback 链（详见「角色路由速查」） |
+| **架构开关** | `team_mode` / `tmux` / `sisyphus_agent` / `default_mode` | 多 agent 协作 / TUI 可视化 / planner / ultrawork 默认值 |
+| **容错与性能** | `runtime_fallback` / `model_fallback` / `background_task` / `model_capabilities` | 4 次重试 / 跨 provider fallback / 并发控制 / 能力探测 |
+| **实验特性** | `experimental` / `keyword_detector` / `disabled_hooks` | task_system / context_pruning / intent 关键词 / hook 黑名单 |
+| **编码习惯** | `i18n` / `hashline_edit` / `git_master` | zh / 行内 hash 编辑 / commit footer |
+
+### `tui.json`（TUI 专用配置）
+
+| 字段 | 说明 |
+|---|---|
+| `plugin` | TUI 模式加载的 plugin（与 `opencode.json` 保持同步） |
+| `theme` / `scroll_speed` / `mouse` | tokyonight / 3 / true |
+
+### `opencode-mem.jsonc`（本地持久记忆配置，**不入 git**）
+
+| 字段类别 | 说明 |
+|---|---|
+| **auto-capture** | `memoryProvider` / `memoryModel` / `memoryApiUrl` / `memoryApiKey`（智谱直连） |
+| **存储** | `storagePath` / `embeddingModel` / `maxVectorsPerShard`（本地默认值） |
+| **Web UI** | `webServerEnabled` / `webServerPort` / `webServerHost`（4747 / 127.0.0.1） |
+| **用户画像** | `userProfileAnalysisInterval` / `injectProfile`（默认 10 / true） |
+
+> **迁移原则**：`opencode.json` + `oh-my-openagent.json` + `tui.json` + `setup-feishu-cli.sh` 都进 git，新机器 `git pull` 即可。`opencode-mem.jsonc` 不入 git（含 API key），需新机器手动配（详见迁移步骤 8）。
+
 ## 新机器迁移步骤
 
 ### 1. 前置依赖
