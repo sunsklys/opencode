@@ -1,0 +1,87 @@
+{
+  // ============================================
+  // OpenCode Memory Plugin Configuration
+  // 智谱 GLM 直连版（由 `make mem` 生成，勿手动编辑）
+  // ============================================
+
+  // 存储：本地 USearch 向量库（0 云成本）
+  "storagePath": "~/.opencode-mem/data",
+
+  "userEmailOverride": "",
+  "userNameOverride": "",
+
+  // ============================================
+  // Embedding Model（本地推理，无需 API）
+  // ============================================
+  "embeddingModel": "Xenova/nomic-embed-text-v1",
+
+  // ============================================
+  // Web Server（记忆管理 UI）
+  // ============================================
+  "webServerEnabled": true,
+  "webServerPort": 4747,
+  "webServerHost": "127.0.0.1",
+
+  // ============================================
+  // Database Settings
+  // ============================================
+  "maxVectorsPerShard": 50000,
+  "autoCleanupEnabled": true,
+  "autoCleanupRetentionDays": 30,
+  "deduplicationEnabled": true,
+  "deduplicationSimilarityThreshold": 0.90,
+
+  // ============================================
+  // Memory Scope
+  // ============================================
+  "memory": {
+    "defaultScope": "project"
+  },
+
+  // ============================================
+  // Auto-Capture（智谱 GLM 直连）
+  // --------------------------------------------
+  // 为什么不用 opencodeProvider 模式？
+  //   智谱不支持 structured output，会报 `prompt response missing info`。
+  //   改用智谱 OpenAI-compatible 直连接口绕过该限制，复用 Z_AI_API_KEY。
+  // ============================================
+  "autoCaptureEnabled": true,
+
+  "memoryProvider": "openai-chat",
+  "memoryModel": "glm-5-turbo",
+  "memoryApiUrl": "https://open.bigmodel.cn/api/paas/v4",
+  "memoryApiKey": "env://Z_AI_API_KEY",
+
+  "autoCaptureMaxIterations": 5,
+  "autoCaptureIterationTimeout": 30000,
+  "aiSessionRetentionDays": 7,
+  "memoryTemperature": 0.3,
+
+  // ============================================
+  // Toast Notifications
+  // ============================================
+  "showAutoCaptureToasts": true,
+  "showUserProfileToasts": true,
+  "showErrorToasts": true,
+
+  // ============================================
+  // User Profile System
+  // ============================================
+  "userProfileAnalysisInterval": 10,
+  "userProfileMaxPreferences": 20,
+  "userProfileMaxPatterns": 15,
+  "userProfileMaxWorkflows": 10,
+  "userProfileConfidenceDecayDays": 30,
+  "userProfileChangelogRetentionCount": 5,
+
+  // ============================================
+  // Search Settings
+  // ============================================
+  "similarityThreshold": 0.6,
+  "maxMemories": 10,
+
+  // ============================================
+  // Advanced
+  // ============================================
+  "injectProfile": true
+}
