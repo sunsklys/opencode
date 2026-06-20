@@ -105,6 +105,12 @@
       "enabled": true
     }
   },
+  "lsp": {
+    "typescript": { "disabled": false },
+    "pyright":    { "disabled": false },
+    "gopls":      { "disabled": false },
+    "eslint":     { "disabled": false }
+  },
   "default_agent": "build",
   "share": "manual",
   "autoupdate": "notify",
