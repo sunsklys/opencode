@@ -109,8 +109,7 @@
   "share": "manual",
   "autoupdate": "notify",
   "compaction": {
-    "auto": true,
-    "reserved": 10000
+    "auto": true
   },
   "small_model": "volcengine-plan/deepseek-v4-flash",
   "tool_output": {

@@ -24,6 +24,7 @@
     "timeout_seconds": 30,
     "notify_on_fallback": true
   },
+  "model_fallback": true,
   "model_capabilities": {
     "enabled": true,
     "auto_refresh_on_start": true,
@@ -31,7 +32,6 @@
   },
   "background_task": {
     "defaultConcurrency": 5,
-    "staleTimeoutMs": 180000,
     "providerConcurrency": {
       "volcengine-plan": 5,
       "zhipuai-coding-plan": 5
@@ -41,16 +41,12 @@
       "volcengine-plan/deepseek-v4-flash": 5,
       "zhipuai-coding-plan/glm-5.2": 5,
       "zhipuai-coding-plan/glm-5-turbo": 3
-    },
-    "circuitBreaker": {
-      "enabled": true,
-      "maxToolCalls": 200,
-      "consecutiveThreshold": 10
     }
   },
   "experimental": {
     "task_system": true,
-    "aggressive_truncation": false,
+    "preemptive_compaction": true,
+    "aggressive_truncation": true,
     "dynamic_context_pruning": {
       "enabled": false,
       "notification": "detailed",
@@ -80,6 +76,7 @@
   "agents": {
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -90,7 +87,9 @@
     },
     "hephaestus": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
+      "allow_non_gpt_model": true,
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
@@ -100,6 +99,7 @@
     },
     "prometheus": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -110,6 +110,7 @@
     },
     "plan": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -120,6 +121,7 @@
     },
     "oracle": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -130,6 +132,7 @@
     },
     "metis": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -140,6 +143,7 @@
     },
     "momus": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -150,6 +154,7 @@
     },
     "atlas": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -183,6 +188,7 @@
     },
     "sisyphus-junior": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -202,6 +208,7 @@
     },
     "ultrabrain": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -212,6 +219,7 @@
     },
     "artistry": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "temperature": 0.7,
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
@@ -223,6 +231,7 @@
     },
     "deep": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
@@ -249,6 +258,7 @@
     },
     "unspecified-high": {
       "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "high",
       "reasoningEffort": "max",
       "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
