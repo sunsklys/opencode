@@ -9,6 +9,7 @@ node_modules/
 .env.local
 .env.*.local
 auth.json
+opencode-mem.jsonc
 
 # === 运行时数据 ===
 *.db
