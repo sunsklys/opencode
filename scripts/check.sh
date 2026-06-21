@@ -158,7 +158,7 @@ else
       HASH=$(echo "$line" | awk '{print $1}')
       REL_PATH=$(echo "$line" | awk '{print $2}')
       TOTAL=$((TOTAL+1))
-      FULL_PATH="$SKILLS_DIR/$REL_PATH"
+      FULL_PATH="$REL_PATH"
       if [ ! -f "$FULL_PATH" ]; then
         warn "SKILL 缺失：$REL_PATH"
         MISSING=$((MISSING+1))

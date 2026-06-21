@@ -118,7 +118,7 @@ npm i -g typescript-language-server pyright
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（10 项：环境 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skill 软链） |
+| `make check` | 体检（11 项：环境 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链） |
 | `make update` | 更新依赖到最新（清 node_modules 重装） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
 | `make config` | 仅配置环境变量（交互式） |

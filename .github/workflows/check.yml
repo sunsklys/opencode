@@ -42,4 +42,11 @@ jobs:
             echo "✓ $f 语法正确"
           done
 
+      - name: skills.lock 存在性验证
+        run: |
+          test -s skills.lock && echo "✓ skills.lock 存在且非空（$(wc -l < skills.lock) 条）" || {
+            echo "❌ skills.lock 缺失或为空（运行 make skills-lock 生成）"
+            exit 1
+          }
+
       # 注：完整 make check 在 CI 环境会因缺 API key 而警告，所以只跑上面的子集
