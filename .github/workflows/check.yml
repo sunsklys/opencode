@@ -1,0 +1,45 @@
+name: check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install opencode
+        run: curl -fsSL https://opencode.ai/install | bash
+
+      - name: Install npm deps
+        run: |
+          npm install
+          # 补丁验证（CI 环境不应崩溃，如果崩溃说明补丁文件名版本失配）
+          grep -q "/glm/i" node_modules/oh-my-openagent/dist/index.js || {
+            echo "❌ hephaestus GLM 补丁未应用"
+            exit 1
+          }
+
+      - name: Makefile syntax check
+        run: make help
+
+      - name: tui.json / opencode.json plugin 同步检查
+        run: make tui-sync
+
+      - name: JSON 语法验证
+        run: |
+          for f in opencode.json oh-my-openagent.json tui.json package.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || exit 1
+            echo "✓ $f 语法正确"
+          done
+
+      # 注：完整 make check 在 CI 环境会因缺 API key 而警告，所以只跑上面的子集

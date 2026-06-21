@@ -5,6 +5,9 @@
 # ============================================================
 set -e
 
+# 默认 App ID（fork 后可经 FEISHU_APP_ID 环境变量覆盖）
+FEISHU_APP_ID="${FEISHU_APP_ID:-cli_aaa482d9dcb8dbcd}"
+
 echo "=== 1/4 安装飞书 CLI ==="
 npm install -g @larksuite/cli
 
@@ -19,7 +22,7 @@ if [ -z "$FEISHU_APP_SECRET" ]; then
   echo "❌ 请先设置环境变量: export FEISHU_APP_SECRET='你的App Secret'"
   exit 1
 fi
-echo "$FEISHU_APP_SECRET" | lark-cli config init --app-id "cli_aaa482d9dcb8dbcd" --app-secret-stdin
+echo "$FEISHU_APP_SECRET" | lark-cli config init --app-id "$FEISHU_APP_ID" --app-secret-stdin
 
 echo ""
 echo "=== 验证 ==="

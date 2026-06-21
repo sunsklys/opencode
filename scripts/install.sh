@@ -28,7 +28,7 @@ if grep -q "/glm/i" node_modules/oh-my-openagent/dist/index.js 2>/dev/null; then
   echo "✓ oh-my-openagent hephaestus GLM 补丁已应用"
 else
   echo "⚠ oh-my-openagent 补丁未应用（hephaestus agent 可能无法使用 GLM 模型）"
-  echo "  检查 patches/oh-my-openagent+4.12.0.patch 是否存在"
+  echo "  检查 patches/oh-my-openagent+4.12.1.patch 是否存在"
 fi
 
 # opencode-mem 软链 + 版本验证（防御性赋值：node -p 失败时 fallback 到"未知"）

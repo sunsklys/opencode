@@ -6,17 +6,18 @@
 
 | 文件 | 说明 |
 |---|---|
-| `opencode.json` | provider 定义（火山引擎 8 模型）+ 8 MCP + 2 plugin + LSP + permission |
+| `opencode.json` | provider 定义（火山引擎 8 模型）+ 8 MCP 条目（7 启用 + chrome-mcp 默认禁用）+ 2 plugin + LSP + permission |
 | `oh-my-openagent.json` | 12 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | oh-my-openagent 4.12.0（精确锁定配合 hephaestus GLM 补丁）+ @opencode-ai/plugin ^1.17.8 + postinstall 全局依赖 |
+| `package.json` | oh-my-openagent 4.12.1（精确锁定配合 hephaestus GLM 补丁）+ @opencode-ai/plugin ^1.17.8 + postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
 | `opencode-mem.jsonc.template` | 智谱直连模板（`make mem` 生成 `opencode-mem.jsonc`） |
 | `.nvmrc` | 锁定 Node.js v22（fnm/nvm 自动识别） |
 | `patches/` | oh-my-openagent 补丁（hephaestus GLM 支持） |
+| `opencode-export.sh` | 配置导出脚本（`make export` 调用，打包 tar.gz 供新机恢复） |
 **不包含**（已被 .gitignore 排除）：
 - `auth.json` - opencode 登录凭证
 - `node_modules/` - 依赖（新机器 npm install 重建）
@@ -68,7 +69,7 @@
 | **Web UI** | `webServerEnabled` / `webServerPort` / `webServerHost`（4747 / 127.0.0.1） |
 | **用户画像** | `userProfileAnalysisInterval` / `injectProfile`（默认 10 / true） |
 
-> **迁移原则**：配置文件都进 git，新机器 `git clone` + `make install` 即可。`opencode-mem.jsonc` 不入 git（含 API key 引用），由 `make mem` 从模板自动生成。
+> **迁移原则**：配置文件都进 git，新机器 `git clone` + `make install` 即可。`opencode-mem.jsonc` 不入 git（由 `make mem` 从模板生成，保持 `.template` 作权威源），避免本地实例澉移污染 git 历史。
 
 ## 快速开始（新机器）
 
@@ -80,7 +81,7 @@ cd ~/.config/opencode
 
 make install                              # 一键：依赖 + 环境变量 + 记忆配置 + 飞书 CLI
 opencode auth login zhipuai-coding-plan   # 登录智谱凭证
-make check                                # 体检（8 项全绿即就绪）
+make check                                # 体检（无 FAIL 即就绪，WARN 为可选组件）
 ```
 
 `make install` 依次执行：
@@ -92,7 +93,7 @@ make check                                # 体检（8 项全绿即就绪）
 | 3 | `make mem` | 从模板生成 `opencode-mem.jsonc`（智谱直连，复用 `Z_AI_API_KEY`） |
 | 4 | `make feishu` | 飞书 CLI + 27 个 SKILL |
 
-> API key 获取：[火山引擎](https://console.volcengine.com/ark) ｜ [智谱](https://www.bigmodel.cn/usercenter/apikeys) ｜ [飞书](https://open.feishu.cn/app/cli_aaa482d9dcb8dbcd)
+> API key 获取：[火山引擎](https://console.volcengine.com/ark) ｜ [智谱](https://www.bigmodel.cn/usercenter/apikeys) ｜ [飞书](https://open.feishu.cn/app/<YOUR_APP_ID>)
 
 ### 前置依赖（make install 之前）
 
@@ -116,13 +117,19 @@ npm i -g typescript-language-server pyright
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（8 项：环境 / 依赖 / 补丁 / 记忆 / Web UI / 飞书） |
+| `make check` | 体检（9 项：环境 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测） |
 | `make update` | 更新依赖到最新（清 node_modules 重装） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
 | `make config` | 仅配置环境变量（交互式） |
 | `make mem` | 仅生成 `opencode-mem.jsonc` |
 | `make feishu` | 仅装飞书 CLI + SKILL |
 | `make clean` | 清理 node_modules |
+| `make export` | 导出配置到 tar.gz（默认 ~/Desktop，可选含 auth.json） |
+| `make audit` | npm 安全审计（切官方源，绕过 npmmirror audit 404） |
+| `make skills-lock` | 生成 lark skills SHA256 锁定（供应链加固） |
+| `make clean-state` | 清理 `.omo/` 和 tasks/ 运行时状态（修复状态机污染） |
+| `make sbom` | 生成 SBOM（软件物料清单，CycloneDX 格式） |
+| `make tui-sync` | 验证 tui.json 与 opencode.json plugin 同步 |
 
 ### 手动分步（备选）
 
@@ -138,7 +145,34 @@ npm i -g typescript-language-server pyright
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.12.0`（非 `^4.12.0`），因 `patches/oh-my-openagent+4.12.0.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.12.1`（非 `^4.12.1`），因 `patches/oh-my-openagent+4.12.1.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
+
+### 如何升级 oh-my-openagent 主版本
+
+> patch-package 按文件名锁版本（`patches/oh-my-openagent+X.Y.Z.patch`），升级时需重生成补丁。
+
+```bash
+# 1. 改 package.json 的 oh-my-openagent 版本号
+# 2. 删除旧 patch
+rm patches/oh-my-openagent+*.patch
+
+# 3. 重装依赖（含 postinstall: patch-package + 全局 MCP）
+make update
+
+# 4. 验证 hephaestus GLM 补丁是否仍需要（看 isHephaestusSupportedModel 是否已原生支持 /glm/i）
+grep -A2 "isHephaestusSupportedModel" node_modules/oh-my-openagent/dist/index.js | head -10
+
+# 5a. 若上游已支持 GLM：补丁不再需要，删除 patches/ 引用，跳到第 7 步
+# 5b. 若仍需要：手动编辑 node_modules/oh-my-openagent/dist/index.js
+#    在 isHephaestusSupportedModel 函数的 return 语句末尾追加：|| /glm/i.test(modelName)
+
+# 6. 生成新 patch
+npx patch-package oh-my-openagent
+#    会生成 patches/oh-my-openagent+<新版本>.patch
+
+# 7. 提交：package.json + patches/oh-my-openagent+<新版本>.patch
+# 8. 体检：make check
+```
 ---
 
 ## API key 获取地址
@@ -147,7 +181,7 @@ npm i -g typescript-language-server pyright
 |---|---|---|
 | `VOLC_API_KEY` | 火山引擎 Ark | https://console.volcengine.com/ark |
 | `Z_AI_API_KEY` | 智谱 BigModel | https://www.bigmodel.cn/usercenter/apikeys |
-| `FEISHU_APP_SECRET` | 飞书开放平台 App Secret | https://open.feishu.cn/app/cli_aaa482d9dcb8dbcd
+| `FEISHU_APP_SECRET` | 飞书开放平台 App Secret | https://open.feishu.cn/app/<YOUR_APP_ID> |
 
 ---
 
@@ -214,6 +248,28 @@ make check     # 体检全绿
 | permission 加固（28 条 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.bash | ✅ 已启用 |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
+
+## MCP 数据流向与信任边界
+
+> 处理敏感项目前必读。部分 MCP 接口会把对话/文件内容发到远程服务器。
+
+| MCP 接口 | 类型 | 数据流向 | 信任边界 |
+|---|---|---|---|
+| `zai-mcp-server` | 本地启动 | 发往智谱 bigmodel.cn（Z_AI_API_KEY 鉴权） | 智谱服务器可见你的提问内容 |
+| `web-search-prime` / `web-reader` / `zread` | 远程接口 | 直连 bigmodel.cn | 智谱服务器可见查询/读取内容 |
+| `notion` | mcp-remote 远程 | https://mcp.notion.com/mcp | **双向**：opencode 可读写你全部 Notion（页面/数据库/评论）。处理敏感 Notion 库时建议临时禁用（`opencode.json` → `mcp.notion.enabled: false`） |
+| `mermaid` / `codegraph` | 本地启动 | 本地处理，不出网 | 无远程信任问题 |
+| `chrome-mcp` | 已禁用 | - | - |
+
+> **敏感项目建议**：临时关 `opencode-mem.jsonc` → `autoCaptureEnabled: false`，避免会话要点出网到智谱做元数据推理。
+
+## plugin `@latest` 漂移检测（`make check` 第 9 项）
+
+`opencode.json` / `tui.json` 用 `@latest` 标签加载 plugin，opencode 会绕过项目 `package-lock.json`，从 `~/.cache/opencode/packages/<plugin>@latest/` 加载运行时版本。`make check` 第 9 项比较：
+- 项目软链 `node_modules/opencode-mem`（`npm i -g` 装的全局版本）
+- opencode 缓存 `~/.cache/opencode/packages/opencode-mem@latest/node_modules/opencode-mem/`（`@latest` 拉到的版本）
+
+两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步，或手动删缓存 `rm -rf ~/.cache/opencode/packages/opencode-mem@latest`。
 
 ## 角色路由速查
 

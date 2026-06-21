@@ -1,0 +1,16 @@
+# 跨平台换行符一致性（macOS/Linux/Windows 协作场景）
+*.sh    text eol=lf
+*.json  text eol=lf
+*.jsonc text eol=lf
+*.md    text eol=lf
+*.py    text eol=lf
+Makefile text eol=lf
+
+# 二进制文件标记（避免误改）
+*.patch binary
+*.png   binary
+*.jpg   binary
+*.pdf   binary
+
+# 模板文件强制 LF
+*.template text eol=lf

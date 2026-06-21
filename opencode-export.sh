@@ -29,6 +29,12 @@ cp "$CONFIG_DIR"/*.sh "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR/.gitignore" "$TMP/config/opencode/" 2>/dev/null || true
 # package-lock.json 一起带上保证依赖一致
 [[ -f "$CONFIG_DIR/package-lock.json" ]] && cp "$CONFIG_DIR/package-lock.json" "$TMP/config/opencode/"
+# 完整目录结构（Makefile / scripts / patches / 模板）一起带上，让 make install 可用
+cp "$CONFIG_DIR/Makefile" "$TMP/config/opencode/" 2>/dev/null || true
+cp "$CONFIG_DIR/.nvmrc" "$TMP/config/opencode/" 2>/dev/null || true
+cp "$CONFIG_DIR/opencode-mem.jsonc.template" "$TMP/config/opencode/" 2>/dev/null || true
+[[ -d "$CONFIG_DIR/scripts" ]] && cp -r "$CONFIG_DIR/scripts" "$TMP/config/opencode/" 2>/dev/null || true
+[[ -d "$CONFIG_DIR/patches" ]] && cp -r "$CONFIG_DIR/patches" "$TMP/config/opencode/" 2>/dev/null || true
 
 # 询问是否包含 auth.json
 echo ""
@@ -59,33 +65,29 @@ curl -fsSL https://opencode.ai/install | bash
 
 ## 恢复配置
 
-```bash
 # 1. 解压到正确位置
 tar -xzf opencode-config-*.tar.gz
 mkdir -p ~/.config/opencode ~/.local/share/opencode
 cp -r config/opencode/* ~/.config/opencode/
 [[ -d data/opencode ]] && cp -r data/opencode/* ~/.local/share/opencode/
 
-# 2. 安装依赖
+# 2. 一键安装（npm 依赖 + hephaestus GLM 补丁 + opencode-mem 软链 + 环境变量 + 飞书 CLI）
 cd ~/.config/opencode
-npm install
+make install
 
 # 3. 若未带 auth.json，需重新登录
 opencode auth login zhipuai-coding-plan
 
-# 4. 安装飞书 CLI（可选，Bot 身份无需审批）
-# ⚠️ 必须先设置 FEISHU_APP_SECRET，否则脚本会报错退出
-export FEISHU_APP_SECRET='你的App Secret'
-bash ~/.config/opencode/setup-feishu-cli.sh
+# 4. 体检
+make check
 
-# 5. 验证
-opencode --version
-
-## 配置文件清单
-- opencode.json   - provider 定义 + MCP 服务 + plugin
-- oh-my-openagent.json - 12 agent + 8 category 路由
-- setup-feishu-cli.sh - 飞书 CLI 一键安装（Bot 身份，无需审批）
-- package.json    - OMO 依赖锁
+## 包含文件
+- opencode.json / oh-my-openagent.json / tui.json - 配置
+- Makefile + scripts/*.sh - 一键安装/体检编排
+- patches/ - hephaestus GLM 补丁（patch-package 按文件名锁版本）
+- package.json + package-lock.json - 依赖锁
+- opencode-mem.jsonc.template - 智谱直连记忆配置模板
+- .nvmrc - Node.js 版本锁
 - tui.json        - 主题
 EOF
 

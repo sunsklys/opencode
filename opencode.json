@@ -142,19 +142,30 @@
       ".ruff_cache/**",
       "bin/**",
       "obj/**",
-      "DerivedData/**"
+      "DerivedData/**",
+      "vendor/**",
+      "Pods/**",
+      ".gradle/**",
+      "coverage/**",
+      "tmp/**",
+      ".sveltekit/**",
+      ".dart_tool/**"
     ]
   },
   "permission": {
     "read": {
       "*": "allow",
       "*.env": "deny",
-      "*.env.*": "deny",
       "*.env.example": "allow",
+      "*.env.*": "deny",
       "**/credentials*": "deny",
       "**/secrets*": "deny",
       "**/.aws/**": "deny",
-      "**/.ssh/**": "deny"
+      "**/.ssh/**": "deny",
+      "**/id_rsa*": "deny",
+      "**/id_ed25519*": "deny",
+      "**/*.pem": "deny",
+      "**/*.key": "deny"
     },
     "bash": {
       "*": "allow",
@@ -182,10 +193,27 @@
       "docker*": "deny",
       "curl * | *sh*": "deny",
       "wget * | *sh*": "deny",
-      "eval ": "deny",
+      "eval *": "deny",
+      "eval(*": "deny",
       ": > **/.env*": "deny",
       ": > ~/.ssh/*": "deny",
-      ": > ~/.aws/*": "deny"
+      ": > ~/.aws/*": "deny",
+      "git push * --force*": "deny",
+      "git push * -f *": "deny",
+      "rm -r -f*": "deny",
+      "rm -f -r*": "deny",
+      "rm -r*f*": "deny",
+      "rm -f*r*": "deny",
+      ": > ~/.zshrc": "deny",
+      ": > ~/.bashrc": "deny",
+      ": > ~/.profile": "deny",
+      ": > ~/.zshenv": "deny",
+      "*> ~/.zshrc": "deny",
+      "*> ~/.bashrc": "deny",
+      "*>> ~/.zshrc*": "deny",
+      "*>> ~/.bashrc*": "deny",
+      "tee ~/.zshrc*": "deny",
+      "tee ~/.bashrc*": "deny"
     }
   }
 }
