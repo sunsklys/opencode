@@ -10,7 +10,7 @@
 | `oh-my-openagent.json` | 12 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | oh-my-openagent 4.12.1（精确锁定配合 hephaestus GLM 补丁）+ @opencode-ai/plugin ^1.17.8 + postinstall 全局依赖 |
+| `package.json` | oh-my-openagent 4.12.1（精确锁定配合 hephaestus GLM 补丁）+ @opencode-ai/plugin 1.17.9（精确锁定）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
@@ -83,7 +83,7 @@ make install                              # 一键：依赖 + 环境变量 + 记
 opencode auth login zhipuai-coding-plan   # 登录智谱凭证（同时初始化 opencode 进程）
 opencode                                  # 启动一次 TUI（装载 plugin 创建缓存），随即退出（Ctrl+C 或 /exit）
 make patch-sync                           # 同步 hephaestus GLM 补丁到 opencode 缓存（两处）
-make check                                # 体检（18 项全绿即就绪）
+make check                                # 体检（11 项全绿即就绪）
 ```
 
 `make install` 依次执行：
@@ -120,7 +120,7 @@ npm i -g typescript-language-server pyright
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（11 项：环境 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链） |
+| `make check` | 体检（11 项：环境 / 变量 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链） |
 | `make update` | 更新依赖到最新（清 node_modules 重装） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
 | `make config` | 仅配置环境变量（交互式） |
@@ -348,7 +348,7 @@ make check
 |---|---|---|
 | opencode 插件缓存 | `~/.cache/opencode/packages/` | opencode 启动时自动重建 |
 | opencode-mem 数据 | `~/.opencode-mem/` | 重新交互积累（向量库 + SQLite + Web UI 缓存） |
-| 全局 npm 包 | `claude-mermaid` / `codegraph` / `lark-cli` | `make install` 重装 |
+| 全局 npm 包 | `claude-mermaid` / `codegraph` / `mcp-remote` / `opencode-mem` / `lark-cli` | `make install` 重装 |
 
 ### 版本控制保护的（git clone 即得）
 

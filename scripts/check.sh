@@ -110,6 +110,7 @@ echo ""
 echo "【6/11】全局 MCP 依赖"
 command -v claude-mermaid >/dev/null 2>&1 && ok "claude-mermaid $(claude-mermaid --version 2>/dev/null || echo '已安装')" || fail "claude-mermaid 未安装（npm i -g claude-mermaid）"
 command -v codegraph >/dev/null 2>&1 && ok "codegraph 已安装" || fail "codegraph 未安装（npm i -g @colbymchenry/codegraph）"
+command -v mcp-remote >/dev/null 2>&1 && ok "mcp-remote 已安装（notion MCP 直调）" || fail "mcp-remote 未安装（npm i -g mcp-remote，notion MCP 依赖）"
 echo ""
 
 # ---------- 7. 飞书 CLI ----------
@@ -218,9 +219,7 @@ if [ -d "$SKILLS_DIR" ]; then
 else
   warn "~/.agents/skills/ 不存在（make feishu 或 make sync-skills 创建）"
 fi
-
-
-
+echo ""
 
 # ---------- 汇总 ----------
 echo "═══════════════════════════════════════════"

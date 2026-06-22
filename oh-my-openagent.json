@@ -166,6 +166,7 @@
     "librarian": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "low",
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -174,6 +175,7 @@
     "explore": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "low",
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -243,6 +245,7 @@
     "quick": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "minimal",
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -251,6 +254,7 @@
     "unspecified-low": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "low",
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -270,6 +274,7 @@
     "writing": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "temperature": 0.7,
+      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",

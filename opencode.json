@@ -88,7 +88,7 @@
     },
     "notion": {
       "type": "local",
-      "command": ["npx", "-y", "mcp-remote", "https://mcp.notion.com/mcp"]
+      "command": ["mcp-remote", "https://mcp.notion.com/mcp"]
     },
     "mermaid": {
       "type": "local",
@@ -149,7 +149,13 @@
       "coverage/**",
       "tmp/**",
       ".sveltekit/**",
-      ".dart_tool/**"
+      ".dart_tool/**",
+      ".DS_Store",
+      "*.log",
+      "*.tsbuildinfo",
+      "*.lintcache",
+      ".idea/**",
+      ".vscode/**"
     ]
   },
   "permission": {
