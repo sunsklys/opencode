@@ -62,13 +62,26 @@ echo ""
 
 # ---------- 4. hephaestus GLM 补丁（opencode 缓存版本）----------
 echo "【4/11】hephaestus GLM 补丁（opencode 缓存版本）"
-CACHE_OMO="$HOME/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/index.js"
-if [ ! -f "$CACHE_OMO" ]; then
-  warn "opencode 缓存未创建（$CACHE_OMO）— 首次启动 opencode 后再检查"
-elif grep -q "/glm/i" "$CACHE_OMO" 2>/dev/null; then
-  ok "缓存版本已含 hephaestus GLM 补丁"
+# opencode 可能加载两处缓存：(1) 内置装的 node_modules/oh-my-opencode (2) plugin 字段装的 oh-my-openagent@latest/
+# 两处都必须有补丁，因为 opencode 加载顺序不固定
+CACHE_BUILTIN="$HOME/.cache/opencode/packages/node_modules/oh-my-opencode/dist/index.js"
+CACHE_PLUGIN="$HOME/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/index.js"
+PATCHED_BUILTIN=false
+PATCHED_PLUGIN=false
+if [ -f "$CACHE_BUILTIN" ]; then
+  grep -q "/glm/i" "$CACHE_BUILTIN" 2>/dev/null && PATCHED_BUILTIN=true
+fi
+if [ -f "$CACHE_PLUGIN" ]; then
+  grep -q "/glm/i" "$CACHE_PLUGIN" 2>/dev/null && PATCHED_PLUGIN=true
+fi
+if [ ! -f "$CACHE_BUILTIN" ] && [ ! -f "$CACHE_PLUGIN" ]; then
+  warn "opencode 缓存未创建 — 首次启动 opencode 后再检查"
+elif $PATCHED_BUILTIN && $PATCHED_PLUGIN; then
+  ok "两处 opencode 缓存均含 hephaestus GLM 补丁（builtin + plugin）"
+elif $PATCHED_BUILTIN || $PATCHED_PLUGIN; then
+  warn "仅一处缓存有补丁（builtin=$PATCHED_BUILTIN plugin=$PATCHED_PLUGIN）— 运行 make patch-sync 同步两处"
 else
-  fail "缓存版本缺 GLM 补丁（opencode 实际加载此版本）— 运行 make patch-sync 同步"
+  fail "两处缓存均缺 GLM 补丁 — 运行 make patch-sync 同步"
 fi
 echo ""
 
@@ -155,10 +168,10 @@ else
     TOTAL=0
     while IFS= read -r line; do
       [ -z "$line" ] && continue
+      TOTAL=$((TOTAL+1))
       HASH=$(echo "$line" | awk '{print $1}')
       REL_PATH=$(echo "$line" | awk '{print $2}')
-      TOTAL=$((TOTAL+1))
-      FULL_PATH="$REL_PATH"
+      FULL_PATH="$SKILLS_DIR/$REL_PATH"
       if [ ! -f "$FULL_PATH" ]; then
         warn "SKILL 缺失：$REL_PATH"
         MISSING=$((MISSING+1))

@@ -73,15 +73,17 @@
 
 ## 快速开始（新机器）
 
-> 装好 Node.js ≥22 和 opencode 后，3 条命令搞定全部配置。
+> 装好 Node.js ≥22 和 opencode 后，5 步搞定全部配置。**第 3 步关键**：opencode 首次启动才创建 plugin 缓存，补丁才能同步进去。
 
 ```bash
 git clone <你的仓库地址> ~/.config/opencode
 cd ~/.config/opencode
 
 make install                              # 一键：依赖 + 环境变量 + 记忆配置 + 飞书 CLI
-opencode auth login zhipuai-coding-plan   # 登录智谱凭证
-make check                                # 体检（无 FAIL 即就绪，WARN 为可选组件）
+opencode auth login zhipuai-coding-plan   # 登录智谱凭证（同时初始化 opencode 进程）
+opencode                                  # 启动一次 TUI（装载 plugin 创建缓存），随即退出（Ctrl+C 或 /exit）
+make patch-sync                           # 同步 hephaestus GLM 补丁到 opencode 缓存（两处）
+make check                                # 体检（18 项全绿即就绪）
 ```
 
 `make install` 依次执行：
@@ -271,28 +273,38 @@ make check     # 体检全绿
 - 项目软链 `node_modules/opencode-mem`（`npm i -g` 装的全局版本）
 - opencode 缓存 `~/.cache/opencode/packages/opencode-mem@latest/node_modules/opencode-mem/`（`@latest` 拉到的版本）
 
-两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步，或手动删缓存 `rm -rf ~/.cache/opencode/packages/opencode-mem@latest`。
+两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步，或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
 
 ## @latest 缓存加载机制与 patch-sync
 
-> **关键**：opencode 启动时从 `~/.cache/opencode/packages/<plugin>@latest/` 加载插件，**不走项目 node_modules**。这意味着 patch-package 给 oh-my-openagent 打的补丁实际未生效。
+> **关键**：opencode 运行时不读项目 `node_modules`，而是从 `~/.cache/opencode/packages/` 加载 plugin。oh-my-openagent 的 hephaestus GLM 补丁打在项目 `node_modules/`，**必须手动同步到 opencode 缓存**才能生效。
 
-### 问题
+### opencode 有**两处**缓存位置（都要同步）
 
-- `opencode.json` 的 plugin 字段用 `oh-my-openagent@latest` 标签
-- opencode 启动时从 `~/.cache/opencode/packages/oh-my-openagent@latest/` 加载（绕过项目 `node_modules`）
-- patch-package 把 hephaestus GLM 补丁打在 `node_modules/oh-my-openagent/dist/index.js`
-- 但 opencode 不读这里 → 缓存版本缺 `|| /glm/i.test(modelName)`
-- 后果：hephaestus agent 配置的 GLM 模型被 `isHephaestusSupportedModel` 门控拒绝，agent 被静默跳过
+OMO 在 npm 上 dual-publish 两个包名（官方主名 `oh-my-openagent` + 兼容名 `oh-my-opencode`），opencode 加载时两处都会出现：
+
+| 位置 | 路径 | 来源 |
+|---|---|---|
+| **builtin** | `~/.cache/opencode/packages/node_modules/oh-my-opencode/dist/index.js` | opencode 主进程内置装（用兼容名） |
+| **plugin** | `~/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/index.js` | opencode.json plugin 字段触发装（用主名） |
+
+opencode 实际加载哪个不固定，所以 `make patch-sync` **同步两处**，`make check` 第 4 项要求**两处都有补丁**。
+
+### 问题表现
+
+- 项目 `patches/oh-my-openagent+4.12.1.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
+- opencode 不读项目 `node_modules`，读自己的缓存
+- 缓存版本缺 `|| /glm/i.test(modelName)` → hephaestus agent 的 GLM 模型被 `isHephaestusSupportedModel` 门控拒绝 → agent 被静默跳过
 
 ### 修复：`make patch-sync`
 
 ```bash
-make patch-sync    # 把项目补丁同步到 opencode 缓存
+make patch-sync    # 同步项目补丁到 opencode 两处缓存
 ```
 
 何时运行：
 
+- 首次 `make install` 后启动 opencode 一次，退出，再跑
 - opencode 升级后（缓存可能被刷新覆盖）
 - 缓存被清空后
 - `make check` 第 4 项报警时
@@ -317,13 +329,16 @@ cd ~/.config/opencode
 # 2. 一键安装（依赖 + 环境变量 + 记忆 + 飞书）
 make install
 
-# 3. 登录智谱凭证
+# 3. 登录智谱凭证（同时初始化 opencode 进程）
 opencode auth login zhipuai-coding-plan
 
-# 4. 同步 hephaestus 补丁到 opencode 缓存
+# 4. 启动 opencode 一次（创建 plugin 缓存），然后退出（Ctrl+C 或 /exit）
+opencode
+
+# 5. 同步 hephaestus 补丁到 opencode 缓存（两处）
 make patch-sync
 
-# 5. 体检
+# 6. 体检
 make check
 ```
 

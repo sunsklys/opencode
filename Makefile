@@ -34,7 +34,9 @@ help: ## 显示帮助
 	@echo "新机器流程："
 	@echo "  git clone <repo> ~/.config/opencode && cd ~/.config/opencode"
 	@echo "  make install"
-	@echo "  opencode auth login zhipuai-coding-plan"
+	@echo "  opencode auth login zhipuai-coding-plan   # 初始化 opencode 进程"
+	@echo "  opencode                                  # 启动一次创建 plugin 缓存，随即退出"
+	@echo "  make patch-sync                           # 同步 hephaestus GLM 补丁到两处缓存"
 	@echo "  make check"
 
 install: deps config mem feishu sync-skills ## 完整安装（新机器首次）
@@ -43,15 +45,19 @@ install: deps config mem feishu sync-skills ## 完整安装（新机器首次）
 	@echo "  ✅ 安装完成！"
 	@echo "═══════════════════════════════════════════"
 	@echo ""
-	@echo "接下来："
-	@echo "  1. 登录智谱凭证："
+	@echo "接下来（按顺序执行）："
+	@echo ""
+	@echo "  1. 登录智谱凭证（同时初始化 opencode 进程）："
 	@echo "     opencode auth login zhipuai-coding-plan"
 	@echo ""
-	@echo "  2. 体检所有组件："
-	@echo "     make check"
-	@echo ""
-	@echo "  3. 启动："
+	@echo "  2. 启动 opencode 一次（创建 plugin 缓存），随即退出（Ctrl+C 或 /exit）："
 	@echo "     opencode"
+	@echo ""
+	@echo "  3. 同步 hephaestus GLM 补丁到 opencode 两处缓存："
+	@echo "     make patch-sync"
+	@echo ""
+	@echo "  4. 体检："
+	@echo "     make check"
 
 deps: ## 安装 npm 依赖 + opencode-mem 软链
 	@bash scripts/install.sh
@@ -122,4 +128,4 @@ tui-sync: ## 验证 tui.json 与 opencode.json 的 plugin 字段同步
 
 patch-sync: ## 把 hephaestus GLM 补丁同步到 opencode 缓存（修 hephaestus agent 失效）
 	@echo "同步补丁到 opencode 缓存..."
-	@node -e "const fs=require('fs'),path=require('path'),os=require('os');const cacheDir=path.join(os.homedir(),'.cache','opencode','packages','oh-my-openagent@latest','node_modules','oh-my-openagent');const src='node_modules/oh-my-openagent/dist/index.js';const dest=path.join(cacheDir,'dist','index.js');if(!fs.existsSync(dest)){console.error('⚠️  opencode 缓存不存在：'+dest);console.error('   首次启动 opencode 后才会创建缓存，再运行 make patch-sync');process.exit(0)}if(!fs.existsSync(src)){console.error('❌ 项目 node_modules/oh-my-openagent 不存在，先运行 make deps');process.exit(1)}fs.copyFileSync(src,dest);console.log('  ✓ 已同步 '+src+' → '+dest);const verify=fs.readFileSync(dest,'utf8').includes('/glm/i.test(modelName)');if(verify){console.log('  ✓ 缓存版本已含 /glm/i 补丁')}else{console.error('❌ 同步后缓存版本仍缺 /glm/i，检查项目 node_modules 是否有补丁');process.exit(1)}"
+	@node -e "const fs=require('fs'),path=require('path'),os=require('os');const src='node_modules/oh-my-openagent/dist/index.js';if(!fs.existsSync(src)){console.error('❌ 项目 node_modules/oh-my-openagent 不存在，先运行 make deps');process.exit(1)}const targets=[['builtin (oh-my-opencode)',path.join(os.homedir(),'.cache','opencode','packages','node_modules','oh-my-opencode','dist','index.js')],['plugin (oh-my-openagent@latest)',path.join(os.homedir(),'.cache','opencode','packages','oh-my-openagent@latest','node_modules','oh-my-openagent','dist','index.js')]];let synced=0,missing=0;for(const [label,dest] of targets){if(!fs.existsSync(dest)){console.log('  ⚠️  '+label+': 缓存未创建，跳过');missing++;continue}fs.copyFileSync(src,dest);const ok=fs.readFileSync(dest,'utf8').includes('/glm/i.test(modelName)');if(ok){console.log('  ✓ '+label+': 已同步且含 /glm/i 补丁');synced++}else{console.error('❌ '+label+': 同步后仍缺 /glm/i');process.exit(1)}}if(synced===0){console.error('⚠️  所有 opencode 缓存均未创建 — 首次启动 opencode 后再运行 make patch-sync');process.exit(0)}console.log('  ✓ 同步完成（'+synced+' 处已同步，'+missing+' 处缓存未创建')"
