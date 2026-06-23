@@ -59,8 +59,9 @@ install: deps config mem feishu sync-skills ## 完整安装（新机器首次）
 	@echo "  4. 体检："
 	@echo "     make check"
 
-deps: ## 安装 npm 依赖 + opencode-mem 软链
+deps: ## 安装 npm 依赖 + opencode-mem 软链 + OMO skill 软链
 	@bash scripts/install.sh
+	@bash scripts/sync-omo-skills.sh
 
 config: ## 配置环境变量（交互式，写 ~/.zshrc + launchctl setenv）
 	@bash scripts/setup-env.sh
@@ -86,16 +87,17 @@ feishu: ## 安装飞书 CLI + 27 个 SKILL（需要 FEISHU_APP_SECRET）
 sync-skills: ## 软链 oh-my-openagent 内置 skill（ulw-plan/git-master/frontend 等）到 ~/.agents/skills/
 	@bash scripts/sync-omo-skills.sh
 
-check: ## 体检所有组件（11 项：环境/变量/依赖/补丁/记忆/MCP/飞书/Web UI/漂移检测/skills.lock/skill 软链）
+check: ## 体检所有组件（12 项：环境/变量/依赖/补丁/记忆/MCP/飞书/Web UI/漂移检测/skills.lock/skill 软链自愈/plugin 缓存健康）
 	@bash scripts/check.sh
 
-update: ## 更新依赖到最新（清 node_modules + package-lock 重装）
+update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync skill 软链）
 	@echo "清理旧依赖（用 node 脚本，绕过 rm -rf 权限限制）..."
 	@node -e "require('fs').rmSync('node_modules',{recursive:true,force:true}); console.log('  node_modules 已清除')"
 	@rm -f package-lock.json
 	@bash scripts/install.sh
+	@bash scripts/sync-omo-skills.sh
 	@echo ""
-	@echo "✓ 依赖已更新，运行 make check 验证"
+	@echo "✓ 依赖已更新（含 skill 软链同步），运行 make check 验证"
 
 clean: ## 清理 node_modules
 	@node -e "require('fs').rmSync('node_modules',{recursive:true,force:true})"

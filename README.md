@@ -240,6 +240,13 @@ make check     # 体检全绿
 → `opencode.json` 的 `lsp` 字段格式错误（每个 LSP 条目必须有 `command` 字段）。
 → 解决：直接用 `"lsp": true` 让 opencode 自动检测启用所有内置 LSP，不要手动列各语言。
 
+### `ulw-plan` / `git-master` / `frontend` 等 OMO skill 不见了
+→ plugin 加载链问题。OMO plugin 启动时通过 `discoverSharedSkills()` 扫描自己的 `dist/skills/`（17 个 skill），缓存损坏 / `@latest` 漂移 / 补丁冲突会让 shared scope 整批消失。
+→ 一键诊断：`make check` 第 12 项检测三处 dist/skills 完整性（项目锁定 + builtin 缓存 + plugin 缓存，17×3），第 11 项自动自愈软链。
+→ 修复优先级：
+  - 第 12 项 fail（缓存损坏）→ `make update + make patch-sync`（治根）
+  - 第 11 项自愈（软链丢）→ 自动重建，无需手动（兑底）
+
 ---
 
 ## 功能开关速查

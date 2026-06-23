@@ -1,18 +1,22 @@
 #!/bin/bash
 # ============================================================
 # sync-omo-skills.sh
-# 把 oh-my-openagent 的 path-backed shared skill 软链到 ~/.agents/skills/
+# 把 oh-my-openagent 的 dist/skills 软链到 ~/.agents/skills/
 #
-# 背景：
-#   opencode TUI 的 `/` 自动补全和 <available_skills> 列表只扫描文件路径
-#   （~/.agents/skills/、~/.claude/skills/、~/.cache/opencode/skills/）
-#   而 oh-my-openagent 的 path-backed skill（ulw-plan / git-master / frontend 等）
-#   是 plugin 运行时注入到 command registry，不落盘到扫描路径，
-#   导致 TUI 不可见但命令实际可用。
+# 背景（v4.12.1 源码验证后的修正描述）：
+#   OMO plugin 启动时通过 discoverSharedSkills() 扫描自己的 dist/skills，
+#   把 ulw-plan/git-master 等 17 个 skill 以 shared scope 注入 <available_skills>。
+#   即：plugin 加载正常时，这些 skill 不需要软链也会出现在 TUI 列表。
 #
-#   本脚本通过软链桥接两条独立的 skill 发现链路，让 path-backed skill 也可见。
+#   本脚本建立的软链是 user-scope fallback —— 当 plugin 因 #latest 缓存漂移、
+#   补丁冲突、缓存损坏等原因加载失败时，让 SKILL.md 内容至少可被 opencode TUI
+#   通过 discoverGlobalAgentsSkills() 扫描到（注：仅 SKILL.md 可读，plugin runtime
+#   的 slash command 注册仍不可用，需修根因：make update + make patch-sync）。
 #
-# 优先用项目锁定版本（node_modules/oh-my-openagent），fallback 到 @latest 缓存。
+#   make check 第 12 项会检测 plugin 缓存的 dist/skills 完整性（真正的根因指标），
+#   第 11 项会自动调用本脚本自愈软链。
+#
+# 优先用项目锁定版本（node_modules/oh-my-openagent），fallback 到 #latest 缓存。
 # 幂等：已存在的非软链目录不覆盖；断链自动清理重建。
 # ============================================================
 
