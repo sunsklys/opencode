@@ -6,8 +6,10 @@
   "scripts": {
     "postinstall": "bash scripts/postinstall.sh"
   },
+  "overrides": {
+    "posthog-node": "5.38.2"
+  },
   "devDependencies": {
-    "patch-package": "^8.0.1",
-    "postinstall-postinstall": "^2.1.0"
+    "patch-package": "^8.0.1"
   }
 }
