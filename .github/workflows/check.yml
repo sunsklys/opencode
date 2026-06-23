@@ -49,4 +49,20 @@ jobs:
             exit 1
           }
 
+      - name: skills.lock 格式校验
+        run: |
+          LINES=$(wc -l < skills.lock)
+          if [ "$LINES" -ne 27 ]; then
+            echo "❌ skills.lock 行数 $LINES ≠ 27（应有 27 个 lark skill）"
+            exit 1
+          fi
+          # 每行必须匹配：<64-hex>  lark-<name>/SKILL.md
+          BAD=$(awk '!/^[a-f0-9]{64}  lark-[a-z-]+\/SKILL\.md$/ {print NR": "$0}' skills.lock)
+          if [ -n "$BAD" ]; then
+            echo "❌ skills.lock 格式错误（应：<64hex>  lark-<name>/SKILL.md）："
+            echo "$BAD"
+            exit 1
+          fi
+          echo "✓ skills.lock 格式正确（27 行，每行 <hash>  lark-*/SKILL.md）"
+
       # 注：完整 make check 在 CI 环境会因缺 API key 而警告，所以只跑上面的子集

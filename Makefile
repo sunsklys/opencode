@@ -11,7 +11,7 @@ help: ## 显示帮助
 	@echo ""
 	@echo "常用命令："
 	@echo "  make install   完整安装（新机器首次，含依赖/环境变量/记忆/飞书）"
-	@echo "  make check     体检所有组件状态（11 项检查）"
+	@echo "  make check     体检所有组件状态（12 项检查）"
 	@echo "  make update    更新依赖到最新（清 node_modules 重装）"
 	@echo ""
 	@echo "分步命令："

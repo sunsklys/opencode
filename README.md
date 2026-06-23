@@ -83,7 +83,7 @@ make install                              # 一键：依赖 + 环境变量 + 记
 opencode auth login zhipuai-coding-plan   # 登录智谱凭证（同时初始化 opencode 进程）
 opencode                                  # 启动一次 TUI（装载 plugin 创建缓存），随即退出（Ctrl+C 或 /exit）
 make patch-sync                           # 同步 hephaestus GLM 补丁到 opencode 缓存（两处）
-make check                                # 体检（11 项全绿即就绪）
+make check                                # 体检（12 项全绿即就绪）
 ```
 
 `make install` 依次执行：
@@ -120,7 +120,7 @@ npm i -g typescript-language-server pyright
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（11 项：环境 / 变量 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链） |
+| `make check` | 体检（12 项：环境 / 变量 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康） |
 | `make update` | 更新依赖到最新（清 node_modules 重装） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
 | `make config` | 仅配置环境变量（交互式） |
