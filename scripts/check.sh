@@ -64,24 +64,42 @@ echo ""
 echo "【4/12】hephaestus GLM 补丁（opencode 缓存版本）"
 # opencode 可能加载两处缓存：(1) 内置装的 node_modules/oh-my-opencode (2) plugin 字段装的 oh-my-openagent@latest/
 # 两处都必须有补丁，因为 opencode 加载顺序不固定
+# 但 opencode 新版不再创建 builtin 兼容名 node_modules，故 builtin 父目录不存在时 skip
+# skip 用目录级判断（非单文件级），避免 opencode 重建 builtin 但缺补丁时假绿
 CACHE_BUILTIN="$HOME/.cache/opencode/packages/node_modules/oh-my-opencode/dist/index.js"
 CACHE_PLUGIN="$HOME/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/index.js"
+BUILTIN_DIR="$HOME/.cache/opencode/packages/node_modules"
+BUILTIN_SKIPPED=false
 PATCHED_BUILTIN=false
 PATCHED_PLUGIN=false
-if [ -f "$CACHE_BUILTIN" ]; then
+if [ ! -d "$BUILTIN_DIR" ]; then
+  BUILTIN_SKIPPED=true
+elif [ -f "$CACHE_BUILTIN" ]; then
   grep -q "/glm/i" "$CACHE_BUILTIN" 2>/dev/null && PATCHED_BUILTIN=true
 fi
 if [ -f "$CACHE_PLUGIN" ]; then
   grep -q "/glm/i" "$CACHE_PLUGIN" 2>/dev/null && PATCHED_PLUGIN=true
 fi
-if [ ! -f "$CACHE_BUILTIN" ] && [ ! -f "$CACHE_PLUGIN" ]; then
-  warn "opencode 缓存未创建 — 首次启动 opencode 后再检查"
-elif $PATCHED_BUILTIN && $PATCHED_PLUGIN; then
-  ok "两处 opencode 缓存均含 hephaestus GLM 补丁（builtin + plugin）"
-elif $PATCHED_BUILTIN || $PATCHED_PLUGIN; then
-  warn "仅一处缓存有补丁（builtin=$PATCHED_BUILTIN plugin=$PATCHED_PLUGIN）— 运行 make patch-sync 同步两处"
+if $BUILTIN_SKIPPED; then
+  if [ ! -f "$CACHE_PLUGIN" ]; then
+    warn "opencode 缓存未创建 — 首次启动 opencode 后再检查"
+  elif $PATCHED_PLUGIN; then
+    ok "plugin 缓存含 hephaestus GLM 补丁（builtin 路径未创建，已 skip）"
+  else
+    fail "plugin 缓存缺 GLM 补丁 — 运行 make patch-sync 同步"
+  fi
 else
-  fail "两处缓存均缺 GLM 补丁 — 运行 make patch-sync 同步"
+  if [ ! -f "$CACHE_BUILTIN" ]; then
+    fail "builtin 父目录存在但 oh-my-opencode/dist/index.js 缺失 — 运行 make update + make patch-sync"
+  elif ! $PATCHED_BUILTIN && ! $PATCHED_PLUGIN; then
+    fail "两处缓存均缺 GLM 补丁 — 运行 make patch-sync 同步"
+  elif ! $PATCHED_BUILTIN; then
+    fail "builtin 缓存缺 GLM 补丁 — 运行 make patch-sync 同步"
+  elif ! $PATCHED_PLUGIN; then
+    warn "仅 builtin 缓存有补丁（builtin=true plugin=false）— 运行 make patch-sync 同步两处"
+  else
+    ok "两处 opencode 缓存均含 hephaestus GLM 补丁（builtin + plugin）"
+  fi
 fi
 echo ""
 
@@ -279,12 +297,21 @@ PLUGIN_COUNT=$(count_complete_skills "$CACHE_PLUGIN_SKILLS")
 
 if [ "$PROJECT_COUNT" -ne 17 ]; then
   fail "项目锁定 dist/skills 仅 $PROJECT_COUNT/17 skill 完整 — 运行 make update 重装"
+elif [ ! -d "$BUILTIN_DIR" ]; then
+  # builtin 父目录不存在 → skip builtin 检查（目录级判断，避免 opencode 重建时假绿）
+  if [ "$PLUGIN_COUNT" -eq 17 ]; then
+    ok "项目锁定 + plugin 缓存完整（17/17，builtin 路径未创建，已 skip）— plugin 加载链健康"
+  elif [ "$PLUGIN_COUNT" -eq 0 ]; then
+    warn "opencode 缓存未创建（项目锁定 OK，17/17）— 首次启动 opencode 后自动缓存"
+  else
+    fail "plugin 缓存不完整（$PLUGIN_COUNT/17）— 运行 make update + make patch-sync"
+  fi
 elif [ "$BUILTIN_COUNT" -eq 17 ] && [ "$PLUGIN_COUNT" -eq 17 ]; then
   ok "三处 dist/skills 完整（项目锁定 + builtin 缓存 + plugin 缓存，17×3）— plugin 加载链健康"
-elif [ "$BUILTIN_COUNT" -eq 0 ] && [ "$PLUGIN_COUNT" -eq 0 ]; then
-  warn "opencode 缓存未创建（项目锁定 OK，17/17）— 首次启动 opencode 后自动缓存"
+elif [ "$BUILTIN_COUNT" -ne 17 ]; then
+  fail "builtin 缓存不完整（$BUILTIN_COUNT/17）— 运行 make update + make patch-sync"
 else
-  fail "opencode 缓存不完整（builtin=$BUILTIN_COUNT/17 plugin=$PLUGIN_COUNT/17）— 运行 make update + make patch-sync"
+  fail "plugin 缓存不完整（$PLUGIN_COUNT/17）— 运行 make update + make patch-sync"
 fi
 
 
