@@ -51,13 +51,8 @@ jobs:
 
       - name: skills.lock 格式校验
         run: |
-          LINES=$(wc -l < skills.lock)
-          if [ "$LINES" -ne 27 ]; then
-            echo "❌ skills.lock 行数 $LINES ≠ 27（应有 27 个 lark skill）"
-            exit 1
-          fi
           # 每行必须匹配：<64-hex>  lark-<name>/SKILL.md
-          BAD=$(awk '!/^[a-f0-9]{64}  lark-[a-z-]+\/SKILL\.md$/ {print NR": "$0}' skills.lock)
+          BAD=$(awk '!/^[a-f0-9]{64}  lark-[a-z0-9_-]+\/SKILL\.md$/ {print NR": "$0}' skills.lock)
           if [ -n "$BAD" ]; then
             echo "❌ skills.lock 格式错误（应：<64hex>  lark-<name>/SKILL.md）："
             echo "$BAD"

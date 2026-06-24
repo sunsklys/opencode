@@ -195,7 +195,7 @@ else
         warn "SKILL 缺失：$REL_PATH"
         MISSING=$((MISSING+1))
       else
-        ACTUAL=$(node -e "console.log(require('crypto').createHash('sha256').update(require('fs').readFileSync('$FULL_PATH')).digest('hex'))")
+        ACTUAL=$(shasum -a 256 "$FULL_PATH" | awk '{print $1}')
         if [ "$ACTUAL" != "$HASH" ]; then
           fail "SKILL 哈希不匹配：$REL_PATH（可能被篡改）"
           MISMATCH=$((MISMATCH+1))
@@ -288,7 +288,9 @@ count_complete_skills() {
 }
 
 PROJECT_SKILLS_DIR="node_modules/oh-my-openagent/dist/skills"
-CACHE_BUILTIN_SKILLS="$HOME/.cache/opencode/packages/node_modules/oh-my-opencode/dist/skills"
+# 独立定义 builtin 根目录，避免跨项复用 $BUILTIN_DIR（第 4 项）导致的调试 silent skip 假绿
+BUILTIN_ROOT_DIR_12="$HOME/.cache/opencode/packages/node_modules"
+CACHE_BUILTIN_SKILLS="$BUILTIN_ROOT_DIR_12/oh-my-opencode/dist/skills"
 CACHE_PLUGIN_SKILLS="$HOME/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/skills"
 
 PROJECT_COUNT=$(count_complete_skills "$PROJECT_SKILLS_DIR")
@@ -297,7 +299,7 @@ PLUGIN_COUNT=$(count_complete_skills "$CACHE_PLUGIN_SKILLS")
 
 if [ "$PROJECT_COUNT" -ne 17 ]; then
   fail "项目锁定 dist/skills 仅 $PROJECT_COUNT/17 skill 完整 — 运行 make update 重装"
-elif [ ! -d "$BUILTIN_DIR" ]; then
+elif [ ! -d "$BUILTIN_ROOT_DIR_12" ]; then
   # builtin 父目录不存在 → skip builtin 检查（目录级判断，避免 opencode 重建时假绿）
   if [ "$PLUGIN_COUNT" -eq 17 ]; then
     ok "项目锁定 + plugin 缓存完整（17/17，builtin 路径未创建，已 skip）— plugin 加载链健康"
