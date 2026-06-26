@@ -83,7 +83,7 @@ make install                              # 一键：依赖 + 环境变量 + 记
 opencode auth login zhipuai-coding-plan   # 登录智谱凭证（同时初始化 opencode 进程）
 opencode                                  # 启动一次 TUI（装载 plugin 创建缓存），随即退出（Ctrl+C 或 /exit）
 make patch-sync                           # 同步 hephaestus GLM 补丁到 opencode 缓存（两处）
-make check                                # 体检（12 项全绿即就绪）
+make check                                # 体检（13 项全绿即就绪）
 ```
 
 `make install` 依次执行：
@@ -120,7 +120,7 @@ npm i -g typescript-language-server pyright
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（12 项：环境 / 变量 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康） |
+| `make check` | 体检（13 项：环境 / 变量 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康 / OMO+opencode 字段验证） |
 | `make update` | 重装依赖（按 package.json 精确版本，配合 patch） |
 | `make upgrade` | 升级 OMO + plugin 到 npm 最新（含 GLM patch 重生成 + $schema URL 同步） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
@@ -260,7 +260,7 @@ make check     # 体检全绿
 
 ### `ulw-plan` / `git-master` / `frontend` 等 OMO skill 不见了
 → plugin 加载链问题。OMO plugin 启动时通过 `discoverSharedSkills()` 扫描自己的 `dist/skills/`（17 个 skill），缓存损坏 / `@latest` 漂移 / 补丁冲突会让 shared scope 整批消失。
-→ 一键诊断：`make check` 第 12 项检测三处 dist/skills 完整性（项目锁定 + builtin 缓存 + plugin 缓存，17×3），第 11 项自动自愈软链。
+→ 一键诊断：`make check` 第 12 项检测三处 dist/skills 完整性（项目锁定 + builtin 缓存 + plugin 缓存，18×3），第 11 项自动自愈软链。
 → 修复优先级：
   - 第 12 项 fail（缓存损坏）→ `make update + make patch-sync`（治根）
   - 第 11 项自愈（软链丢）→ 自动重建，无需手动（兑底）
@@ -282,7 +282,7 @@ make check     # 体检全绿
 | **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `oh-my-openagent.json` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
 | **notification.force_enable**（OMO 接管会话通知） | `oh-my-openagent.json` → `notification.force_enable=true` | ✅ 已启用 |
 | **comment_checker**（中文注释质量检查） | `oh-my-openagent.json` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
-| **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph/handoff） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
+| **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
 | **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
 | **experimental.mcp_timeout**（全局 MCP 超时 10s） | `opencode.json` → `experimental.mcp_timeout=10000` | ✅ 已启用 |
