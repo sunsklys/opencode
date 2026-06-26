@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.12.1/assets/oh-my-opencode.schema.json",
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.13.0/assets/oh-my-opencode.schema.json",
   "hashline_edit": true,
   "i18n": {
     "locale": "zh"
@@ -300,5 +300,40 @@
   },
   "keyword_detector": {
     "enabled_expansions": ["ultrawork", "team", "hyperplan", "hyperplan-ultrawork"]
-  }
+  },
+  "monitor": {
+    "enabled": true,
+    "live_mode_enabled": false,
+    "max_monitors_per_session": 3,
+    "max_runtime_ms": 1800000,
+    "batch_max_lines": 50,
+    "batch_max_bytes": 16384,
+    "flush_interval_ms": 1000,
+    "ring_max_lines": 1000,
+    "line_max_bytes": 8192,
+    "pattern_max_length": 512
+  },
+  "ralph_loop": {
+    "enabled": false,
+    "default_max_iterations": 30,
+    "default_strategy": "continue"
+  },
+  "babysitting": {
+    "timeout_ms": 300000
+  },
+  "notification": {
+    "force_enable": true
+  },
+  "comment_checker": {
+    "custom_prompt": "检查中文注释与代码一致性。中文注释需准确描述代码行为，避免英文直译凑数。检查：1) 中文表述是否符合代码实际逻辑；2) 是否有 AI 生成的空洞描述（如“这里做一些处理”）；3) 函数/类/复杂分支是否有中文文档注释。代码注释：{{comments}}"
+  },
+  "disabled_skills": [
+    "playwright-cli",
+    "dev-browser",
+    "agent-browser"
+  ],
+  "disabled_commands": [
+    "ralph-loop",
+    "cancel-ralph"
+  ]
 }
