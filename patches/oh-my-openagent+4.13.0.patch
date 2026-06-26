@@ -1,0 +1,13 @@
+diff --git a/node_modules/oh-my-openagent/dist/index.js b/node_modules/oh-my-openagent/dist/index.js
+index d9ad77e..59ffb50 100644
+--- a/node_modules/oh-my-openagent/dist/index.js
++++ b/node_modules/oh-my-openagent/dist/index.js
+@@ -141867,7 +141867,7 @@ function isHephaestusSupportedModel(model) {
+   if (!model)
+     return false;
+   const modelName = extractModelName3(model);
+-  return GPT_5_3_CODEX_RE.test(modelName) || GPT_5_4_RE.test(modelName) || GPT_5_5_RE.test(modelName);
++  return GPT_5_3_CODEX_RE.test(modelName) || GPT_5_4_RE.test(modelName) || GPT_5_5_RE.test(modelName) || /glm/i.test(modelName);
+ }
+ function assertHephaestusSupportedModel(model) {
+   if (!isHephaestusSupportedModel(model)) {

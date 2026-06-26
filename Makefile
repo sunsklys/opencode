@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install deps config mem feishu check update clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills
+.PHONY: help install deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -12,7 +12,8 @@ help: ## 显示帮助
 	@echo "常用命令："
 	@echo "  make install   完整安装（新机器首次，含依赖/环境变量/记忆/飞书）"
 	@echo "  make check     体检所有组件状态（12 项检查）"
-	@echo "  make update    更新依赖到最新（清 node_modules 重装）"
+	@echo "  make update    重装依赖（按 package.json 精确版本，配合 patch）"
+	@echo "  make upgrade   升级 OMO + plugin 到 npm 最新（含 GLM patch 重生成）"
 	@echo ""
 	@echo "分步命令："
 	@echo "  make deps      仅装 npm 依赖 + opencode-mem 软链"
@@ -99,6 +100,8 @@ update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync
 	@echo ""
 	@echo "✓ 依赖已更新（含 skill 软链同步），运行 make check 验证"
 
+upgrade: ## 升级 OMO 和 plugin 到 npm 最新版（含 GLM patch 重生成 + $schema URL 同步）
+	@bash scripts/upgrade.sh
 clean: ## 清理 node_modules
 	@node -e "require('fs').rmSync('node_modules',{recursive:true,force:true})"
 	@echo "✓ node_modules 已清理（运行 make deps 重建）"
