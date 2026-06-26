@@ -64,11 +64,11 @@ echo ""
 echo "【4/12】hephaestus GLM 补丁（opencode 缓存版本）"
 # opencode 可能加载两处缓存：(1) 内置装的 node_modules/oh-my-opencode (2) plugin 字段装的 oh-my-openagent@latest/
 # 两处都必须有补丁，因为 opencode 加载顺序不固定
-# 但 opencode 新版不再创建 builtin 兼容名 node_modules，故 builtin 父目录不存在时 skip
-# skip 用目录级判断（非单文件级），避免 opencode 重建 builtin 但缺补丁时假绿
+# opencode 1.17.11+ 不再 builtin 装 oh-my-opencode 主包（只装 platform binary），builtin 路径不存在是正常状态
+# 判断 oh-my-opencode 目录自身（不是父目录），避免 opencode 不再装载时假报 fail
 CACHE_BUILTIN="$HOME/.cache/opencode/packages/node_modules/oh-my-opencode/dist/index.js"
 CACHE_PLUGIN="$HOME/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/index.js"
-BUILTIN_DIR="$HOME/.cache/opencode/packages/node_modules"
+BUILTIN_DIR="$HOME/.cache/opencode/packages/node_modules/oh-my-opencode"
 BUILTIN_SKIPPED=false
 PATCHED_BUILTIN=false
 PATCHED_PLUGIN=false
@@ -210,10 +210,10 @@ fi
 echo ""
 # ---------- 11. oh-my-openagent 内置 skill 软链健康 ----------
 echo "【11/12】oh-my-openagent 内置 skill 软链健康（含自愈）"
-# 检测 17 个 OMO skill 软链是否齐全有效，缺失/断链时自动重建
+# 检测 18 个 OMO skill 软链是否齐全有效，缺失/断链时自动重建
 # 软链作用：plugin 加载失败时作为 user-scope fallback（详见第 12 项根因检查）
 SKILLS_DIR="$HOME/.agents/skills"
-EXPECTED_OMO_SKILLS="ast-grep debugging frontend git-master init-deep lcx-contribute-bug-fix lcx-doctor lcx-report-bug lsp-setup programming refactor remove-ai-slops review-work start-work ultraresearch ulw-plan visual-qa"
+EXPECTED_OMO_SKILLS="ast-grep debugging frontend git-master init-deep lcx-contribute-bug-fix lcx-doctor lcx-report-bug lsp-setup programming refactor remove-ai-slops review-work start-work ultimate-browsing ultraresearch ulw-plan visual-qa"
 
 omo_present=0
 omo_missing=0
@@ -230,11 +230,11 @@ if [ -d "$SKILLS_DIR" ]; then
     fi
   done
 else
-  omo_missing=17
+  omo_missing=18
 fi
 
 if [ "$omo_missing" -eq 0 ] && [ "$omo_broken" -eq 0 ]; then
-  ok "17 个 OMO skill 软链全部有效（ulw-plan/git-master/frontend 等）"
+  ok "18 个 OMO skill 软链全部有效（ulw-plan/git-master/frontend 等）"
   # 版本漂移检测：软链指向 node_modules vs @latest 缓存
   ulw_link_target=$(readlink "$SKILLS_DIR/ulw-plan" 2>/dev/null || echo "")
   if echo "$ulw_link_target" | grep -q "/oh-my-openagent@latest/"; then
@@ -262,10 +262,10 @@ else
         omo_broken_after=$((omo_broken_after+1))
       fi
     done
-    if [ "$omo_broken_after" -gt 0 ] || [ "$omo_present_after" -lt 17 ]; then
-      fail "自愈后仍不完整（$omo_present_after/17 有效，$omo_broken_after 断链）— 项目 node_modules 可能损坏，运行 make update"
+    if [ "$omo_broken_after" -gt 0 ] || [ "$omo_present_after" -lt 18 ]; then
+      fail "自愈后仍不完整（$omo_present_after/18 有效，$omo_broken_after 断链）— 项目 node_modules 可能损坏，运行 make update"
     else
-      ok "已自愈：重建 $((17 - omo_present)) 个 OMO skill 软链（17/17 有效）"
+      ok "已自愈：重建 $((18 - omo_present)) 个 OMO skill 软链（18/18 有效）"
     fi
   fi
 fi
@@ -275,7 +275,7 @@ echo "【12/12】opencode plugin 缓存健康（dist/skills 完整性）"
 # 这是 ulw-plan/git-master 等 shared scope skill 的真实加载源
 # OMO plugin 启动时通过 discoverSharedSkills() 扫描自己的 dist/skills
 # 缓存缺失或不完整 → plugin 加载失败 → shared scope skill 整批消失（即使软链在）
-EXPECTED_SKILLS="ast-grep debugging frontend git-master init-deep lcx-contribute-bug-fix lcx-doctor lcx-report-bug lsp-setup programming refactor remove-ai-slops review-work start-work ultraresearch ulw-plan visual-qa"
+EXPECTED_SKILLS="ast-grep debugging frontend git-master init-deep lcx-contribute-bug-fix lcx-doctor lcx-report-bug lsp-setup programming refactor remove-ai-slops review-work start-work ultimate-browsing ultraresearch ulw-plan visual-qa"
 
 count_complete_skills() {
   local dir="$1"
@@ -297,25 +297,60 @@ PROJECT_COUNT=$(count_complete_skills "$PROJECT_SKILLS_DIR")
 BUILTIN_COUNT=$(count_complete_skills "$CACHE_BUILTIN_SKILLS")
 PLUGIN_COUNT=$(count_complete_skills "$CACHE_PLUGIN_SKILLS")
 
-if [ "$PROJECT_COUNT" -ne 17 ]; then
-  fail "项目锁定 dist/skills 仅 $PROJECT_COUNT/17 skill 完整 — 运行 make update 重装"
-elif [ ! -d "$BUILTIN_ROOT_DIR_12" ]; then
-  # builtin 父目录不存在 → skip builtin 检查（目录级判断，避免 opencode 重建时假绿）
-  if [ "$PLUGIN_COUNT" -eq 17 ]; then
-    ok "项目锁定 + plugin 缓存完整（17/17，builtin 路径未创建，已 skip）— plugin 加载链健康"
+if [ "$PROJECT_COUNT" -ne 18 ]; then
+  fail "项目锁定 dist/skills 仅 $PROJECT_COUNT/18 skill 完整 — 运行 make update 重装"
+elif [ ! -d "$CACHE_BUILTIN_SKILLS" ]; then
+  # opencode 1.17.11+ 不再 builtin 装 oh-my-opencode 主包（只装 platform binary），路径不存在是正常状态
+  if [ "$PLUGIN_COUNT" -eq 18 ]; then
+    ok "项目锁定 + plugin 缓存完整（18/18，builtin 未装载，已 skip）— plugin 加载链健康"
   elif [ "$PLUGIN_COUNT" -eq 0 ]; then
-    warn "opencode 缓存未创建（项目锁定 OK，17/17）— 首次启动 opencode 后自动缓存"
+    warn "opencode 缓存未创建（项目锁定 OK，18/18）— 首次启动 opencode 后自动缓存"
   else
-    fail "plugin 缓存不完整（$PLUGIN_COUNT/17）— 运行 make update + make patch-sync"
+    fail "plugin 缓存不完整（$PLUGIN_COUNT/18）— 运行 make update + make patch-sync"
   fi
-elif [ "$BUILTIN_COUNT" -eq 17 ] && [ "$PLUGIN_COUNT" -eq 17 ]; then
-  ok "三处 dist/skills 完整（项目锁定 + builtin 缓存 + plugin 缓存，17×3）— plugin 加载链健康"
-elif [ "$BUILTIN_COUNT" -ne 17 ]; then
-  fail "builtin 缓存不完整（$BUILTIN_COUNT/17）— 运行 make update + make patch-sync"
+elif [ "$BUILTIN_COUNT" -eq 18 ] && [ "$PLUGIN_COUNT" -eq 18 ]; then
+  ok "三处 dist/skills 完整（项目锁定 + builtin 缓存 + plugin 缓存，18×3）— plugin 加载链健康"
+elif [ "$BUILTIN_COUNT" -ne 18 ]; then
+  fail "builtin 缓存不完整（$BUILTIN_COUNT/18）— 运行 make update + make patch-sync"
 else
-  fail "plugin 缓存不完整（$PLUGIN_COUNT/17）— 运行 make update + make patch-sync"
+  fail "plugin 缓存不完整（$PLUGIN_COUNT/18）— 运行 make update + make patch-sync"
 fi
 
+# ---------- 13. OMO + opencode 关键字段验证 ----------
+echo "【13/13】OMO + opencode 关键字段配置验证"
+# 用 node 提取字段避免 jq 依赖
+OMO_FIELDS=$(node -e "const c=require('./oh-my-openagent.json');console.log(JSON.stringify({monitor:c.monitor?.enabled,ralph_max:c.ralph_loop?.default_max_iterations,babysitting:c.babysitting?.timeout_ms,notification:c.notification?.force_enable,comment_checker:!!c.comment_checker?.custom_prompt,disabled_skills:(c.disabled_skills||[]).length,disabled_commands:(c.disabled_commands||[]).length}))" 2>/dev/null || echo "{}")
+OC_FIELDS=$(node -e "const c=require('./opencode.json');console.log(JSON.stringify({edit_ssh:c.permission?.edit?.['**/.ssh/**'],batch_tool:c.experimental?.batch_tool,continue_loop:c.experimental?.continue_loop_on_deny,policies:(c.experimental?.policies||[]).length,mcp_timeout:c.experimental?.mcp_timeout,prune:c.compaction?.prune,tail_turns:c.compaction?.tail_turns,formatter:c.formatter,instructions:(c.instructions||[]).length}))" 2>/dev/null || echo "{}")
+
+M_ON=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).monitor" 2>/dev/null)
+M_MAX=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).ralph_max" 2>/dev/null)
+M_BABY=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).babysitting" 2>/dev/null)
+M_NOTI=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).notification" 2>/dev/null)
+M_COMMENT=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).comment_checker" 2>/dev/null)
+M_DSK=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).disabled_skills" 2>/dev/null)
+M_DCMD=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).disabled_commands" 2>/dev/null)
+
+O_EDIT=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).edit_ssh" 2>/dev/null)
+O_BATCH=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).batch_tool" 2>/dev/null)
+O_POL=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).policies" 2>/dev/null)
+O_PRUNE=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).prune" 2>/dev/null)
+O_FMT=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).formatter" 2>/dev/null)
+O_INST=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions" 2>/dev/null)
+
+[ "$M_ON" = "true" ]                 && ok "OMO monitor.enabled=true（后台监控 idle 模式）" || fail "OMO monitor.enabled 未启用（oh-my-openagent.json）"
+[ -n "$M_MAX" ] && [ "$M_MAX" -le 50 ]  && ok "OMO ralph_loop.default_max_iterations=$M_MAX（已 cap）" || fail "OMO ralph_loop.default_max_iterations 未设或 >50（防失控）"
+[ -n "$M_BABY" ] && [ "$M_BABY" -ge 180000 ] && ok "OMO babysitting.timeout_ms=$M_BABY（适配 GLM-5.2）" || warn "OMO babysitting.timeout_ms 未调高（默认 120000 在 max reasoning 下可能误杀）"
+[ "$M_NOTI" = "true" ]                && ok "OMO notification.force_enable=true（OMO 接管通知）" || warn "OMO notification.force_enable 未启用（opencode-notify 接管）"
+[ "$M_COMMENT" = "true" ]             && ok "OMO comment_checker.custom_prompt 已配" || warn "OMO comment_checker 未配（可选）"
+[ -n "$M_DSK" ] && [ "$M_DSK" -ge 1 ]  && ok "OMO disabled_skills: $M_DSK 条（playwright-cli/dev-browser/agent-browser）" || warn "OMO disabled_skills 未配"
+[ -n "$M_DCMD" ] && [ "$M_DCMD" -ge 1 ] && ok "OMO disabled_commands: $M_DCMD 条（ralph-loop/cancel-ralph/handoff）" || warn "OMO disabled_commands 未配"
+[ "$O_EDIT" = "deny" ]                && ok "opencode permission.edit 加了 .ssh/** deny（纵深防御）" || fail "opencode permission.edit 缺 .ssh/** deny（写文件层无防护）"
+[ "$O_BATCH" = "true" ]               && ok "opencode experimental.batch_tool=true（批量工具调用）" || warn "opencode experimental.batch_tool 未启用"
+[ -n "$O_POL" ] && [ "$O_POL" -ge 1 ]  && ok "opencode experimental.policies: $O_POL 条（deny 海外 provider）" || warn "opencode experimental.policies 未配（可选）"
+[ "$O_PRUNE" = "true" ]               && ok "opencode compaction.prune=true（自动修剪旧工具输出）" || warn "opencode compaction.prune 未启用（默认 false 浪费 token）"
+[ "$O_FMT" = "true" ]                 && ok "opencode formatter=true（启用内置格式化器，无 prettier 时 no-op）" || warn "opencode formatter 未启用（可选）"
+[ -n "$O_INST" ] && [ "$O_INST" -ge 1 ] && ok "opencode instructions: $O_INST 条引用（.opencode/instructions.md）" || warn "opencode instructions 未配（可选）"
+echo ""
 
 # ---------- 汇总 ----------
 echo "═══════════════════════════════════════════"

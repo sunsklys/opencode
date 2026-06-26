@@ -42,7 +42,15 @@ jobs:
             echo "✓ $f 语法正确"
           done
 
-      - name: skills.lock 存在性验证
+      - name: OMO 配置 schema 校验（ajv）
+        run: |
+          # 用项目自带 ajv（npm install 后可用），跑 OMO 官方 schema 校验 oh-my-openagent.json
+          if [ ! -d node_modules/ajv ]; then
+            echo "⚠️  ajv 未安装，跳过 schema 校验"
+            exit 0
+          fi
+          node -e "const Ajv=require('ajv');const s=require('./node_modules/oh-my-openagent/dist/oh-my-opencode.schema.json');const d=require('./oh-my-openagent.json');const a=new Ajv({strict:false,allErrors:true});const v=a.compile(s);if(!v(d)){console.error('❌ OMO schema 校验失败:');console.error(JSON.stringify(v.errors,null,2));process.exit(1)}else{console.log('✓ oh-my-openagent.json 符合 OMO schema')}"
+
         run: |
           test -s skills.lock && echo "✓ skills.lock 存在且非空（$(wc -l < skills.lock) 条）" || {
             echo "❌ skills.lock 缺失或为空（运行 make skills-lock 生成）"

@@ -10,7 +10,7 @@
 | `oh-my-openagent.json` | 12 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | oh-my-openagent 4.12.1（精确锁定配合 hephaestus GLM 补丁）+ @opencode-ai/plugin 1.17.9（精确锁定）+ postinstall 全局依赖 |
+| `package.json` | oh-my-openagent 4.13.0（精确锁定配合 hephaestus GLM 补丁）+ @opencode-ai/plugin 1.17.11（精确锁定）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
@@ -121,7 +121,8 @@ npm i -g typescript-language-server pyright
 |---|---|
 | `make install` | 完整安装（新机器首次） |
 | `make check` | 体检（12 项：环境 / 变量 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康） |
-| `make update` | 更新依赖到最新（清 node_modules 重装） |
+| `make update` | 重装依赖（按 package.json 精确版本，配合 patch） |
+| `make upgrade` | 升级 OMO + plugin 到 npm 最新（含 GLM patch 重生成 + $schema URL 同步） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
 | `make config` | 仅配置环境变量（交互式） |
 | `make mem` | 仅生成 `opencode-mem.jsonc` |
@@ -149,11 +150,24 @@ npm i -g typescript-language-server pyright
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.12.1`（非 `^4.12.1`），因 `patches/oh-my-openagent+4.12.1.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.13.0`（非 `^4.13.0`），因 `patches/oh-my-openagent+4.13.0.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
 
 ### 如何升级 oh-my-openagent 主版本
 
 > patch-package 按文件名锁版本（`patches/oh-my-openagent+X.Y.Z.patch`），升级时需重生成补丁。
+
+```bash
+# 推荐：一键升级（自动检测 npm 最新 → 改 package.json → 删旧 patch → 重装
+#                  → 检测 GLM 补丁需求 → 重生成新 patch → 同步 $schema URL）
+make upgrade
+
+# 升级后还需手动（upgrade 不会自动跑这两步）：
+opencode                # 启动一次创建 plugin 缓存，随即退出
+make patch-sync         # 同步 GLM 补丁到 opencode 缓存（builtin + plugin 两处）
+make check              # 体检
+```
+
+### 手动分步（`make upgrade` 失败或需控制每步时）
 
 ```bash
 # 1. 改 package.json 的 oh-my-openagent 版本号
@@ -163,10 +177,10 @@ rm patches/oh-my-openagent+*.patch
 # 3. 重装依赖（含 postinstall: patch-package + 全局 MCP）
 make update
 
-# 4. 验证 hephaestus GLM 补丁是否仍需要（看 isHephaestusSupportedModel 是否已原生支持 /glm/i）
+# 4. 验证 hephaestus GLM 补丁是否仍需要
 grep -A2 "isHephaestusSupportedModel" node_modules/oh-my-openagent/dist/index.js | head -10
 
-# 5a. 若上游已支持 GLM：补丁不再需要，删除 patches/ 引用，跳到第 7 步
+# 5a. 若上游已支持 GLM（return 语句含 /glm/i）：补丁不再需要，跳到第 7 步
 # 5b. 若仍需要：手动编辑 node_modules/oh-my-openagent/dist/index.js
 #    在 isHephaestusSupportedModel 函数的 return 语句末尾追加：|| /glm/i.test(modelName)
 
@@ -174,9 +188,13 @@ grep -A2 "isHephaestusSupportedModel" node_modules/oh-my-openagent/dist/index.js
 npx patch-package oh-my-openagent
 #    会生成 patches/oh-my-openagent+<新版本>.patch
 
-# 7. 提交：package.json + patches/oh-my-openagent+<新版本>.patch
-# 8. 体检：make check
+# 7. 同步 $schema URL（oh-my-openagent.json 顶部）改到新版本号
+# 8. 启动 opencode 创建 plugin 缓存 → make patch-sync → make check
+# 9. 提交：package.json + patches/oh-my-openagent+<新版本>.patch + oh-my-openagent.json
 ```
+
+> `make upgrade` 把第 1-7 步全自动化，仅留 opencode 启动（创建 plugin 缓存）+ patch-sync + check 给手动。
+
 ---
 
 ## API key 获取地址
@@ -256,9 +274,21 @@ make check     # 体检全绿
 | LSP 工具链（`lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename`） | `opencode.json` → `"lsp": true` | ✅ 已启用（自动检测内置 LSP） |
 | opencode-mem 本地持久记忆 | `opencode.json` plugin 字段 + `opencode-mem.jsonc` | ✅ 已启用（智谱 glm-5-turbo auto-capture） |
 | 8 个 MCP（智谱 web 工具 / notion / mermaid / codegraph / zread / chrome-mcp disabled） | `opencode.json` mcp 字段 | ✅ 已启用 |
-| permission 加固（28 条 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.bash | ✅ 已启用 |
+| permission 加固（read + bash + edit 三层 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（纵深层防御） |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
+| **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `oh-my-openagent.json` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
+| **ralph_loop 迭代上限**（防 ralph 失控烧钱） | `oh-my-openagent.json` → `ralph_loop.default_max_iterations=30` | ✅ 显式 cap（默认 100） |
+| **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `oh-my-openagent.json` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
+| **notification.force_enable**（OMO 接管会话通知） | `oh-my-openagent.json` → `notification.force_enable=true` | ✅ 已启用 |
+| **comment_checker**（中文注释质量检查） | `oh-my-openagent.json` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
+| **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph/handoff） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
+| **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
+| **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
+| **experimental.mcp_timeout**（全局 MCP 超时 10s） | `opencode.json` → `experimental.mcp_timeout=10000` | ✅ 已启用 |
+| **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 2 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=2 |
+| **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |
+| **instructions**（项目级系统提示补充） | `opencode.json` → `instructions: ['.opencode/instructions.md']` | ✅ 已启用 |
 
 ## MCP 数据流向与信任边界
 
@@ -299,7 +329,7 @@ opencode 实际加载哪个不固定，所以 `make patch-sync` **同步两处**
 
 ### 问题表现
 
-- 项目 `patches/oh-my-openagent+4.12.1.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
+- 项目 `patches/oh-my-openagent+4.13.0.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
 - opencode 不读项目 `node_modules`，读自己的缓存
 - 缓存版本缺 `|| /glm/i.test(modelName)` → hephaestus agent 的 GLM 模型被 `isHephaestusSupportedModel` 门控拒绝 → agent 被静默跳过
 
