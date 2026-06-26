@@ -110,8 +110,24 @@
   "share": "manual",
   "autoupdate": "notify",
   "compaction": {
-    "auto": true
+    "auto": true,
+    "prune": true,
+    "tail_turns": 2
   },
+  "experimental": {
+    "batch_tool": true,
+    "continue_loop_on_deny": true,
+    "mcp_timeout": 10000,
+    "policies": [
+      { "effect": "deny", "action": "provider.use", "resource": "openai" },
+      { "effect": "deny", "action": "provider.use", "resource": "anthropic" },
+      { "effect": "deny", "action": "provider.use", "resource": "google" }
+    ]
+  },
+  "formatter": true,
+  "instructions": [
+    "{file:.opencode/instructions.md}"
+  ],
   "small_model": "volcengine-plan/deepseek-v4-flash",
   "tool_output": {
     "max_lines": 2000,
@@ -220,6 +236,14 @@
       "*>> ~/.bashrc*": "deny",
       "tee ~/.zshrc*": "deny",
       "tee ~/.bashrc*": "deny"
+    },
+    "edit": {
+      "**/.ssh/**": "deny",
+      "**/.aws/**": "deny",
+      "**/id_rsa*": "deny",
+      "**/id_ed25519*": "deny",
+      "**/*.pem": "deny",
+      "**/*.key": "deny"
     }
   }
 }
