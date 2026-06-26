@@ -285,7 +285,7 @@ make check     # 体检全绿
 | **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
 | **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
-| **experimental.mcp_timeout**（全局 MCP 超时 10s） | `opencode.json` → `experimental.mcp_timeout=10000` | ✅ 已启用 |
+| **experimental.mcp_timeout**（全局 MCP 超时 30s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=30000` | ✅ 已启用 |
 | **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 2 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=2 |
 | **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |
 | **instructions**（项目级系统提示补充） | `opencode.json` → `instructions: ['.opencode/instructions.md']` | ✅ 已启用 |

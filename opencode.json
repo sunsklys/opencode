@@ -117,7 +117,7 @@
   "experimental": {
     "batch_tool": true,
     "continue_loop_on_deny": true,
-    "mcp_timeout": 10000,
+    "mcp_timeout": 30000,
     "policies": [
       { "effect": "deny", "action": "provider.use", "resource": "openai" },
       { "effect": "deny", "action": "provider.use", "resource": "anthropic" },
