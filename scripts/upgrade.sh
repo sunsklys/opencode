@@ -17,6 +17,13 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# Pre-flight: 工作区必须干净，否则升级失败后无法 git 回滚
+if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+  echo "❌ 工作区有未提交改动，请先 commit 或 stash" >&2
+  git status --short >&2
+  exit 1
+fi
+
 # ---------- 1. 查询 npm 最新版（用官方源避免 npmmirror 同步延迟）----------
 echo "=== 1/7 查询 npm 最新版 ==="
 OMO_CURRENT=$(node -p "require('./package.json').dependencies['oh-my-openagent']")
@@ -53,6 +60,20 @@ fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
 console.log('  ✓ 已更新: ' + changed.join(', '));
 "
 
+# 备份关键状态，失败可回滚
+BACKUP_DIR=".upgrade-backup-$(date +%s)"
+mkdir -p "$BACKUP_DIR"
+cp -r patches package.json package-lock.json "$BACKUP_DIR/" 2>/dev/null || true
+[ -d node_modules ] && cp -r node_modules "$BACKUP_DIR/" 2>/dev/null || true
+
+_restore_upgrade() {
+  if [ -d "$BACKUP_DIR" ]; then
+    echo "↩ 升级失败，恢复备份..." >&2
+    cp -r "$BACKUP_DIR"/* . 2>/dev/null || true
+    rm -rf "$BACKUP_DIR"
+  fi
+}
+trap _restore_upgrade ERR
 # ---------- 3. 删除旧 patch（patch-package 按文件名锁版本）----------
 echo ""
 echo "=== 3/7 删除旧 GLM patch ==="
@@ -138,6 +159,10 @@ if (re.test(s)) {
   console.log('  ⚠ 未找到现有 \$schema URL 模式，跳过（请手动检查）');
 }
 "
+
+# 清理备份，解除 trap
+trap - ERR
+rm -rf "$BACKUP_DIR"
 
 # ---------- 完成 ----------
 echo ""
