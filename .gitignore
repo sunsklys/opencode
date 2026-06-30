@@ -47,3 +47,4 @@ tasks/
 *.tmp
 *.bak
 .tmp/
+.upgrade-backup-*/

@@ -40,6 +40,21 @@ if [ "$OMO_CURRENT" = "$OMO_LATEST" ] && [ "$PLG_CURRENT" = "$PLG_LATEST" ]; the
   exit 0
 fi
 
+# 备份关键状态（在 step 2 修改 package.json 之前），失败可回滚
+BACKUP_DIR=".upgrade-backup-$(date +%s)"
+mkdir -p "$BACKUP_DIR"
+cp -r patches package.json package-lock.json "$BACKUP_DIR/" 2>/dev/null || true
+[ -d node_modules ] && cp -r node_modules "$BACKUP_DIR/" 2>/dev/null || true
+
+_restore_upgrade() {
+  if [ -d "$BACKUP_DIR" ]; then
+    echo "↩ 升级失败，恢复备份..." >&2
+    cp -r "$BACKUP_DIR"/* . 2>/dev/null || true
+    rm -rf "$BACKUP_DIR"
+  fi
+}
+trap _restore_upgrade ERR INT TERM
+
 # ---------- 2. 更新 package.json ----------
 echo ""
 echo "=== 2/7 更新 package.json ==="
@@ -60,21 +75,7 @@ fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
 console.log('  ✓ 已更新: ' + changed.join(', '));
 "
 
-# 备份关键状态，失败可回滚
-BACKUP_DIR=".upgrade-backup-$(date +%s)"
-mkdir -p "$BACKUP_DIR"
-cp -r patches package.json package-lock.json "$BACKUP_DIR/" 2>/dev/null || true
-[ -d node_modules ] && cp -r node_modules "$BACKUP_DIR/" 2>/dev/null || true
 
-_restore_upgrade() {
-  if [ -d "$BACKUP_DIR" ]; then
-    echo "↩ 升级失败，恢复备份..." >&2
-    cp -r "$BACKUP_DIR"/* . 2>/dev/null || true
-    rm -rf "$BACKUP_DIR"
-  fi
-}
-trap _restore_upgrade ERR
-# ---------- 3. 删除旧 patch（patch-package 按文件名锁版本）----------
 echo ""
 echo "=== 3/7 删除旧 GLM patch ==="
 node -e "
