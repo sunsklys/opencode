@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Subset scope notice
+        run: echo "::notice::此 CI 仅跑静态子集检查（约 7 项），非全量 make check（13 项）。完整体检需在本地或装有 API key 的 self-hosted runner 上跑。"
+
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
