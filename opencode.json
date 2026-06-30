@@ -112,7 +112,7 @@
   "compaction": {
     "auto": true,
     "prune": true,
-    "tail_turns": 2
+    "tail_turns": 4
   },
   "experimental": {
     "batch_tool": true,
@@ -188,6 +188,14 @@
       "**/id_ed25519*": "deny",
       "**/*.pem": "deny",
       "**/*.key": "deny"
+,
+      "**/.kube/**": "deny",
+      "**/.gnupg/**": "deny",
+      "**/.docker/config.json": "deny",
+      "**/.npmrc": "deny",
+      "**/.pypirc": "deny",
+      "**/.netrc": "deny",
+      "**/.git-credentials": "deny"
     },
     "bash": {
       "*": "allow",
@@ -236,6 +244,14 @@
       "*>> ~/.bashrc*": "deny",
       "tee ~/.zshrc*": "deny",
       "tee ~/.bashrc*": "deny"
+,
+      "python3 -c*": "deny",
+      "python -c*": "deny",
+      "node -e*": "deny",
+      "node -e (*": "deny",
+      "command rm*": "deny",
+      "\\rm*": "deny",
+      "git config alias.*": "deny"
     },
     "edit": {
       "**/.ssh/**": "deny",
