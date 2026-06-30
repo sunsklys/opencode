@@ -187,15 +187,19 @@
       "**/id_rsa*": "deny",
       "**/id_ed25519*": "deny",
       "**/*.pem": "deny",
-      "**/*.key": "deny"
-,
+      "**/*.key": "deny",
       "**/.kube/**": "deny",
       "**/.gnupg/**": "deny",
       "**/.docker/config.json": "deny",
       "**/.npmrc": "deny",
       "**/.pypirc": "deny",
       "**/.netrc": "deny",
-      "**/.git-credentials": "deny"
+      "**/.git-credentials": "deny",
+      "**/.zshrc*": "deny",
+      "**/.bashrc*": "deny",
+      "**/.profile": "deny",
+      "**/.zshenv": "deny",
+      "**/.zprofile": "deny"
     },
     "bash": {
       "*": "allow",
@@ -243,15 +247,17 @@
       "*>> ~/.zshrc*": "deny",
       "*>> ~/.bashrc*": "deny",
       "tee ~/.zshrc*": "deny",
-      "tee ~/.bashrc*": "deny"
-,
+      "tee ~/.bashrc*": "deny",
       "python3 -c*": "deny",
       "python -c*": "deny",
       "node -e*": "deny",
       "node -e (*": "deny",
       "command rm*": "deny",
       "\\rm*": "deny",
-      "git config alias.*": "deny"
+      "git config alias.*": "deny",
+      "curl *-d *": "deny",
+      "curl *--data *": "deny",
+      "curl *-F *": "deny"
     },
     "edit": {
       "**/.ssh/**": "deny",
