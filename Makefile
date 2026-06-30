@@ -4,14 +4,15 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills
+.PHONY: help install bootstrap deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
 	@echo ""
 	@echo "常用命令："
 	@echo "  make install   完整安装（新机器首次，含依赖/环境变量/记忆/飞书）"
-	@echo "  make check     体检所有组件状态（12 项检查）"
+	@echo "  make check     体检所有组件状态（13 项：critical 5 + warning 8）"
+	@echo "  make bootstrap 一键灾备恢复（install + prime-cache + patch-sync + check）"
 	@echo "  make update    重装依赖（按 package.json 精确版本，配合 patch）"
 	@echo "  make upgrade   升级 OMO + plugin 到 npm 最新（含 GLM patch 重生成）"
 	@echo ""
@@ -60,6 +61,22 @@ install: deps config mem feishu sync-skills ## 完整安装（新机器首次）
 	@echo "  4. 体检："
 	@echo "     make check"
 
+.PHONY: bootstrap
+bootstrap: ## 一键灾备恢复（install + prime-cache + patch-sync + check）
+	@echo "=== Bootstrap: 一键灾备恢复 ==="
+	@$(MAKE) install
+	@echo ""
+	@echo "=== Prime opencode plugin cache ==="
+	@echo "（启动 opencode 创建 plugin 缓存，10s 后自动关闭）"
+	@bash -c 'opencode & PID=$$!; sleep 10; kill $$PID 2>/dev/null' || true
+	@echo ""
+	@$(MAKE) patch-sync
+	@echo ""
+	@$(MAKE) check
+	@echo ""
+	@echo "✅ Bootstrap 完成。下一步："
+	@echo "   1. opencode auth login zhipuai-coding-plan  （如果还没登录）"
+	@echo "   2. opencode  （启动验证）"
 deps: ## 安装 npm 依赖 + opencode-mem 软链 + OMO skill 软链
 	@bash scripts/install.sh
 	@bash scripts/sync-omo-skills.sh
@@ -88,7 +105,7 @@ feishu: ## 安装飞书 CLI + 27 个 SKILL（需要 FEISHU_APP_SECRET）
 sync-skills: ## 软链 oh-my-openagent 内置 skill（ulw-plan/git-master/frontend 等）到 ~/.agents/skills/
 	@bash scripts/sync-omo-skills.sh
 
-check: ## 体检所有组件（12 项：环境/变量/依赖/补丁/记忆/MCP/飞书/Web UI/漂移检测/skills.lock/skill 软链自愈/plugin 缓存健康）
+check: ## 体检所有组件（13 项 = critical 5 + warning 8；critical 全绿则 exit 0，warning 失败也 exit 0）
 	@bash scripts/check.sh
 
 update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync skill 软链）

@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+# opencode 配置 pre-commit hook
+# 阻止损坏配置进入 git 历史
+# 安装：bash scripts/install-hooks.sh
+
+echo "▶ Running make check (critical tier) + make tui-sync..."
+
+# make check: critical 全绿才通过
+if ! make check; then
+  echo "❌ make check failed (critical tier). Fix issues before committing."
+  echo "   Hint: 运行 make update / make patch-sync / make mem 修复"
+  exit 1
+fi
+
+# make tui-sync: plugin 字段一致性
+if ! make tui-sync; then
+  echo "❌ make tui-sync failed. tui.json 与 opencode.json plugin 不同步。"
+  exit 1
+fi
+
+echo "✅ Pre-commit checks passed."
