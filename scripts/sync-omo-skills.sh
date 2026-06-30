@@ -5,7 +5,7 @@
 #
 # 背景（v4.12.1 源码验证后的修正描述）：
 #   OMO plugin 启动时通过 discoverSharedSkills() 扫描自己的 dist/skills，
-#   把 ulw-plan/git-master 等 17 个 skill 以 shared scope 注入 <available_skills>。
+#   把 ulw-plan/git-master 等 18 个 skill 以 shared scope 注入 <available_skills>。
 #   即：plugin 加载正常时，这些 skill 不需要软链也会出现在 TUI 列表。
 #
 #   本脚本建立的软链是 user-scope fallback —— 当 plugin 因 #latest 缓存漂移、
