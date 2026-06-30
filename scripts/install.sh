@@ -8,6 +8,9 @@ set -eo pipefail
 
 cd "$(dirname "$0")/.."
 
+# 从 package.json 读取 oh-my-openagent 版本（单一真相源）
+OMO_VER=$(node -p "require('./package.json').dependencies['oh-my-openagent']")
+
 echo "=== 1/3 npm install（含 postinstall: patch-package + 全局 MCP 依赖）==="
 npm install
 # ⚠ npm install 会清理 node_modules 里的 extraneous 包（含 opencode-mem 软链），
@@ -30,7 +33,7 @@ if grep -q "/glm/i" node_modules/oh-my-openagent/dist/index.js 2>/dev/null; then
   echo "✓ oh-my-openagent hephaestus GLM 补丁已应用"
 else
   echo "⚠ oh-my-openagent 补丁未应用（hephaestus agent 可能无法使用 GLM 模型）"
-  echo "  检查 patches/oh-my-openagent+4.12.1.patch 是否存在"
+  echo "  检查 patches/oh-my-openagent+${OMO_VER}.patch 是否存在"
 fi
 
 # opencode-mem 软链 + 版本验证（防御性赋值：node -p 失败时 fallback 到"未知"）
