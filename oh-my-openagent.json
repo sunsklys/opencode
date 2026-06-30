@@ -39,28 +39,20 @@
     "modelConcurrency": {
       "volcengine-plan/deepseek-v4-pro": 3,
       "volcengine-plan/deepseek-v4-flash": 5,
+      "volcengine-plan/kimi-k2.6": 3,
+      "volcengine-plan/doubao-seed-2.0-pro": 3,
+      "volcengine-plan/doubao-seed-2.0-code": 3,
+      "volcengine-plan/minimax-m3": 3,
+      "volcengine-plan/glm-5.2": 5,
       "zhipuai-coding-plan/glm-5.2": 5,
-      "zhipuai-coding-plan/glm-5-turbo": 3
+      "zhipuai-coding-plan/glm-5-turbo": 3,
+      "zhipuai-coding-plan/glm-5v-turbo": 3
     }
   },
   "experimental": {
     "task_system": true,
     "preemptive_compaction": true,
-    "aggressive_truncation": true,
-    "dynamic_context_pruning": {
-      "enabled": false,
-      "notification": "detailed",
-      "turn_protection": { "enabled": true, "turns": 3 },
-      "protected_tools": [
-        "task", "todowrite", "todoread",
-        "lsp_rename", "session_read", "session_search"
-      ],
-      "strategies": {
-        "deduplication": { "enabled": true },
-        "supersede_writes": { "enabled": true, "aggressive": false },
-        "purge_errors": { "enabled": true, "turns": 5 }
-      }
-    }
+    "aggressive_truncation": true
   },
   "sisyphus_agent": {
     "disabled": false,
@@ -78,7 +70,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -90,7 +82,7 @@
       "variant": "high",
       "reasoningEffort": "max",
       "allow_non_gpt_model": true,
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -101,7 +93,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -112,7 +104,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -123,7 +115,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -134,7 +126,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -145,7 +137,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -156,7 +148,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -165,8 +157,8 @@
     },
     "librarian": {
       "model": "volcengine-plan/deepseek-v4-flash",
-      "reasoningEffort": "low",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "reasoningEffort": "medium",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -174,8 +166,8 @@
     },
     "explore": {
       "model": "volcengine-plan/deepseek-v4-flash",
-      "reasoningEffort": "low",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "reasoningEffort": "medium",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -192,7 +184,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -212,7 +204,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -224,7 +216,7 @@
       "variant": "high",
       "reasoningEffort": "max",
       "temperature": 0.7,
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -235,7 +227,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -245,7 +237,7 @@
     "quick": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "minimal",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -254,7 +246,7 @@
     "unspecified-low": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "low",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -264,7 +256,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "high",
       "reasoningEffort": "max",
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -274,7 +266,7 @@
     "writing": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "temperature": 0.7,
-      "prompt_append": "始终使用中文（简体）回答。思考过程、所有解释、说明、代码注释也用中文。",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -287,17 +279,7 @@
     "include_co_authored_by": true,
     "git_env_prefix": "GIT_MASTER=1"
   },
-  "disabled_hooks": [
-    "auto-update-checker"
-  ],
-  "tmux": {
-    "enabled": false,
-    "layout": "main-vertical",
-    "main_pane_size": 60,
-    "main_pane_min_width": 120,
-    "agent_pane_min_width": 40,
-    "isolation": "inline"
-  },
+  "disabled_hooks": [],
   "keyword_detector": {
     "enabled_expansions": ["ultrawork", "team", "hyperplan", "hyperplan-ultrawork"]
   },
@@ -321,14 +303,11 @@
   "babysitting": {
     "timeout_ms": 300000
   },
-  "notification": {
-    "force_enable": true
-  },
   "comment_checker": {
     "custom_prompt": "检查中文注释与代码一致性。中文注释需准确描述代码行为，避免英文直译凑数。检查：1) 中文表述是否符合代码实际逻辑；2) 是否有 AI 生成的空洞描述（如“这里做一些处理”）；3) 函数/类/复杂分支是否有中文文档注释。代码注释：{{comments}}"
   },
   "disabled_skills": [
-    "playwright-cli",
+    "playwright",
     "dev-browser",
     "agent-browser"
   ],
