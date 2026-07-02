@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install bootstrap deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills
+.PHONY: help install bootstrap deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills patch-sync-cleanup
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -32,6 +32,7 @@ help: ## 显示帮助
 	@echo "  make sbom         生成 SBOM（软件物料清单，CycloneDX 格式）"
 	@echo "  make tui-sync     验证 tui.json 与 opencode.json plugin 同步"
 	@echo "  make patch-sync   同步 hephaestus GLM 补丁到 opencode 缓存"
+	@echo "  make patch-sync-cleanup  清理 opencode plugin 缓存（防 @latest 漂移）"
 	@echo ""
 	@echo "新机器流程："
 	@echo "  git clone <repo> ~/.config/opencode && cd ~/.config/opencode"
@@ -151,3 +152,8 @@ tui-sync: ## 验证 tui.json 与 opencode.json 的 plugin 字段同步
 patch-sync: ## 把 hephaestus GLM 补丁同步到 opencode 缓存（修 hephaestus agent 失效）
 	@echo "同步补丁到 opencode 缓存..."
 	@node -e "const fs=require('fs'),path=require('path'),os=require('os');const src='node_modules/oh-my-openagent/dist/index.js';if(!fs.existsSync(src)){console.error('❌ 项目 node_modules/oh-my-openagent 不存在，先运行 make deps');process.exit(1)}const targets=[['builtin (oh-my-opencode)',path.join(os.homedir(),'.cache','opencode','packages','node_modules','oh-my-opencode','dist','index.js')],['plugin (oh-my-openagent@latest)',path.join(os.homedir(),'.cache','opencode','packages','oh-my-openagent@latest','node_modules','oh-my-openagent','dist','index.js')]];let synced=0,missing=0;for(const [label,dest] of targets){if(!fs.existsSync(dest)){console.log('  ⚠️  '+label+': 缓存未创建，跳过');missing++;continue}fs.copyFileSync(src,dest);const ok=fs.readFileSync(dest,'utf8').includes('/glm/i.test(modelName)');if(ok){console.log('  ✓ '+label+': 已同步且含 /glm/i 补丁');synced++}else{console.error('❌ '+label+': 同步后仍缺 /glm/i');process.exit(1)}}if(synced===0){console.error('⚠️  所有 opencode 缓存均未创建 — 首次启动 opencode 后再运行 make patch-sync');process.exit(0)}console.log('  ✓ 同步完成（'+synced+' 处已同步，'+missing+' 处缓存未创建')"
+
+patch-sync-cleanup: ## 清理 opencode plugin 缓存（防 @latest 漂移，让 opencode 下次启动重新拉取并应用补丁）
+	@echo "清理 opencode plugin 缓存..."
+	@node -e "const fs=require('fs'),path=require('os').homedir()+'/.cache/opencode/packages/oh-my-openagent@latest';if(fs.existsSync(path)){fs.rmSync(path,{recursive:true,force:true});console.log('  ✓ 已清理 '+path)}else{console.log('  ✓ 缓存不存在，无需清理')}"
+	@echo "✓ 完成。下次启动 opencode 会重新拉取并自动应用补丁（通过 postinstall hook）"
