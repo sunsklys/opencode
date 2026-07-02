@@ -33,6 +33,24 @@
 
 一句话流程：`git clone` → `make install` → `opencode auth login zhipuai-coding-plan` → `opencode`（创建缓存后退出）→ `make patch-sync` → `make check`。
 
+## @latest 缓存漂移根治机制
+
+opencode 的 plugin 字段（`oh-my-openagent@latest`）会在启动时拉取 npm 最新版到 `~/.cache/opencode/packages/`，可能与项目 `package.json` 锁定版本不一致，导致 hephaestus 等 agent 加载到无 GLM 补丁的版本。
+
+**根治方案**（已实施）：
+1. `scripts/postinstall.sh` 第 4 步：每次 `npm install` 后自动清理 `~/.cache/opencode/packages/oh-my-openagent@latest/`，让 opencode 下次启动重新拉取
+2. `make patch-sync`：把项目 `node_modules/` 内打过补丁的 dist/index.js 同步到 opencode 缓存
+3. `make patch-sync-cleanup`：独立调用上述清理逻辑（手动验证用）
+
+**完整流程**（升级或重装后）：
+
+```bash
+make upgrade              # 升级 OMO（自动清缓存）
+opencode                  # 启动一次创建缓存，随即退出（Ctrl+C 或 /exit）
+make patch-sync           # 把补丁同步到刚创建的缓存
+make check                # 验证补丁应用（第 3 项应 ✅）
+```
+
 ## 详细文档
 
 | 文档 | 用途 |

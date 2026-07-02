@@ -165,3 +165,11 @@ opencode
 - 补丁文件（`patches/`）
 - 锁文件（`package-lock.json` + `skills.lock`）
 - CI 配置（`.github/workflows/`）
+
+### @latest 缓存漂移根治
+
+opencode plugin 字段 `oh-my-openagent@latest` 启动时拉取 npm 最新版到 `~/.cache/opencode/packages/`，可能与项目锁定的 4.13.0 不一致（hephaestus 加载到无 GLM 补丁的版本）。
+
+**已自动化的防护**：`scripts/postinstall.sh` 第 4 步在每次 `npm install` / `make update` / `make upgrade` 后自动清理 `~/.cache/opencode/packages/oh-my-openagent@latest/`，确保下次启动重新拉取。
+
+**手动验证 / 修复**：`make patch-sync-cleanup` 单独清缓存；`make patch-sync` 把补丁同步进缓存。完整升级流程见 [README](../README.md#latest-缓存漂移根治机制)。
