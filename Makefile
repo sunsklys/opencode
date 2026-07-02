@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install bootstrap deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills patch-sync-cleanup
+.PHONY: help install bootstrap deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync patch-sync sync-skills patch-sync-cleanup install-hooks
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -42,7 +42,7 @@ help: ## 显示帮助
 	@echo "  make patch-sync                           # 同步 hephaestus GLM 补丁到两处缓存"
 	@echo "  make check"
 
-install: deps config mem feishu sync-skills ## 完整安装（新机器首次）
+install: deps config mem feishu sync-skills install-hooks ## 完整安装（新机器首次）
 	@echo ""
 	@echo "═══════════════════════════════════════════"
 	@echo "  ✅ 安装完成！"
@@ -157,3 +157,6 @@ patch-sync-cleanup: ## 清理 opencode plugin 缓存（防 @latest 漂移，让 
 	@echo "清理 opencode plugin 缓存..."
 	@node -e "const fs=require('fs'),path=require('os').homedir()+'/.cache/opencode/packages/oh-my-openagent@latest';if(fs.existsSync(path)){fs.rmSync(path,{recursive:true,force:true});console.log('  ✓ 已清理 '+path)}else{console.log('  ✓ 缓存不存在，无需清理')}"
 	@echo "✓ 完成。下次启动 opencode 会重新拉取并自动应用补丁（通过 postinstall hook）"
+
+install-hooks: ## 安装 git pre-commit hook（让 make check 在 commit 前自动跑）
+	@bash scripts/install-hooks.sh
