@@ -11,7 +11,7 @@
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
 | **插件/扩展** | `plugin` / `mcp` / `lsp` | 2 plugin + 8 MCP + LSP（true = 自动检测内置） |
-| **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + deepseek-v4-flash 作 small |
+| **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + 智谱 glm-5-turbo 作 small（避开火山 deepseek-v4-flash 月配额限制） |
 | **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / notify / auto |
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
 | **安全** | `permission.read` / `permission.bash` / `watcher.ignore` | deny 列表 + 文件监听忽略 |

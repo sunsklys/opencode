@@ -128,7 +128,7 @@
   "instructions": [
     "{file:.opencode/instructions.md}"
   ],
-  "small_model": "volcengine-plan/deepseek-v4-flash",
+  "small_model": "zhipuai-coding-plan/glm-5-turbo",
   "tool_output": {
     "max_lines": 2000,
     "max_bytes": 524288
