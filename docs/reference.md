@@ -173,7 +173,7 @@ opencode 实际加载哪个不固定，所以 `make patch-sync` **同步两处**
 
 ### 问题表现
 
-- 项目 `patches/oh-my-openagent+4.13.0.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
+- 项目 `patches/oh-my-openagent+4.15.1.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
 - opencode 不读项目 `node_modules`，读自己的缓存
 - 缓存版本缺 `|| /glm/i.test(modelName)` → hephaestus agent 的 GLM 模型被 `isHephaestusSupportedModel` 门控拒绝 → agent 被静默跳过
 
@@ -255,4 +255,4 @@ npx patch-package oh-my-openagent
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.13.0`（非 `^4.13.0`），因 `patches/oh-my-openagent+4.13.0.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.15.1`（非 `^4.15.1`），因 `patches/oh-my-openagent+4.15.1.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
