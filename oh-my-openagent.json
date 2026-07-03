@@ -21,7 +21,7 @@
     "retry_on_errors": [429, 500, 502, 503, 504, 529],
     "max_fallback_attempts": 4,
     "cooldown_seconds": 60,
-    "timeout_seconds": 30,
+    "timeout_seconds": 60,
     "notify_on_fallback": true
   },
   "model_fallback": true,
@@ -52,7 +52,29 @@
   "experimental": {
     "task_system": true,
     "preemptive_compaction": true,
-    "aggressive_truncation": true
+    "aggressive_truncation": true,
+    "dynamic_context_pruning": {
+      "enabled": true,
+      "notification": "minimal",
+      "turn_protection": {
+        "enabled": true,
+        "turns": 3
+      },
+      "protected_tools": [
+        "task",
+        "todowrite",
+        "todoread",
+        "lsp_rename",
+        "session_read",
+        "session_write",
+        "session_search"
+      ],
+      "strategies": {
+        "deduplication": { "enabled": true },
+        "supersede_writes": { "enabled": true, "aggressive": false },
+        "purge_errors": { "enabled": true, "turns": 5 }
+      }
+    }
   },
   "sisyphus_agent": {
     "disabled": false,
@@ -75,7 +97,8 @@
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/doubao-seed-2.0-pro"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "hephaestus": {
       "model": "zhipuai-coding-plan/glm-5.2",
@@ -87,7 +110,8 @@
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "prometheus": {
       "model": "zhipuai-coding-plan/glm-5.2",
@@ -98,7 +122,8 @@
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/doubao-seed-2.0-pro"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "plan": {
       "model": "zhipuai-coding-plan/glm-5.2",
@@ -109,7 +134,8 @@
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/doubao-seed-2.0-pro"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "oracle": {
       "model": "zhipuai-coding-plan/glm-5.2",
@@ -120,7 +146,8 @@
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/doubao-seed-2.0-pro"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "metis": {
       "model": "zhipuai-coding-plan/glm-5.2",
@@ -131,7 +158,8 @@
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/doubao-seed-2.0-pro"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "momus": {
       "model": "zhipuai-coding-plan/glm-5.2",
@@ -142,7 +170,8 @@
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/doubao-seed-2.0-pro"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "atlas": {
       "model": "zhipuai-coding-plan/glm-5.2",
@@ -153,7 +182,8 @@
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
     "librarian": {
       "model": "volcengine-plan/deepseek-v4-flash",
@@ -162,7 +192,8 @@
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
-      ]
+      ],
+      "textVerbosity": "low"
     },
     "explore": {
       "model": "volcengine-plan/deepseek-v4-flash",
@@ -171,7 +202,8 @@
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
-      ]
+      ],
+      "textVerbosity": "low"
     },
     "multimodal-looker": {
       "model": "zhipuai-coding-plan/glm-5v-turbo",
@@ -189,7 +221,8 @@
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
-      ]
+      ],
+      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     }
   },
   "categories": {

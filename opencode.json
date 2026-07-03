@@ -50,7 +50,7 @@
           "limit": { "context": 800000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] },
           "options": {
-            "thinking": { "type": "enabled", "budgetTokens": 16384 }
+            "thinking": { "type": "enabled", "budgetTokens": 32768 }
           }
         }
       }
@@ -112,12 +112,12 @@
   "compaction": {
     "auto": true,
     "prune": true,
-    "tail_turns": 4
+    "tail_turns": 6
   },
   "experimental": {
     "batch_tool": true,
     "continue_loop_on_deny": true,
-    "mcp_timeout": 30000,
+    "mcp_timeout": 60000,
     "policies": [
       { "effect": "deny", "action": "provider.use", "resource": "openai" },
       { "effect": "deny", "action": "provider.use", "resource": "anthropic" },
@@ -265,7 +265,19 @@
       "**/id_rsa*": "deny",
       "**/id_ed25519*": "deny",
       "**/*.pem": "deny",
-      "**/*.key": "deny"
+      "**/*.key": "deny",
+      "**/.kube/**": "deny",
+      "**/.gnupg/**": "deny",
+      "**/.docker/config.json": "deny",
+      "**/.npmrc": "deny",
+      "**/.pypirc": "deny",
+      "**/.netrc": "deny",
+      "**/.git-credentials": "deny",
+      "**/.zshrc*": "deny",
+      "**/.bashrc*": "deny",
+      "**/.profile": "deny",
+      "**/.zshenv": "deny",
+      "**/.zprofile": "deny"
     }
   }
 }
