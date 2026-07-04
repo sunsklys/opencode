@@ -180,7 +180,7 @@ else
 fi
 echo ""
 # ---------- 9. [Warning] lark skills SHA256 校验 ----------
-echo "【9/13·Warning】lark skills SHA256 校验（供应链完整性）"
+echo "【9/13·Warning】skills SHA256 校验（供应链完整性，lark + OMO）"
  
 if [ ! -f "skills.lock" ]; then
   warn "skills.lock 不存在（运行 make skills-lock 生成）"

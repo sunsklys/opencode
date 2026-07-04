@@ -70,7 +70,7 @@ make check                                # 体检（13 项全绿即就绪）
 | `make clean` | 清理 node_modules |
 | `make export` | 导出配置到 tar.gz（默认 ~/Desktop，可选含 auth.json） |
 | `make audit` | npm 安全审计（切官方源，绕过 npmmirror audit 404） |
-| `make skills-lock` | 生成 lark skills SHA256 锁定（供应链加固） |
+| `make skills-lock` | 生成全部 skills SHA256 锁定（lark + OMO，供应链加固） |
 | `make clean-state` | 清理 `.omo/` 和 tasks/ 运行时状态（修复状态机污染） |
 | `make sbom` | 生成 SBOM（软件物料清单，CycloneDX 格式） |
 | `make tui-sync` | 验证 tui.json 与 opencode.json plugin 同步 |

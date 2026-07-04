@@ -27,7 +27,7 @@ help: ## 显示帮助
 	@echo ""
 	@echo "维护命令（可选）："
 	@echo "  make audit        npm 安全审计（切官方源，绕过 npmmirror audit 404）"
-	@echo "  make skills-lock  生成 lark skills SHA256 锁定（供应链加固）"
+	@echo "  make skills-lock  生成全部 skills SHA256 锁定（含 lark + OMO，供应链加固）"
 	@echo "  make clean-state  清理 .omo/ 和 tasks/ 运行时状态（修复状态机污染）"
 	@echo "  make sbom         生成 SBOM（软件物料清单，CycloneDX 格式）"
 	@echo "  make tui-sync     验证 tui.json 与 opencode.json plugin 同步"
@@ -131,9 +131,9 @@ audit: ## npm 安全审计（切官方源，绕过 npmmirror audit 404）
 	@echo "运行 npm audit（临时切官方源）..."
 	@npm audit --audit-level=moderate --registry=https://registry.npmjs.org || echo '⚠️  发现漏洞，详见上方报告'
 
-skills-lock: ## 生成 lark skills SHA256 锁定文件（供应链加固，跨平台用 node 算 hash）
+skills-lock: ## 生成全部 skills SHA256 锁定文件（含 lark + OMO，供应链加固，跨平台用 node 算 hash）
 	@echo "生成 skills.lock（SHA256）..."
-	@node -e "const fs=require('fs'),crypto=require('crypto'),path=require('path');const os=require('os');const skillsDir=path.join(os.homedir(),'.agents','skills');const lock={};if(!fs.existsSync(skillsDir)){console.error('⚠️  ~/.agents/skills 不存在，先运行 make feishu');process.exit(1)}for(const name of fs.readdirSync(skillsDir)){if(!name.startsWith('lark-'))continue;const skillPath=path.join(skillsDir,name,'SKILL.md');if(!fs.existsSync(skillPath))continue;const content=fs.readFileSync(skillPath);const hash=crypto.createHash('sha256').update(content).digest('hex');const relPath=path.relative(skillsDir, skillPath);lock[relPath]=hash}const lines=Object.keys(lock).sort().map(p=>lock[p]+'  '+p);fs.writeFileSync('skills.lock',lines.join('\n')+'\n');console.log('✓ 已生成 skills.lock（'+lines.length+' 条记录）');console.log('  下次 make feishu 后建议重跑本命令以检测 SKILL 是否被篡改')"
+	@node -e "const fs=require('fs'),crypto=require('crypto'),path=require('path');const os=require('os');const skillsDir=path.join(os.homedir(),'.agents','skills');const lock={};if(!fs.existsSync(skillsDir)){console.error('⚠️  ~/.agents/skills 不存在，先运行 make feishu');process.exit(1)}for(const name of fs.readdirSync(skillsDir)){const skillPath=path.join(skillsDir,name,'SKILL.md');if(!fs.existsSync(skillPath))continue;const content=fs.readFileSync(skillPath);const hash=crypto.createHash('sha256').update(content).digest('hex');const relPath=path.relative(skillsDir, skillPath);lock[relPath]=hash}const lines=Object.keys(lock).sort().map(p=>lock[p]+'  '+p);fs.writeFileSync('skills.lock',lines.join('\n')+'\n');console.log('✓ 已生成 skills.lock（'+lines.length+' 条记录，lark + OMO）');console.log('  下次 make feishu / make upgrade 后建议重跑本命令以检测 SKILL 是否被篡改')"
 
 clean-state: ## 清理运行时状态文件（保留 plans/boulder.json/start-work）
 	@echo "清理运行时状态文件..."
@@ -153,9 +153,9 @@ patch-sync: ## 把 hephaestus GLM 补丁同步到 opencode 缓存（修 hephaest
 	@echo "同步补丁到 opencode 缓存..."
 	@node -e "const fs=require('fs'),path=require('path'),os=require('os');const src='node_modules/oh-my-openagent/dist/index.js';if(!fs.existsSync(src)){console.error('❌ 项目 node_modules/oh-my-openagent 不存在，先运行 make deps');process.exit(1)}const targets=[['builtin (oh-my-opencode)',path.join(os.homedir(),'.cache','opencode','packages','node_modules','oh-my-opencode','dist','index.js')],['plugin (oh-my-openagent@latest)',path.join(os.homedir(),'.cache','opencode','packages','oh-my-openagent@latest','node_modules','oh-my-openagent','dist','index.js')]];let synced=0,missing=0;for(const [label,dest] of targets){if(!fs.existsSync(dest)){console.log('  ⚠️  '+label+': 缓存未创建，跳过');missing++;continue}fs.copyFileSync(src,dest);const ok=fs.readFileSync(dest,'utf8').includes('/glm/i.test(modelName)');if(ok){console.log('  ✓ '+label+': 已同步且含 /glm/i 补丁');synced++}else{console.error('❌ '+label+': 同步后仍缺 /glm/i');process.exit(1)}}if(synced===0){console.error('⚠️  所有 opencode 缓存均未创建 — 首次启动 opencode 后再运行 make patch-sync');process.exit(0)}console.log('  ✓ 同步完成（'+synced+' 处已同步，'+missing+' 处缓存未创建')"
 
-patch-sync-cleanup: ## 清理 opencode plugin 缓存（防 @latest 漂移，让 opencode 下次启动重新拉取并应用补丁）
+patch-sync-cleanup: ## 清理 opencode plugin 缓存（防 @latest 漂移：oh-my-openagent + opencode-mem）
 	@echo "清理 opencode plugin 缓存..."
-	@node -e "const fs=require('fs'),path=require('os').homedir()+'/.cache/opencode/packages/oh-my-openagent@latest';if(fs.existsSync(path)){fs.rmSync(path,{recursive:true,force:true});console.log('  ✓ 已清理 '+path)}else{console.log('  ✓ 缓存不存在，无需清理')}"
+	@node -e "const fs=require('fs'),path=require('path'),os=require('os');const pkgDir=path.join(os.homedir(),'.cache','opencode','packages');const targets=['oh-my-openagent@latest','opencode-mem@latest'];let cleaned=0;for(const t of targets){const p=path.join(pkgDir,t);if(fs.existsSync(p)){fs.rmSync(p,{recursive:true,force:true});console.log('  ✓ 已清理 '+p);cleaned++}}if(cleaned===0)console.log('  ✓ 缓存不存在，无需清理')"
 	@echo "✓ 完成。下次启动 opencode 会重新拉取并自动应用补丁（通过 postinstall hook）"
 
 install-hooks: ## 安装 git pre-commit hook（让 make check 在 commit 前自动跑）

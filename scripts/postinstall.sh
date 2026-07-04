@@ -22,7 +22,7 @@ npm i -g @colbymchenry/codegraph
 echo "  ✓ codegraph 完成"
 
 echo ""
-echo "=== 4/4 清理 opencode plugin 缓存（防 @latest 漂移）==="
-node -e "const fs=require('fs'),path=require('os').homedir()+'/.cache/opencode/packages/oh-my-openagent@latest';if(fs.existsSync(path)){fs.rmSync(path,{recursive:true,force:true});console.log('  ✓ 已清理 '+path)}else{console.log('  ✓ 缓存不存在，跳过')}" || echo "  ⚠ 清理失败（不阻断）"
+echo "=== 4/4 清理 opencode plugin 缓存（防 @latest 漂移：oh-my-openagent + opencode-mem）==="
+node -e "const fs=require('fs'),path=require('path'),os=require('os');const pkgDir=path.join(os.homedir(),'.cache','opencode','packages');const targets=['oh-my-openagent@latest','opencode-mem@latest'];let cleaned=0;for(const t of targets){const p=path.join(pkgDir,t);if(fs.existsSync(p)){fs.rmSync(p,{recursive:true,force:true});console.log('  ✓ 已清理 '+p);cleaned++}}if(cleaned===0)console.log('  ✓ 缓存不存在，跳过')" || echo "  ⚠ 清理失败（不阻断）"
 echo ""
 echo "✓ postinstall 全部完成（4/4 步）"
