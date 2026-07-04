@@ -11,7 +11,7 @@
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
 | **插件/扩展** | `plugin` / `mcp` / `lsp` | 2 plugin + 8 MCP + LSP（true = 自动检测内置） |
-| **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + deepseek-v4-flash 作 small |
+| **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + 智谱 glm-5-turbo 作 small（避开火山 deepseek-v4-flash 月配额限制） |
 | **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / notify / auto |
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
 | **安全** | `permission.read` / `permission.bash` / `watcher.ignore` | deny 列表 + 文件监听忽略 |
@@ -65,7 +65,7 @@
 |---|---|---|---|---|
 | `monitor.max_runtime_ms` (1800000=30min) | oh-my-openagent.json | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | index.js:133018 `spawnMonitorProcess` |
 | `babysitting.timeout_ms` (300000=5min) | oh-my-openagent.json | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | index.js:110060-110110 `unstable-agent-babysitter` hook |
-| `runtime_fallback.timeout_seconds` (30) | oh-my-openagent.json | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | index.js:103092-103115 `prepareFallback` |
+| `runtime_fallback.timeout_seconds` (60) | oh-my-openagent.json | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | index.js:103092-103115 `prepareFallback` |
 | `experimental.mcp_timeout` (30000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
 | `model_capabilities.refresh_timeout_ms` (5000) | oh-my-openagent.json | **启动时模型能力探测**（一次性） | 跳过刷新，用缓存元数据 | index.js:81832-81857 |
 
@@ -102,13 +102,12 @@
 | **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `oh-my-openagent.json` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
 | **ralph_loop 迭代上限**（防 ralph 失控烧钱） | `oh-my-openagent.json` → `ralph_loop.default_max_iterations=30` | ✅ 显式 cap（默认 100） |
 | **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `oh-my-openagent.json` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
-| **notification.force_enable**（OMO 接管会话通知） | `oh-my-openagent.json` → `notification.force_enable=true` | ✅ 已启用 |
 | **comment_checker**（中文注释质量检查） | `oh-my-openagent.json` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
 | **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
 | **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
 | **experimental.mcp_timeout**（全局 MCP 超时 30s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=30000` | ✅ 已启用 |
-| **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 2 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=2 |
+| **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 6 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=6 |
 | **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |
 | **instructions**（项目级系统提示补充） | `opencode.json` → `instructions: ['.opencode/instructions.md']` | ✅ 已启用 |
 
@@ -173,7 +172,7 @@ opencode 实际加载哪个不固定，所以 `make patch-sync` **同步两处**
 
 ### 问题表现
 
-- 项目 `patches/oh-my-openagent+4.13.0.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
+- 项目 `patches/oh-my-openagent+4.15.1.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
 - opencode 不读项目 `node_modules`，读自己的缓存
 - 缓存版本缺 `|| /glm/i.test(modelName)` → hephaestus agent 的 GLM 模型被 `isHephaestusSupportedModel` 门控拒绝 → agent 被静默跳过
 
@@ -255,4 +254,4 @@ npx patch-package oh-my-openagent
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.13.0`（非 `^4.13.0`），因 `patches/oh-my-openagent+4.13.0.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.15.1`（非 `^4.15.1`），因 `patches/oh-my-openagent+4.15.1.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
