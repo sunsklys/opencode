@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.15.1/assets/oh-my-opencode.schema.json",
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.16.0/assets/oh-my-opencode.schema.json",
   "hashline_edit": true,
   "i18n": {
     "locale": "zh"
@@ -97,19 +97,6 @@
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
         "volcengine-plan/doubao-seed-2.0-pro"
-      ],
-      "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
-    },
-    "hephaestus": {
-      "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
-      "reasoningEffort": "max",
-      "allow_non_gpt_model": true,
-      "prompt_append": "file://.opencode/lang-zh.md",
-      "fallback_models": [
-        "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-2.0-code"
       ],
       "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
     },
@@ -312,7 +299,9 @@
     "include_co_authored_by": true,
     "git_env_prefix": "GIT_MASTER=1"
   },
-  "disabled_hooks": [],
+  "disabled_hooks": [
+    "auto-update-checker"
+  ],
   "keyword_detector": {
     "enabled_expansions": ["ultrawork", "team", "hyperplan", "hyperplan-ultrawork"]
   },

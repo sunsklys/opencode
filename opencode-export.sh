@@ -29,12 +29,11 @@ cp "$CONFIG_DIR"/*.sh "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR/.gitignore" "$TMP/config/opencode/" 2>/dev/null || true
 # package-lock.json 一起带上保证依赖一致
 [[ -f "$CONFIG_DIR/package-lock.json" ]] && cp "$CONFIG_DIR/package-lock.json" "$TMP/config/opencode/"
-# 完整目录结构（Makefile / scripts / patches / 模板）一起带上，让 make install 可用
+# 完整目录结构（Makefile / scripts / 模板）一起带上，让 make install 可用
 cp "$CONFIG_DIR/Makefile" "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR/.nvmrc" "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR/opencode-mem.jsonc.template" "$TMP/config/opencode/" 2>/dev/null || true
 [[ -d "$CONFIG_DIR/scripts" ]] && cp -r "$CONFIG_DIR/scripts" "$TMP/config/opencode/" 2>/dev/null || true
-[[ -d "$CONFIG_DIR/patches" ]] && cp -r "$CONFIG_DIR/patches" "$TMP/config/opencode/" 2>/dev/null || true
 
 # 询问是否包含 auth.json
 echo ""
@@ -71,7 +70,7 @@ mkdir -p ~/.config/opencode ~/.local/share/opencode
 cp -r config/opencode/* ~/.config/opencode/
 [[ -d data/opencode ]] && cp -r data/opencode/* ~/.local/share/opencode/
 
-# 2. 一键安装（npm 依赖 + hephaestus GLM 补丁 + opencode-mem 软链 + 环境变量 + 飞书 CLI）
+# 2. 一键安装（npm 依赖 + opencode-mem 软链 + 环境变量 + 飞书 CLI）
 cd ~/.config/opencode
 make install
 
@@ -84,7 +83,6 @@ make check
 ## 包含文件
 - opencode.json / oh-my-openagent.json / tui.json - 配置
 - Makefile + scripts/*.sh - 一键安装/体检编排
-- patches/ - hephaestus GLM 补丁（patch-package 按文件名锁版本）
 - package.json + package-lock.json - 依赖锁
 - opencode-mem.jsonc.template - 智谱直连记忆配置模板
 - .nvmrc - Node.js 版本锁

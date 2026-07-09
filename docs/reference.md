@@ -20,7 +20,7 @@
 
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
-| **角色定义** | `agents` / `categories` | 12 agent + 8 category + fallback 链（详见「角色路由速查」） |
+| **角色定义** | `agents` / `categories` | 11 agent + 8 category + fallback 链（详见「角色路由速查」） |
 | **架构开关** | `team_mode` / `tmux` / `sisyphus_agent` / `default_mode` | 多 agent 协作 / TUI 可视化 / planner / ultrawork 默认值 |
 | **容错与性能** | `runtime_fallback` / `model_fallback` / `background_task` / `model_capabilities` | 4 次重试 / 跨 provider fallback / 并发控制 / 能力探测 |
 | **实验特性** | `experimental` / `keyword_detector` / `disabled_hooks` | task_system / context_pruning / intent 关键词 / hook 黑名单 |
@@ -119,13 +119,13 @@
 | 架构/深度推理 (oracle/prometheus/momus/metis/plan) | GLM-5.2 (zhipu, max) |
 | 高难度自主 (ultrabrain/deep) | GLM-5.2 (zhipu, max) |
 | 创意/非常规 (artistry) | GLM-5.2 (zhipu, max)（fallback → DeepSeek V4-Pro） |
-| 编码实现 (hephaestus/atlas/sisyphus-junior/unspecified-high) | GLM-5.2 (zhipu, max)（fallback → DeepSeek V4-Pro） |
+| 编码实现 (atlas/sisyphus-junior/unspecified-high) | GLM-5.2 (zhipu, max)（fallback → DeepSeek V4-Pro） |
 | 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-Turbo |
 | 检索/轻量 (librarian/explore/unspecified-low) | DeepSeek V4-Flash (low) |
 | 快速执行 (quick) | DeepSeek V4-Flash (minimal) |
 | 写作 (writing) | GLM-5.2 |
 
-> **调度与深度推理类** GLM-5.2 主模型（sisyphus / oracle / prometheus / momus / metis / plan / ultrabrain / deep / writing）均配置 `volcengine-plan/glm-5.2` 作同模型跨 provider fallback（zhipuai 宕机先走火山通道保持模型一致，再退化到异构模型）。编码实现类（hephaestus / atlas / sisyphus-junior / artistry / unspecified-high）的 fallback 首位是 `deepseek-v4-pro`。`max_fallback_attempts=4`。
+> **调度与深度推理类** GLM-5.2 主模型（sisyphus / oracle / prometheus / momus / metis / plan / ultrabrain / deep / writing）均配置 `volcengine-plan/glm-5.2` 作同模型跨 provider fallback（zhipuai 宕机先走火山通道保持模型一致，再退化到异构模型）。编码实现类（atlas / sisyphus-junior / artistry / unspecified-high）的 fallback 首位是 `deepseek-v4-pro`。`max_fallback_attempts=4`。
 
 ## team_mode 成本控制
 
@@ -147,68 +147,19 @@ OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 
 
 > **敏感项目建议**：临时关 `opencode-mem.jsonc` → `autoCaptureEnabled: false`，避免会话要点出网到智谱做元数据推理。
 
-## plugin `@latest` 漂移检测（`make check` 第 9 项）
+## plugin `@latest` 漂移检测（`make check` 第 7 项）
 
-`opencode.json` / `tui.json` 用 `@latest` 标签加载 plugin，opencode 会绕过项目 `package-lock.json`，从 `~/.cache/opencode/packages/<plugin>@latest/` 加载运行时版本。`make check` 第 9 项比较：
+`opencode.json` / `tui.json` 用 `@latest` 标签加载 plugin，opencode 会绕过项目 `package-lock.json`，从 `~/.cache/opencode/packages/<plugin>@latest/` 加载运行时版本。`make check` 第 7 项比较：
 - 项目软链 `node_modules/opencode-mem`（`npm i -g` 装的全局版本）
 - opencode 缓存 `~/.cache/opencode/packages/opencode-mem@latest/node_modules/opencode-mem/`（`@latest` 拉到的版本）
 
 两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步，或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
 
-## @latest 缓存加载机制与 patch-sync
-
-> **关键**：opencode 运行时不读项目 `node_modules`，而是从 `~/.cache/opencode/packages/` 加载 plugin。oh-my-openagent 的 hephaestus GLM 补丁打在项目 `node_modules/`，**必须手动同步到 opencode 缓存**才能生效。
-
-### opencode 有**两处**缓存位置（都要同步）
-
-OMO 在 npm 上 dual-publish 两个包名（官方主名 `oh-my-openagent` + 兼容名 `oh-my-opencode`），opencode 加载时两处都会出现：
-
-| 位置 | 路径 | 来源 |
-|---|---|---|
-| **builtin** | `~/.cache/opencode/packages/node_modules/oh-my-opencode/dist/index.js` | opencode 主进程内置装（用兼容名） |
-| **plugin** | `~/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/index.js` | opencode.json plugin 字段触发装（用主名） |
-
-opencode 实际加载哪个不固定，所以 `make patch-sync` **同步两处**，`make check` 第 4 项要求**两处都有补丁**。
-
-### 问题表现
-
-- 项目 `patches/oh-my-openagent+4.15.1.patch` 只打在 `node_modules/oh-my-openagent/dist/index.js`
-- opencode 不读项目 `node_modules`，读自己的缓存
-- 缓存版本缺 `|| /glm/i.test(modelName)` → hephaestus agent 的 GLM 模型被 `isHephaestusSupportedModel` 门控拒绝 → agent 被静默跳过
-
-### 修复：`make patch-sync`
-
-```bash
-make patch-sync    # 同步项目补丁到 opencode 两处缓存
-```
-
-何时运行：
-
-- 首次 `make install` 后启动 opencode 一次，退出，再跑
-- opencode 升级后（缓存可能被刷新覆盖）
-- 缓存被清空后
-- `make check` 第 4 项报警时
-
-### `package-lock.json` 是「装饰性的」
-
-`package-lock.json` 虽然入 git，但 opencode 运行时绕过它直接读 `@latest` 缓存。这意味着：
-
-- lockfile 锁定的是 `npm install` 装到 `node_modules` 的版本
-- opencode 实际加载的是 `@latest` 缓存版本（可能与 lockfile 不一致）
-- `make check` 第 9 项（@latest 漂移检测）是唯一可用的版本一致性机制
-
 ## 如何升级 oh-my-openagent 主版本
 
-> patch-package 按文件名锁版本（`patches/oh-my-openagent+X.Y.Z.patch`），升级时需重生成补丁。
-
 ```bash
-# 推荐：一键升级（自动检测 npm 最新 → 改 package.json → 删旧 patch → 重装
-#                  → 检测 GLM 补丁需求 → 重生成新 patch → 同步 $schema URL）
+# 推荐：一键升级（自动检测 npm 最新 → 改 package.json → 重装 → 同步 $schema URL）
 make upgrade
-
-# 升级后还需手动（upgrade 不会自动跑这两步）：
-opencode                # 启动一次创建 plugin 缓存，随即退出
-make patch-sync         # 同步 GLM 补丁到 opencode 缓存（builtin + plugin 两处）
 make check              # 体检
 ```
 
@@ -216,29 +167,14 @@ make check              # 体检
 
 ```bash
 # 1. 改 package.json 的 oh-my-openagent 版本号
-# 2. 删除旧 patch
-rm patches/oh-my-openagent+*.patch
-
-# 3. 重装依赖（含 postinstall: patch-package + 全局 MCP）
+# 2. 重装依赖（含 postinstall: 全局 MCP）
 make update
 
-# 4. 验证 hephaestus GLM 补丁是否仍需要
-grep -A2 "isHephaestusSupportedModel" node_modules/oh-my-openagent/dist/index.js | head -10
-
-# 5a. 若上游已支持 GLM（return 语句含 /glm/i）：补丁不再需要，跳到第 7 步
-# 5b. 若仍需要：手动编辑 node_modules/oh-my-openagent/dist/index.js
-#    在 isHephaestusSupportedModel 函数的 return 语句末尾追加：|| /glm/i.test(modelName)
-
-# 6. 生成新 patch
-npx patch-package oh-my-openagent
-#    会生成 patches/oh-my-openagent+<新版本>.patch
-
-# 7. 同步 $schema URL（oh-my-openagent.json 顶部）改到新版本号
-# 8. 启动 opencode 创建 plugin 缓存 → make patch-sync → make check
-# 9. 提交：package.json + patches/oh-my-openagent+<新版本>.patch + oh-my-openagent.json
+# 3. 同步 $schema URL（oh-my-openagent.json 顶部）改到新版本号
+# 4. 体检
+make check
+# 5. 提交：package.json + oh-my-openagent.json
 ```
-
-> `make upgrade` 把第 1-7 步全自动化，仅留 opencode 启动（创建 plugin 缓存）+ patch-sync + check 给手动。
 
 ## 手动分步安装（备选）
 
@@ -254,4 +190,4 @@ npx patch-package oh-my-openagent
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.15.1`（非 `^4.15.1`），因 `patches/oh-my-openagent+4.15.1.patch` 修改 `isHephaestusSupportedModel` 让 hephaestus agent 支持 GLM 模型。patch-package 按文件名版本匹配，升级需同步更新补丁。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.16.0`（非 `^4.16.0`），确保所有机器运行相同版本。

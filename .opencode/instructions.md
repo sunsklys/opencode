@@ -10,16 +10,15 @@
 ## 工作约束
 
 1. **配置即代码**：所有改动通过 JSON / Shell / Markdown 表达，遵循现有风格（2 空格缩进、双引号、中文注释/文档）。
-2. **不破坏安装链**：任何配置改动必须保证 `make install` 在新机器上仍能跑通；改 `package.json` 版本必须同步 `patches/` 和 README。
-3. **补丁同步**：改 `node_modules/oh-my-openagent/dist/index.js` 后必须 `npx patch-package oh-my-openagent` 重生成补丁，并跑 `make patch-sync` 同步到 opencode 两处缓存。
-4. **README 同步**：新增 Makefile 命令 / 配置字段 / 故障排查条目时，必须同步更新 `README.md` 对应章节。
-5. **体检先于提交**：提交前必须 `make check` 全绿（允许 warn 不允许 fail）。
+2. **不破坏安装链**：任何配置改动必须保证 `make install` 在新机器上仍能跑通；改 `package.json` 版本必须同步 README。
+3. **README 同步**：新增 Makefile 命令 / 配置字段 / 故障排查条目时，必须同步更新 `README.md` 对应章节。
+4. **体检先于提交**：提交前必须 `make check` 全绿（允许 warn 不允许 fail）。
 
 ## 当前活跃配置主题
 
-- 12 agent + 8 category 的模型路由（GLM-5.2 主，DeepSeek-V4-Pro 兜底）
+- 11 agent + 8 category 的模型路由（GLM-5.2 主，DeepSeek-V4-Pro 兜底）
 - 8 MCP（智谱 web 工具 / notion / mermaid / codegraph）
 - 28+ 条 permission deny（read + bash + edit 三层纵深防御）
-- OMO 4.15.1 + hephaestus GLM 补丁
+- OMO 4.16.0
 
 详细字段地图见 `README.md` 的「配置文件结构」段。

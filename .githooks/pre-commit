@@ -8,7 +8,7 @@ echo "▶ Running make check (critical tier) + make tui-sync..."
 # make check: critical 全绿才通过
 if ! make check; then
   echo "❌ make check failed (critical tier). Fix issues before committing."
-  echo "   Hint: 运行 make update / make patch-sync / make mem 修复"
+  echo "   Hint: 运行 make update / make mem 修复"
   exit 1
 fi
 

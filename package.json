@@ -1,15 +1,12 @@
 {
   "dependencies": {
-    "@opencode-ai/plugin": "1.17.14",
-    "oh-my-openagent": "4.15.1"
+    "@opencode-ai/plugin": "1.17.15",
+    "oh-my-openagent": "4.16.0"
   },
   "scripts": {
     "postinstall": "bash scripts/postinstall.sh"
   },
   "overrides": {
     "posthog-node": "5.38.2"
-  },
-  "devDependencies": {
-    "patch-package": "^8.0.1"
   }
 }

@@ -9,12 +9,12 @@
 #   即：plugin 加载正常时，这些 skill 不需要软链也会出现在 TUI 列表。
 #
 #   本脚本建立的软链是 user-scope fallback —— 当 plugin 因 #latest 缓存漂移、
-#   补丁冲突、缓存损坏等原因加载失败时，让 SKILL.md 内容至少可被 opencode TUI
+#   缓存损坏等原因加载失败时，让 SKILL.md 内容至少可被 opencode TUI
 #   通过 discoverGlobalAgentsSkills() 扫描到（注：仅 SKILL.md 可读，plugin runtime
-#   的 slash command 注册仍不可用，需修根因：make update + make patch-sync）。
+#   的 slash command 注册仍不可用，需修根因：make update）。
 #
-#   make check 第 12 项会检测 plugin 缓存的 dist/skills 完整性（真正的根因指标），
-#   第 11 项会自动调用本脚本自愈软链。
+#   make check 第 10 项会检测 plugin 缓存的 dist/skills 完整性（真正的根因指标），
+#   第 9 项会自动调用本脚本自愈软链。
 #
 # 优先用项目锁定版本（node_modules/oh-my-openagent），fallback 到 #latest 缓存。
 # 幂等：已存在的非软链目录不覆盖；断链自动清理重建。

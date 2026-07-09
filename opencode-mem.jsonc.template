@@ -49,7 +49,7 @@
 
   "memoryProvider": "openai-chat",
   "memoryModel": "glm-5-turbo",
-  "memoryApiUrl": "https://open.bigmodel.cn/api/paas/v4",
+  "memoryApiUrl": "https://open.bigmodel.cn/api/coding/paas/v4",
   "memoryApiKey": "env://Z_AI_API_KEY",
 
   "autoCaptureMaxIterations": 5,

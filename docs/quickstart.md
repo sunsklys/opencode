@@ -21,24 +21,21 @@ npm i -g typescript-language-server pyright
 
 ## 5 步装好
 
-> **第 3 步关键**：opencode 首次启动才创建 plugin 缓存，补丁才能同步进去。
-
 ```bash
 git clone <你的仓库地址> ~/.config/opencode
 cd ~/.config/opencode
 
 make install                              # 一键：依赖 + 环境变量 + 记忆配置 + 飞书 CLI
 opencode auth login zhipuai-coding-plan   # 登录智谱凭证（同时初始化 opencode 进程）
-opencode                                  # 启动一次 TUI（装载 plugin 创建缓存），随即退出（Ctrl+C 或 /exit）
-make patch-sync                           # 同步 hephaestus GLM 补丁到 opencode 缓存（两处）
-make check                                # 体检（13 项全绿即就绪）
+opencode                                  # 启动验证（首次会初始化 plugin 缓存）
+make check                                # 体检（12 项全绿即就绪）
 ```
 
 ### `make install` 依次执行
 
 | 步骤 | 子命令 | 做什么 |
 |---|---|---|
-| 1 | `make deps` | npm install + patch-package（hephaestus GLM 补丁）+ opencode-mem 全局装 + 软链 |
+| 1 | `make deps` | npm install + opencode-mem 全局装 + 软链 |
 | 2 | `make config` | 交互式输入 3 个 API key → 写入 `~/.zshrc` + `launchctl setenv` |
 | 3 | `make mem` | 从模板生成 `opencode-mem.jsonc`（智谱直连，复用 `Z_AI_API_KEY`） |
 | 4 | `make feishu` | 飞书 CLI + 27 个 SKILL |
@@ -59,9 +56,9 @@ make check                                # 体检（13 项全绿即就绪）
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（13 项：环境 / 变量 / 依赖 / 补丁 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康 / OMO+opencode 字段验证） |
-| `make update` | 重装依赖（按 package.json 精确版本，配合 patch） |
-| `make upgrade` | 升级 OMO + plugin 到 npm 最新（含 GLM patch 重生成 + $schema URL 同步） |
+| `make check` | 体检（12 项：环境 / 变量 / 依赖 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康 / OMO+opencode 字段验证） |
+| `make update` | 重装依赖（按 package.json 精确版本） |
+| `make upgrade` | 升级 OMO + plugin 到 npm 最新（含 $schema URL 同步） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
 | `make config` | 仅配置环境变量（交互式） |
 | `make mem` | 仅生成 `opencode-mem.jsonc` |
@@ -105,7 +102,7 @@ git add . && git commit -m "update: xxx" && git push
 # 另一台机器拉新版
 cd ~/.config/opencode
 git pull
-make update    # 清 node_modules 重装 + 补丁 + opencode-mem 软链
+make update    # 清 node_modules 重装 + opencode-mem 软链
 make check     # 体检全绿
 ```
 
@@ -118,7 +115,7 @@ make check     # 体检全绿
 git clone <repo> ~/.config/opencode
 cd ~/.config/opencode
 
-# 2. 一键 bootstrap（install + prime-cache + patch-sync + check）
+# 2. 一键 bootstrap（install + prime-cache + check）
 make bootstrap
 
 # 3. 登录智谱凭证（同时初始化 opencode 进程）
@@ -141,13 +138,10 @@ opencode
 > # 3. 登录智谱凭证（同时初始化 opencode 进程）
 > opencode auth login zhipuai-coding-plan
 >
-> # 4. 启动 opencode 一次（创建 plugin 缓存），然后退出（Ctrl+C 或 /exit）
+> # 4. 启动 opencode 验证
 > opencode
 >
-> # 5. 同步 hephaestus 补丁到 opencode 缓存（两处）
-> make patch-sync
->
-> # 6. 体检
+> # 5. 体检
 > make check
 > ```
 
@@ -162,14 +156,6 @@ opencode
 ### 版本控制保护的（git clone 即得）
 
 - 所有配置文件（`opencode.json` / `oh-my-openagent.json` / `tui.json` / `Makefile` / `scripts/`）
-- 补丁文件（`patches/`）
 - 锁文件（`package-lock.json` + `skills.lock`）
 - CI 配置（`.github/workflows/`）
 
-### @latest 缓存漂移根治
-
-opencode plugin 字段 `oh-my-openagent@latest` 启动时拉取 npm 最新版到 `~/.cache/opencode/packages/`，可能与项目锁定的 4.13.0 不一致（hephaestus 加载到无 GLM 补丁的版本）。
-
-**已自动化的防护**：`scripts/postinstall.sh` 第 4 步在每次 `npm install` / `make update` / `make upgrade` 后自动清理 `~/.cache/opencode/packages/oh-my-openagent@latest/`，确保下次启动重新拉取。
-
-**手动验证 / 修复**：`make patch-sync-cleanup` 单独清缓存；`make patch-sync` 把补丁同步进缓存。完整升级流程见 [README](../README.md#latest-缓存漂移根治机制)。

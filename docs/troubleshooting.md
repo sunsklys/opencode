@@ -1,6 +1,6 @@
 # 故障排查
 
-> 常见报错和修复路径。如果这里没有，先跑 `make check` 看 13 项体检哪一项 fail。
+> 常见报错和修复路径。如果这里没有，先跑 `make check` 看 12 项体检哪一项 fail。
 
 ## `opencode` 启动报 "missing apiKey"
 
@@ -45,14 +45,13 @@
 
 ## `ulw-plan` / `git-master` / `frontend` 等 OMO skill 不见了
 
-→ plugin 加载链问题。OMO plugin 启动时通过 `discoverSharedSkills()` 扫描自己的 `dist/skills/`（18 个 skill），缓存损坏 / `@latest` 漂移 / 补丁冲突会让 shared scope 整批消失。
-→ 一键诊断：`make check` 第 12 项检测三处 dist/skills 完整性（项目锁定 + builtin 缓存 + plugin 缓存，18×3），第 11 项自动自愈软链。
+→ plugin 加载链问题。OMO plugin 启动时通过 `discoverSharedSkills()` 扫描自己的 `dist/skills/`（18 个 skill），缓存损坏 / `@latest` 漂移会让 shared scope 整批消失。
+→ 一键诊断：`make check` 第 10 项检测三处 dist/skills 完整性（项目锁定 + builtin 缓存 + plugin 缓存，18×3），第 9 项自动自愈软链。
 → 修复优先级：
-  - 第 12 项 fail（缓存损坏）→ `make update + make patch-sync`（治根）
-  - 第 11 项自愈（软链丢）→ 自动重建，无需手动（兑底）
+  - 第 10 项 fail（缓存损坏）→ `make update`（治根）
+  - 第 9 项自愈（软链丢）→ 自动重建，无需手动（兑底）
 
 ## 还没解决？
 
-1. 跑 `make check` 看 13 项体检报告
-2. 看 [reference.md](./reference.md) 里的「@latest 缓存加载机制与 patch-sync」段
+1. 跑 `make check` 看 12 项体检报告
 3. 看 [reference.md](./reference.md) 里的「超时字段作用域对照」表，确认不是超时配置错位

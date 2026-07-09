@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Subset scope notice
-        run: echo "::notice::此 CI 仅跑静态子集检查（约 7 项），非全量 make check（13 项）。完整体检需在本地或装有 API key 的 self-hosted runner 上跑。"
+        run: echo "::notice::此 CI 仅跑静态子集检查（约 6 项），非全量 make check（12 项）。完整体检需在本地或装有 API key 的 self-hosted runner 上跑。"
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
@@ -26,11 +26,6 @@ jobs:
       - name: Install npm deps
         run: |
           npm install
-          # 补丁验证（CI 环境不应崩溃，如果崩溃说明补丁文件名版本失配）
-          grep -q "/glm/i" node_modules/oh-my-openagent/dist/index.js || {
-            echo "❌ hephaestus GLM 补丁未应用"
-            exit 1
-          }
 
       - name: Makefile syntax check
         run: make help
@@ -63,13 +58,13 @@ jobs:
 
       - name: skills.lock 格式校验
         run: |
-          # 每行必须匹配：<64-hex>  lark-<name>/SKILL.md
-          BAD=$(awk '!/^[a-f0-9]{64}  lark-[a-z0-9_-]+\/SKILL\.md$/ {print NR": "$0}' skills.lock)
+          # 每行必须匹配：<64-hex>  <name>/SKILL.md
+          BAD=$(awk '!/^[a-f0-9]{64}  [a-z0-9_-]+\/SKILL\.md$/ {print NR": "$0}' skills.lock)
           if [ -n "$BAD" ]; then
-            echo "❌ skills.lock 格式错误（应：<64hex>  lark-<name>/SKILL.md）："
+            echo "❌ skills.lock 格式错误（应：<64hex>  <name>/SKILL.md）："
             echo "$BAD"
             exit 1
           fi
-          echo "✓ skills.lock 格式正确（27 行，每行 <hash>  lark-*/SKILL.md）"
+          echo "✓ skills.lock 格式正确（$(wc -l < skills.lock) 条，每行 <hash>  <name>/SKILL.md）"
 
       # 注：完整 make check 在 CI 环境会因缺 API key 而警告，所以只跑上面的子集

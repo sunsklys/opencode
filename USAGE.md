@@ -14,13 +14,13 @@
 | 层级 | 模型 | reasoningEffort | 并发上限 | 角色 |
 |---|---|---|---|---|
 | 重型推理 | GLM-5.2 (zhipu) | max | **5** | sisyphus / oracle / prometheus / momus / metis / plan / ultrabrain / deep / writing |
-| 编码实现 | GLM-5.2 (zhipu) | max | **5** | hephaestus / atlas / sisyphus-junior / unspecified-high / artistry |
+| 编码实现 | GLM-5.2 (zhipu) | max | **5** | atlas / sisyphus-junior / unspecified-high / artistry |
 | 检索轻量 | DeepSeek V4 Flash (volc) | low | **5** | librarian / explore / unspecified-low |
 | 多模态 | GLM-5v-Turbo (zhipu) | — | — | multimodal-looker / visual-engineering |
 | 快通道 | DeepSeek V4 Flash (volc) | minimal | **5** | quick |
-| 重型推理(fallback) | DeepSeek V4 Pro (volc) | — | **3** | hephaestus/atlas 等的 fallback 首位 |
+| 重型推理(fallback) | DeepSeek V4 Pro (volc) | — | **3** | atlas/sisyphus-junior 等的 fallback 首位 |
 
-> **并发精细值**（`oh-my-openagent.json:39-44` `background_task.modelConcurrency`）：
+> **并发精细值**（`oh-my-openagent.json:39-50` `background_task.modelConcurrency`）：
 > `deepseek-v4-pro: 3` / `deepseek-v4-flash: 5` / `glm-5.2: 5` / `glm-5-turbo: 3`。
 > `providerConcurrency` 各 provider 5（L36-37）。`defaultConcurrency: 5`（L34）。
 > **含义**：pro/turbo 模型并发被压到 3（rate-limit 保护），并行委派时这两个模型可能排队。
@@ -29,7 +29,7 @@
 
 - `max_fallback_attempts: 4` — 最多重试 4 次
 - `cooldown_seconds: 60` — 失败后冷却 60 秒
-- `timeout_seconds: 30` — 单次请求超时 30 秒
+- `timeout_seconds: 60` — 单次请求超时 60 秒
 - `notify_on_fallback: true` — 触发 fallback 时弹 toast 提醒（**注意字段名是 `notify_on_fallback`，不是 `notify_on_footer`**）
 
 > GLM-5.2 宕机 → 火山 GLM-5.2 → kimi-k2.6 → doubao-seed-2.0-pro（自动）。
@@ -38,7 +38,7 @@
 
 ## 二、关键词触发速查（最高频交互入口）🔥
 
-> **核心特性**：`oh-my-openagent.json:296-298` `keyword_detector.enabled_expansions`
+> **核心特性**：`oh-my-openagent.json:305-307` `keyword_detector.enabled_expansions`
 > 在普通对话里说这些词，**自动展开为对应模式**，无需手动 `/` 命令。
 
 | 关键词 | 触发 | 适用场景 |
@@ -62,7 +62,7 @@
 
 ### 场景 2：实现新功能
 - **单文件小改**：直接说 → sisyphus 自处理
-- **跨文件中等**：直接说 → 委派 hephaestus/sisyphus-junior
+- **跨文件中等**：直接说 → 委派 sisyphus-junior（deep category）
 - **复杂多步**（5+ 步）：先 `/ulw-plan` 规划 → `/start-work` 执行
 - **何时不用 /ulw-plan**：路径明确的修复、单文件改动、文档编辑——开销大于收益
 
@@ -147,15 +147,14 @@
 - 编辑工具用 `LINE#ID` 格式精确定位行
 - 你看到的文件内容每行带 hash 标识——这是特性，不是 bug
 
-### 8. ⚠️ aggressive_truncation 副作用（`oh-my-openagent.json:49`）
+### 8. ⚠️ aggressive_truncation 副作用（`oh-my-openagent.json:55`）
 - `experimental.aggressive_truncation: true` 会激进截断上下文
 - **副作用**：长 session 中可能丢失关键历史信息
 - **缓解**：重要上下文主动重述；感觉响应变慢或信息丢失时开新 session
 
-### 9. dynamic_context_pruning 预留（`oh-my-openagent.json:50-63`）
-- 当前 `enabled: false`
-- 但 `protected_tools` 已配（task/todowrite/lsp_rename/session_read 等不被裁剪）
-- 未来开启时，这些工具的上下文受保护
+### 9. dynamic_context_pruning（`oh-my-openagent.json:56-77`）
+- `enabled: true`（动态上下文裁剪已启用）
+- `protected_tools` 保护 task/todowrite/lsp_rename/session_read 等不被裁剪；`turn_protection` 保护最近 3 轮；策略含 deduplication / supersede_writes / purge_errors
 
 ---
 
@@ -184,9 +183,9 @@
 
 | 周期 | 动作 |
 |---|---|
-| 每周 | `make update` → 清 node_modules 重装 + 补丁 + mem 软链 |
+| 每周 | `make update` → 清 node_modules 重装 + mem 软链 |
 | 每月 | `npm view oh-my-openagent version` 对比本地，参考 README「如何升级 oh-my-openagent 主版本」章节 |
-| 升级 OMO 后 | **必跑** `make check`（含 hephaestus 补丁验证） |
+| 升级 OMO 后 | **必跑** `make check` 验证 |
 
 ### `model_capabilities.auto_refresh_on_start: true`（L28-32）
 首次启动会刷新模型能力探测（`refresh_timeout_ms: 5000`），冷启动稍慢属正常。
@@ -226,16 +225,16 @@
 
 | 配置项 | 文件:行 | 当前值 |
 |---|---|---|
-| 12 agents | `oh-my-openagent.json:76-200` | sisyphus/hephaestus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior |
-| 8 categories | `oh-my-openagent.json:201-279` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
+| 11 agents | `oh-my-openagent.json:90-214` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior |
+| 8 categories | `oh-my-openagent.json:215-296` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
 | team_mode | `oh-my-openagent.json:7-18` | enabled, max_parallel_members=4, max_members=8 |
-| background_task | `oh-my-openagent.json:33-45` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
-| runtime_fallback | `oh-my-openagent.json:19-26` | 4 retries / 60s cooldown / 30s timeout / notify_on_fallback=true |
-| experimental | `oh-my-openagent.json:46-64` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=false |
-| sisyphus_agent | `oh-my-openagent.json:65-71` | tdd=true / planner_enabled=true / replace_plan=true |
-| keyword_detector | `oh-my-openagent.json:296-298` | ultrawork/team/hyperplan/hyperplan-ultrawork |
-| disabled_hooks | `oh-my-openagent.json:285-287` | auto-update-checker |
-| git_master | `oh-my-openagent.json:280-284` | commit_footer=true / include_co_authored_by=true |
+| background_task | `oh-my-openagent.json:33-51` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
+| runtime_fallback | `oh-my-openagent.json:19-26` | 4 retries / 60s cooldown / 60s timeout / notify_on_fallback=true |
+| experimental | `oh-my-openagent.json:52-78` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
+| sisyphus_agent | `oh-my-openagent.json:79-85` | tdd=true / planner_enabled=true / replace_plan=true |
+| keyword_detector | `oh-my-openagent.json:305-307` | ultrawork/team/hyperplan/hyperplan-ultrawork |
+| disabled_hooks | `oh-my-openagent.json:302-304` | auto-update-checker |
+| git_master | `oh-my-openagent.json:297-301` | commit_footer=true / include_co_authored_by=true |
 | compaction | `opencode.json:112-114` | auto=true |
 | lsp | `opencode.json:108` | true（自动检测） |
 | permission.bash | `opencode.json:172-216` | 45 条 deny 规则 |

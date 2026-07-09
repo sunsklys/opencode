@@ -7,16 +7,15 @@
 | 文件 | 说明 |
 |---|---|
 | `opencode.json` | provider 定义（火山引擎 8 模型）+ 8 MCP 条目（7 启用 + chrome-mcp 默认禁用）+ 2 plugin + LSP + permission |
-| `oh-my-openagent.json` | 12 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
+| `oh-my-openagent.json` | 11 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | oh-my-openagent 4.15.1（精确锁定配合 hephaestus GLM 补丁）+ @opencode-ai/plugin 1.17.13（精确锁定）+ postinstall 全局依赖 |
+| `package.json` | oh-my-openagent 4.16.0（精确锁定）+ @opencode-ai/plugin 1.17.15（精确锁定）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
 | `opencode-mem.jsonc.template` | 智谱直连模板（`make mem` 生成 `opencode-mem.jsonc`） |
 | `.nvmrc` | 锁定 Node.js v22（fnm/nvm 自动识别） |
-| `patches/` | oh-my-openagent 补丁（hephaestus GLM 支持） |
 | `opencode-export.sh` | 配置导出脚本（`make export` 调用，打包 tar.gz 供新机恢复） |
 | `docs/` | 详细文档（见下） |
 
@@ -31,25 +30,7 @@
 
 新机器装好 Node.js ≥22 + opencode 后，5 步搞定 → **[docs/quickstart.md](./docs/quickstart.md)**
 
-一句话流程：`git clone` → `make install` → `opencode auth login zhipuai-coding-plan` → `opencode`（创建缓存后退出）→ `make patch-sync` → `make check`。
-
-## @latest 缓存漂移根治机制
-
-opencode 的 plugin 字段（`oh-my-openagent@latest`）会在启动时拉取 npm 最新版到 `~/.cache/opencode/packages/`，可能与项目 `package.json` 锁定版本不一致，导致 hephaestus 等 agent 加载到无 GLM 补丁的版本。
-
-**根治方案**（已实施）：
-1. `scripts/postinstall.sh` 第 4 步：每次 `npm install` 后自动清理 `~/.cache/opencode/packages/oh-my-openagent@latest/`，让 opencode 下次启动重新拉取
-2. `make patch-sync`：把项目 `node_modules/` 内打过补丁的 dist/index.js 同步到 opencode 缓存
-3. `make patch-sync-cleanup`：独立调用上述清理逻辑（手动验证用）
-
-**完整流程**（升级或重装后）：
-
-```bash
-make upgrade              # 升级 OMO（自动清缓存）
-opencode                  # 启动一次创建缓存，随即退出（Ctrl+C 或 /exit）
-make patch-sync           # 把补丁同步到刚创建的缓存
-make check                # 验证补丁应用（第 3 项应 ✅）
-```
+一句话流程：`git clone` → `make install` → `opencode auth login zhipuai-coding-plan` → `opencode` → `make check`。
 
 ## 详细文档
 
@@ -65,7 +46,7 @@ make check                # 验证补丁应用（第 3 项应 ✅）
 
 ```bash
 git clone <repo> ~/.config/opencode && cd ~/.config/opencode
-make bootstrap         # install + prime-cache + patch-sync + check
+make bootstrap         # install + prime-cache + check
 opencode auth login zhipuai-coding-plan && opencode
 ```
 
