@@ -171,7 +171,12 @@
       "*.tsbuildinfo",
       "*.lintcache",
       ".idea/**",
-      ".vscode/**"
+      ".vscode/**",
+      ".codegraph/**",
+      ".opencode/**",
+      ".omo/**",
+      "tasks/**",
+      ".sisyphus/**"
     ]
   },
   "permission": {

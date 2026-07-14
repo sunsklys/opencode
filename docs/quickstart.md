@@ -39,7 +39,7 @@ make check                                # 体检（12 项全绿即就绪）
 | 2 | `make config` | 交互式输入 3 个 API key → 写入 `~/.zshrc` + `launchctl setenv` |
 | 3 | `make mem` | 从模板生成 `opencode-mem.jsonc`（智谱直连，复用 `Z_AI_API_KEY`） |
 | 4 | `make feishu` | 飞书 CLI + 27 个 SKILL |
-| 5 | `make sync-skills` | 软链 oh-my-openagent 内置 skill 到 `~/.agents/skills/`（让 `ulw-plan` / `git-master` / `frontend` 等 18 个在 TUI 可见） |
+| 5 | `make sync-skills` | 软链 oh-my-openagent 内置 skill 到 `~/.agents/skills/`（让 `ulw-plan` / `git-master` / `frontend` 等 20 个在 TUI 可见） |
 
 ## API key 获取地址
 

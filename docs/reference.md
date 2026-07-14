@@ -31,7 +31,7 @@
 | 字段 | 说明 |
 |---|---|
 | `plugin` | TUI 模式加载的 plugin（与 `opencode.json` 保持同步） |
-| `theme` / `scroll_speed` / `mouse` | tokyonight / 3 / true |
+| `theme` / `scroll_speed` / `mouse` | tokyonight / 8 / true |
 
 ### `opencode-mem.jsonc`（本地持久记忆配置，**不入 git**）
 
@@ -106,7 +106,7 @@
 | **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
 | **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
-| **experimental.mcp_timeout**（全局 MCP 超时 30s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=30000` | ✅ 已启用 |
+| **experimental.mcp_timeout**（全局 MCP 超时 60s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=60000` | ✅ 已启用 |
 | **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 6 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=6 |
 | **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |
 | **instructions**（项目级系统提示补充） | `opencode.json` → `instructions: ['.opencode/instructions.md']` | ✅ 已启用 |
@@ -129,9 +129,7 @@
 
 ## team_mode 成本控制
 
-当前 team_mode 配置无显式 token/cost 上限（`max_members=8`, `max_member_turns=500`）。
-OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 字段。
-建议保守设置：`max_member_turns: 200`（从 500 下调）作为隐性成本控制。
+当前 team_mode 配置无显式 token/cost 上限（`max_members=8`, `max_member_turns=500`）。OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 字段。如需隐性成本控制，可下调 `max_member_turns`。
 
 ## MCP 数据流向与信任边界
 
@@ -190,4 +188,4 @@ make check
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.16.2`（非 `^4.16.2`），确保所有机器运行相同版本。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.17.1`（非 `^4.17.1`），确保所有机器运行相同版本。

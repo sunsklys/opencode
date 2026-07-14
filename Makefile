@@ -98,7 +98,7 @@ feishu: ## 安装飞书 CLI + 27 个 SKILL（需要 FEISHU_APP_SECRET）
 sync-skills: ## 软链 oh-my-openagent 内置 skill（ulw-plan/git-master/frontend 等）到 ~/.agents/skills/
 	@bash scripts/sync-omo-skills.sh
 
-check: ## 体检所有组件（13 项 = critical 5 + warning 8；critical 全绿则 exit 0，warning 失败也 exit 0）
+check: ## 体检所有组件（12 项 = critical 4 + warning 8；critical 全绿则 exit 0，warning 失败也 exit 0）
 	@bash scripts/check.sh
 
 update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync skill 软链）

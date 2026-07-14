@@ -20,7 +20,7 @@
     "enabled": true,
     "retry_on_errors": [429, 500, 502, 503, 504, 529],
     "max_fallback_attempts": 4,
-    "cooldown_seconds": 60,
+    "cooldown_seconds": 30,
     "timeout_seconds": 60,
     "notify_on_fallback": true
   },
