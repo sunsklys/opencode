@@ -44,9 +44,9 @@
 
 > **迁移原则**：配置文件都进 git，新机器 `git clone` + `make install` 即可。`opencode-mem.jsonc` 不入 git（由 `make mem` 从模板生成，保持 `.template` 作权威源），避免本地实例澉移污染 git 历史。
 
-## 关于 `prompt_append` × 12 重复
+## 关于 `prompt_append` × 19（全覆盖）
 
-> 12 个 agent/category 都挂了 `"prompt_append": "始终使用中文（简体）回答..."`，看似 DRY 违反，实则是**必要的**。
+> 19 个 agent/category（11 agent + 8 category）都挂了 `prompt_append`（`file://.opencode/lang-zh.md`），看似 DRY 违反，实则是**必要的**。
 
 **为什么不依赖 `i18n.locale: "zh"`？**
 - OMO 的 `i18n.locale` 只管 **toast/UI 文案**翻译（`locales[currentLang][key]`，如 `toast.fallback_runtime`）
