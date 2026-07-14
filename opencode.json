@@ -22,22 +22,22 @@
         },
         "doubao-seed-2.0-code": {
           "name": "doubao-seed-2.0-code",
-          "limit": { "context": 256000, "output": 32768 },
+          "limit": { "context": 256000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] }
         },
         "doubao-seed-2.0-lite": {
           "name": "doubao-seed-2.0-lite",
-          "limit": { "context": 256000, "output": 32768 },
+          "limit": { "context": 256000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] }
         },
         "doubao-seed-2.0-pro": {
           "name": "doubao-seed-2.0-pro",
-          "limit": { "context": 256000, "output": 65536 },
+          "limit": { "context": 256000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] }
         },
         "glm-5.2": {
           "name": "glm-5.2",
-          "limit": { "context": 1024000, "output": 131072 },
+          "limit": { "context": 1024000, "output": 128000 },
           "modalities": { "input": ["text"], "output": ["text"] }
         },
         "kimi-k2.6": {
@@ -101,8 +101,7 @@
     },
     "codegraph": {
       "type": "local",
-      "command": ["codegraph", "serve", "--mcp"],
-      "enabled": true
+      "command": ["codegraph", "serve", "--mcp"]
     }
   },
   "lsp": true,

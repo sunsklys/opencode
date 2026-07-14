@@ -66,7 +66,7 @@
 | `monitor.max_runtime_ms` (1800000=30min) | oh-my-openagent.json | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | index.js:133018 `spawnMonitorProcess` |
 | `babysitting.timeout_ms` (300000=5min) | oh-my-openagent.json | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | index.js:110060-110110 `unstable-agent-babysitter` hook |
 | `runtime_fallback.timeout_seconds` (60) | oh-my-openagent.json | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | index.js:103092-103115 `prepareFallback` |
-| `experimental.mcp_timeout` (30000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
+| `experimental.mcp_timeout` (60000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
 | `model_capabilities.refresh_timeout_ms` (5000) | oh-my-openagent.json | **启动时模型能力探测**（一次性） | 跳过刷新，用缓存元数据 | index.js:81832-81857 |
 
 **关键区分**：
