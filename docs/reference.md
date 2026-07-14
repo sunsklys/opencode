@@ -153,7 +153,7 @@ OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 
 - 项目软链 `node_modules/opencode-mem`（`npm i -g` 装的全局版本）
 - opencode 缓存 `~/.cache/opencode/packages/opencode-mem@latest/node_modules/opencode-mem/`（`@latest` 拉到的版本）
 
-两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步，或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
+两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步（**Makefile L110 已自动清 opencode-mem@latest 缓存，下次启动 opencode 重拉 npm latest，与全局软链同步**），或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
 
 ## 如何升级 oh-my-openagent 主版本
 

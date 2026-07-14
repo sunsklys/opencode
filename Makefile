@@ -107,6 +107,7 @@ update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync
 	@rm -f package-lock.json
 	@bash scripts/install.sh
 	@bash scripts/sync-omo-skills.sh
+	@node -e "require('fs').rmSync(process.env.HOME+'/.cache/opencode/packages/opencode-mem@latest',{recursive:true,force:true}); console.log('  opencode-mem @latest 缓存已清（下次启动 opencode 重拉 npm latest，与全局软链同步）')"
 	@echo ""
 	@echo "✓ 依赖已更新（含 skill 软链同步），运行 make check 验证"
 

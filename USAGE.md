@@ -134,8 +134,9 @@
 - 实现任务默认走 RED→GREEN→REFACTOR
 - **豁免场景**：纯 prompt 文本、注释、版本号 bump、rename-only、一次性脚本、配置文件——明确说「不要 TDD」
 
-### 5. 权限安全网（45 条 bash deny，`opencode.json:172-216`）
-- rm -rf / force push / .env 写入 / ~/.zshrc 写入 / eval / 私钥文件读 全拦
+### 5. 权限安全网（43 条 bash deny，`opencode.json:206-248`）
+- 拦：sudo / rm -rf / kill / node -e / python -c / curl POST / force push / git reset --hard / npm publish / docker / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取
+- 放：chmod / chown / git restore / git config alias（日常开发常用，但需注意 chmod 可改 ~/.ssh 权限、git restore 会丢未提交工作）
 - 放手让 agent 跑命令
 
 ### 6. LSP 工具链（`opencode.json:108  "lsp": true`）
@@ -237,8 +238,8 @@
 | git_master | `oh-my-openagent.json:297-301` | commit_footer=true / include_co_authored_by=true |
 | compaction | `opencode.json:112-114` | auto=true |
 | lsp | `opencode.json:108` | true（自动检测） |
-| permission.bash | `opencode.json:172-216` | 45 条 deny 规则 |
-| permission.read | `opencode.json:156-168` | 12 条规则（2 allow + 10 deny，含私钥保护） |
+| permission.bash | `opencode.json:206-248` | 43 条 deny 规则（1 allow + 43 deny） |
+| permission.read | `opencode.json:178-202` | 24 条规则（2 allow + 22 deny，含私钥保护） |
 | MCP 启用 | `opencode.json:59-107` | zai/web-search-prime/web-reader/zread/notion/mermaid/codegraph（7 个，chrome-mcp disabled） |
 | opencode-mem | `opencode-mem.jsonc` | autoCapture=true / injectProfile=true / Web UI :4747 |
 

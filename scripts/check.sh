@@ -130,7 +130,7 @@ if [ -d "$CACHE_DIR" ]; then
   if [ "$LINKED_VER" = "$CACHED_VER" ]; then
     ok "opencode-mem 软链 $LINKED_VER = opencode 缓存 $CACHED_VER（@latest 一致）"
   else
-    warn "opencode-mem 软链 $LINKED_VER ≠ opencode 缓存 $CACHED_VER（@latest 已漂移，opencode 启动会加载缓存版本而非软链版本）"
+    warn "opencode-mem 软链 $LINKED_VER ≠ opencode 缓存 $CACHED_VER（@latest 已漂移，opencode 启动会加载缓存版本而非软链版本——运行 make update 后会自动清缓存重拉）"
   fi
 else
   warn "opencode-mem 未在 opencode 缓存中（首次启动 opencode 后才会缓存）"
