@@ -43,12 +43,12 @@
         "kimi-k2.6": {
           "name": "kimi-k2.6",
           "limit": { "context": 256000, "output": 32768 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] }
+          "modalities": { "input": ["text"], "output": ["text"] }
         },
         "minimax-m3": {
           "name": "minimax-m3",
           "limit": { "context": 800000, "output": 131072 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "modalities": { "input": ["text"], "output": ["text"] },
           "options": {
             "thinking": { "type": "enabled", "budgetTokens": 32768 }
           }
@@ -175,7 +175,9 @@
       ".opencode/**",
       ".omo/**",
       "tasks/**",
-      ".sisyphus/**"
+      ".sisyphus/**",
+      ".claude/**",
+      ".codex/**"
     ]
   },
   "permission": {
@@ -249,7 +251,9 @@
       "killall*": "deny",
       "curl *-d *": "deny",
       "curl *--data *": "deny",
-      "curl *-F *": "deny"
+      "curl *-F *": "deny",
+      "git push --force-with-lease*": "allow",
+      "git push * --force-with-lease*": "allow"
     },
     "edit": {
       "**/.ssh/**": "deny",
