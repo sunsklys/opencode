@@ -99,6 +99,44 @@ if (re.test(s)) {
 }
 "
 
+# ---------- 5. 同步 skills.lock + 文档版本号 ----------
+echo ""
+echo "=== 5/5 同步 skills.lock + 文档版本号 ==="
+
+# 5a. skills.lock：OMO 升级或 feishu 重装会让 skill 内容变化，必须重算哈希
+if command -v make >/dev/null 2>&1; then
+  make -s skills-lock
+else
+  echo "  ⚠ make 不可用，请手动运行：make skills-lock"
+fi
+
+# 5b. 文档里的硬编码版本号（README / reference / instructions）
+# 把旧版本号字符串替换成新版本号，用 node 做精确字面替换（避免 sed 在 macOS/BSD 的转义差异）
+node -e "
+const fs = require('fs');
+const files = ['README.md', 'docs/reference.md', '.opencode/instructions.md'];
+const replacements = [
+  ['$OMO_CURRENT', '$OMO_LATEST'],
+  ['$PLG_CURRENT', '$PLG_LATEST'],
+];
+let touched = 0;
+for (const f of files) {
+  if (!fs.existsSync(f)) continue;
+  let s = fs.readFileSync(f, 'utf8');
+  let orig = s;
+  for (const [from, to] of replacements) {
+    if (from === to) continue;
+    s = s.split(from).join(to);
+  }
+  if (s !== orig) {
+    fs.writeFileSync(f, s);
+    console.log('  ✓ 文档版本号已同步: ' + f);
+    touched++;
+  }
+}
+if (touched === 0) console.log('  ✓ 文档无旧版本号需更新（可能已同步或未硬编码）');
+"
+
 # 清理备份，解除 trap
 trap - ERR
 rm -rf "$BACKUP_DIR"
@@ -114,9 +152,6 @@ echo ""
 echo "  1. 体检："
 echo "     make check"
 echo ""
-echo "  2. 如果 skills.lock 哈希不匹配（lark skills 被升级时更新过）："
-echo "     make skills-lock    # 重新生成"
-echo ""
-echo "  3. 提交改动："
-echo "     git add package.json oh-my-openagent.json README.md skills.lock"
+echo "  2. 提交改动（skills.lock + 文档版本号已自动同步）："
+echo "     git add package.json oh-my-openagent.json package-lock.json skills.lock README.md docs/reference.md .opencode/instructions.md"
 echo "     git commit -m \"upgrade: oh-my-openagent → $OMO_LATEST, plugin → $PLG_LATEST\""

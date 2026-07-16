@@ -4,6 +4,11 @@
 # 一键验证所有组件是否就绪
 # ============================================================
 
+# 确保 UTF-8 locale（make 透传调用时 LANG=C.UTF-8 会导致中文输出乱码，
+# 强制设为 en_US.UTF-8；系统不支持时 locale 命令会告警，不影响逻辑）
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
 cd "$(dirname "$0")/.."
 
 # 分层计数器：Critical 项 fail → FAIL（阻断 exit code）；Warning 项 fail → WFAIL（不阻断，仅提示）
