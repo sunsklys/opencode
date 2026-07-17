@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install bootstrap deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks
+.PHONY: help install bootstrap deps config mem feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -15,6 +15,7 @@ help: ## 显示帮助
 	@echo "  make bootstrap 一键灾备恢复（install + prime-cache + check）"
 	@echo "  make update    重装依赖（按 package.json 精确版本）"
 	@echo "  make upgrade   升级 OMO + plugin 到 npm 最新"
+	@echo "  make upgrade-superpowers   升级 superpowers plugin 到远端最新 tag"
 	@echo ""
 	@echo "分步命令："
 	@echo "  make deps      仅装 npm 依赖 + opencode-mem 软链"
@@ -113,6 +114,9 @@ update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync
 
 upgrade: ## 升级 OMO 和 plugin 到 npm 最新版（含 $schema URL 同步）
 	@bash scripts/upgrade.sh
+
+upgrade-superpowers: ## 升级 superpowers plugin 到远端最新 tag（查远端 → 改 opencode.json → 清缓存）
+	@bash scripts/upgrade-superpowers.sh
 clean: ## 清理 node_modules
 	@node -e "require('fs').rmSync('node_modules',{recursive:true,force:true})"
 	@echo "✓ node_modules 已清理（运行 make deps 重建）"
