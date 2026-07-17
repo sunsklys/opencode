@@ -238,8 +238,8 @@
 | git_master | `oh-my-openagent.json:297-301` | commit_footer=true / include_co_authored_by=true |
 | compaction | `opencode.json:112-114` | auto=true |
 | lsp | `opencode.json:108` | true（自动检测） |
-| permission.bash | `opencode.json:206-248` | 43 条 deny 规则（1 allow + 43 deny） |
-| permission.read | `opencode.json:178-202` | 24 条规则（2 allow + 22 deny，含私钥保护） |
+| permission.bash | `opencode.json:205-258` | 52 条规则（1 default allow + 2 force-with-lease allow + 49 deny，含 rm/docker 危险操作白名单） |
+| permission.read | `opencode.json:184-204` | 19 条规则（2 allow + 17 deny，含私钥保护） |
 | MCP 启用 | `opencode.json:59-107` | zai/web-search-prime/web-reader/zread/notion/mermaid/codegraph（7 个，chrome-mcp disabled） |
 | opencode-mem | `opencode-mem.jsonc` | autoCapture=true / injectProfile=true / Web UI :4747 |
 
