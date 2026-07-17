@@ -9,7 +9,6 @@ cd "$(dirname "$0")/.."
 
 OPENCODE_JSON="opencode.json"
 REMOTE_URL="https://github.com/obra/superpowers.git"
-CACHE_GLOB="$HOME/.cache/opencode/packages/superpowers@git+https:*"
 
 # --- 1. 读当前锁定版本 ---
 CURRENT=$(grep -oE 'superpowers@git\+https://github\.com/obra/superpowers\.git#v[0-9]+\.[0-9]+\.[0-9]+' "$OPENCODE_JSON" | head -1 | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+')
@@ -46,18 +45,24 @@ echo "更新 opencode.json：$CURRENT → $LATEST ..."
 sed -i '' "s|superpowers@git+https://github.com/obra/superpowers.git#v[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}|superpowers@git+https://github.com/obra/superpowers.git#$LATEST|" "$OPENCODE_JSON"
 
 # JSON 合法性校验
-node -e "JSON.parse(require('fs').readFileSync('$OPENCODE_JSON','utf8'))" || {
+# JSON 合法性校验（用 jq 避免 node -e 被 permission 拒）
+jq empty "$OPENCODE_JSON" 2>/dev/null || {
   echo "❌ opencode.json JSON 解析失败，请手动检查"
   exit 1
 }
 
 # --- 5. 清缓存 ---
-echo "清理旧版本缓存..."
+CLEANED=0
 if [ -d "$HOME/.cache/opencode/packages" ]; then
+  echo "清理旧版本缓存..."
   # 用 find 避免 glob 在 bash 下的歧义
-  find "$HOME/.cache/opencode/packages" -maxdepth 1 -name "superpowers@git+https:*" -exec rm -rf {} + 2>/dev/null || true
+  find "$HOME/.cache/opencode/packages" -maxdepth 1 -name "superpowers@git+https:*" -exec rm -rf {} + 2>/dev/null && CLEANED=1 || true
 fi
-echo "  ✓ 缓存已清"
+if [ "$CLEANED" -eq 1 ]; then
+  echo "  ✓ 缓存已清"
+else
+  echo "  ℹ️ 无旧缓存可清（首次安装）"
+fi
 
 # --- 6. 重装依赖（让 opencode 下次启动时拉新版本）---
 echo "重装依赖..."
