@@ -10,7 +10,7 @@
 
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
-| **插件/扩展** | `plugin` / `mcp` / `lsp` | 2 plugin + 8 MCP + LSP（true = 自动检测内置） |
+| **插件/扩展** | `plugin` / `mcp` / `lsp` | 3 plugin + 8 MCP + LSP（true = 自动检测内置） |
 | **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + 智谱 glm-5-turbo 作 small（避开火山 deepseek-v4-flash 月配额限制） |
 | **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / notify / auto |
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
@@ -188,4 +188,4 @@ make check
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.18.1`（非 `^4.18.1`），确保所有机器运行相同版本。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.18.2`（非 `^4.18.2`），确保所有机器运行相同版本。
