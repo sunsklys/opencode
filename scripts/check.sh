@@ -351,12 +351,12 @@ else
   echo "  当前锁定：$SP_LOCKED"
   # 查远端最新 tag（macOS 无 timeout 时降级直跑）
   if command -v timeout >/dev/null 2>&1; then
-    SP_REMOTE=$(timeout 8 git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
+    SP_REMOTE=$(timeout 8 git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
   elif command -v gtimeout >/dev/null 2>&1; then
-    SP_REMOTE=$(gtimeout 8 git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
+    SP_REMOTE=$(gtimeout 8 git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
   else
     # 无 timeout 可用时，git ls-remote 自身有 connect timeout 兜底
-    SP_REMOTE=$(git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
+    SP_REMOTE=$(git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
   fi
   if [ -z "$SP_REMOTE" ]; then
     warn "superpowers 远端检测跳过（无网络或仓库不可达）"
