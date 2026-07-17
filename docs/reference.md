@@ -153,6 +153,28 @@
 
 两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步（**Makefile L110 已自动清 opencode-mem@latest 缓存，下次启动 opencode 重拉 npm latest，与全局软链同步**），或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
 
+## plugin git 源版本锁定（superpowers）
+
+`opencode.json` 第 3 行的 superpowers plugin 用 git 源（`superpowers@git+https://...`），不像 `@latest` 的 npm 包有 npm registry 做 semver 网关。为保证可复现性，**显式锁定到 git tag**：
+
+```json
+"superpowers@git+https://github.com/obra/superpowers.git#v6.1.1"
+```
+
+**为什么锁 tag 而非 commit SHA**：obra 维护规范的 semver tag（v3.1.0 → v6.1.1），可读性远好于 SHA；升级时一眼能看出当前锁的版本。
+
+**`make check` 第 13 项** 会检测：
+- opencode.json 是否锁定版本（无 `#vX.Y.Z` 时警告「未锁定」）
+- 远端是否有比本地新的 tag（有时警告「有新版 → 运行 make upgrade-superpowers」）
+- 无网络时软失败（仅警告「跳过」，不阻断）
+
+**升级流程**：
+
+```bash
+make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存 → 提示重启
+```
+
+升级后必须**重启 opencode**，因为 plugin 在启动时加载到内存，运行时不会重读。
 ## 如何升级 oh-my-openagent 主版本
 
 ```bash
