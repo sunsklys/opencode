@@ -45,8 +45,8 @@
 
 ## `ulw-plan` / `git-master` / `frontend` 等 OMO skill 不见了
 
-→ plugin 加载链问题。OMO plugin 启动时通过 `discoverSharedSkills()` 扫描自己的 `dist/skills/`（18 个 skill），缓存损坏 / `@latest` 漂移会让 shared scope 整批消失。
-→ 一键诊断：`make check` 第 10 项检测三处 dist/skills 完整性（项目锁定 + builtin 缓存 + plugin 缓存，18×3），第 9 项自动自愈软链。
+→ plugin 加载链问题。OMO plugin 启动时通过 `discoverSharedSkills()` 扫描自己的 `dist/skills/`（20 个 skill），缓存损坏 / `@latest` 漂移会让 shared scope 整批消失。
+→ 一键诊断：`make check` 第 10 项检测三处 dist/skills 完整性（项目锁定 + builtin 缓存 + plugin 缓存，20×3），第 9 项自动自愈软链。
 → 修复优先级：
   - 第 10 项 fail（缓存损坏）→ `make update`（治根）
   - 第 9 项自愈（软链丢）→ 自动重建，无需手动（兑底）

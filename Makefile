@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install bootstrap deps config mem feishu check update upgrade clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks
+.PHONY: help install bootstrap deps config mem feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -15,6 +15,7 @@ help: ## 显示帮助
 	@echo "  make bootstrap 一键灾备恢复（install + prime-cache + check）"
 	@echo "  make update    重装依赖（按 package.json 精确版本）"
 	@echo "  make upgrade   升级 OMO + plugin 到 npm 最新"
+	@echo "  make upgrade-superpowers   升级 superpowers plugin 到远端最新 tag"
 	@echo ""
 	@echo "分步命令："
 	@echo "  make deps      仅装 npm 依赖 + opencode-mem 软链"
@@ -98,7 +99,7 @@ feishu: ## 安装飞书 CLI + 27 个 SKILL（需要 FEISHU_APP_SECRET）
 sync-skills: ## 软链 oh-my-openagent 内置 skill（ulw-plan/git-master/frontend 等）到 ~/.agents/skills/
 	@bash scripts/sync-omo-skills.sh
 
-check: ## 体检所有组件（13 项 = critical 5 + warning 8；critical 全绿则 exit 0，warning 失败也 exit 0）
+check: ## 体检所有组件（12 项 = critical 4 + warning 8；critical 全绿则 exit 0，warning 失败也 exit 0）
 	@bash scripts/check.sh
 
 update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync skill 软链）
@@ -107,11 +108,15 @@ update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync
 	@rm -f package-lock.json
 	@bash scripts/install.sh
 	@bash scripts/sync-omo-skills.sh
+	@node -e "require('fs').rmSync(process.env.HOME+'/.cache/opencode/packages/opencode-mem@latest',{recursive:true,force:true}); console.log('  opencode-mem @latest 缓存已清（下次启动 opencode 重拉 npm latest，与全局软链同步）')"
 	@echo ""
 	@echo "✓ 依赖已更新（含 skill 软链同步），运行 make check 验证"
 
 upgrade: ## 升级 OMO 和 plugin 到 npm 最新版（含 $schema URL 同步）
 	@bash scripts/upgrade.sh
+
+upgrade-superpowers: ## 升级 superpowers plugin 到远端最新 tag（查远端 → 改 opencode.json → 清缓存）
+	@bash scripts/upgrade-superpowers.sh
 clean: ## 清理 node_modules
 	@node -e "require('fs').rmSync('node_modules',{recursive:true,force:true})"
 	@echo "✓ node_modules 已清理（运行 make deps 重建）"

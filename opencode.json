@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["oh-my-openagent@latest", "opencode-mem@latest"],
+  "plugin": ["oh-my-openagent@latest", "opencode-mem@latest", "superpowers@git+https://github.com/obra/superpowers.git#v6.1.1"],
   "provider": {
     "volcengine-plan": {
       "npm": "@ai-sdk/openai-compatible",
@@ -22,33 +22,33 @@
         },
         "doubao-seed-2.0-code": {
           "name": "doubao-seed-2.0-code",
-          "limit": { "context": 256000, "output": 32768 },
+          "limit": { "context": 256000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] }
         },
         "doubao-seed-2.0-lite": {
           "name": "doubao-seed-2.0-lite",
-          "limit": { "context": 256000, "output": 32768 },
+          "limit": { "context": 256000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] }
         },
         "doubao-seed-2.0-pro": {
           "name": "doubao-seed-2.0-pro",
-          "limit": { "context": 256000, "output": 65536 },
+          "limit": { "context": 256000, "output": 131072 },
           "modalities": { "input": ["text", "image"], "output": ["text"] }
         },
         "glm-5.2": {
           "name": "glm-5.2",
-          "limit": { "context": 1024000, "output": 131072 },
+          "limit": { "context": 1024000, "output": 128000 },
           "modalities": { "input": ["text"], "output": ["text"] }
         },
         "kimi-k2.6": {
           "name": "kimi-k2.6",
           "limit": { "context": 256000, "output": 32768 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] }
+          "modalities": { "input": ["text"], "output": ["text"] }
         },
         "minimax-m3": {
           "name": "minimax-m3",
           "limit": { "context": 800000, "output": 131072 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "modalities": { "input": ["text"], "output": ["text"] },
           "options": {
             "thinking": { "type": "enabled", "budgetTokens": 32768 }
           }
@@ -101,8 +101,7 @@
     },
     "codegraph": {
       "type": "local",
-      "command": ["codegraph", "serve", "--mcp"],
-      "enabled": true
+      "command": ["codegraph", "serve", "--mcp"]
     }
   },
   "lsp": true,
@@ -171,7 +170,14 @@
       "*.tsbuildinfo",
       "*.lintcache",
       ".idea/**",
-      ".vscode/**"
+      ".vscode/**",
+      ".codegraph/**",
+      ".opencode/**",
+      ".omo/**",
+      "tasks/**",
+      ".sisyphus/**",
+      ".claude/**",
+      ".codex/**"
     ]
   },
   "permission": {
@@ -194,37 +200,19 @@
       "**/.npmrc": "deny",
       "**/.pypirc": "deny",
       "**/.netrc": "deny",
-      "**/.git-credentials": "deny",
-      "**/.zshrc*": "deny",
-      "**/.bashrc*": "deny",
-      "**/.profile": "deny",
-      "**/.zshenv": "deny",
-      "**/.zprofile": "deny"
+      "**/.git-credentials": "deny"
     },
     "bash": {
       "*": "allow",
-      "rm -rf*": "deny",
-      "rm -fr*": "deny",
       "sudo*": "deny",
       "mkfs*": "deny",
       "shutdown*": "deny",
       "reboot*": "deny",
-      "kill*": "deny",
-      "pkill*": "deny",
-      "killall*": "deny",
-      "chmod*": "deny",
-      "chown*": "deny",
       "dd*": "deny",
       "git push --force*": "deny",
       "git push -f*": "deny",
-      "git reset --hard*": "deny",
       "git clean*": "deny",
-      "git checkout --*": "deny",
-      "git checkout .": "deny",
-      "git restore --*": "deny",
-      "git restore .": "deny",
       "npm publish*": "deny",
-      "docker*": "deny",
       "curl * | *sh*": "deny",
       "wget * | *sh*": "deny",
       "eval *": "deny",
@@ -234,10 +222,6 @@
       ": > ~/.aws/*": "deny",
       "git push * --force*": "deny",
       "git push * -f *": "deny",
-      "rm -r -f*": "deny",
-      "rm -f -r*": "deny",
-      "rm -r*f*": "deny",
-      "rm -f*r*": "deny",
       ": > ~/.zshrc": "deny",
       ": > ~/.bashrc": "deny",
       ": > ~/.profile": "deny",
@@ -248,16 +232,29 @@
       "*>> ~/.bashrc*": "deny",
       "tee ~/.zshrc*": "deny",
       "tee ~/.bashrc*": "deny",
-      "python3 -c*": "deny",
-      "python -c*": "deny",
-      "node -e*": "deny",
-      "node -e (*": "deny",
-      "command rm*": "deny",
-      "\\rm*": "deny",
-      "git config alias.*": "deny",
-      "curl *-d *": "deny",
-      "curl *--data *": "deny",
-      "curl *-F *": "deny"
+      "git push --force-with-lease*": "allow",
+      "git push * --force-with-lease*": "allow",
+      "rm -rf /": "deny",
+      "rm -fr /": "deny",
+      "rm -rf ~": "deny",
+      "rm -fr ~": "deny",
+      "rm -rf $HOME": "deny",
+      "rm -fr $HOME": "deny",
+      "rm -rf /*": "deny",
+      "rm -fr /*": "deny",
+      "rm -rf ~/*": "deny",
+      "rm -fr ~/*": "deny",
+      "rm -rf ..": "deny",
+      "rm -fr ..": "deny",
+      "docker system prune*": "deny",
+      "docker container prune*": "deny",
+      "docker image prune*": "deny",
+      "docker volume prune*": "deny",
+      "docker network prune*": "deny",
+      "docker rm -f *": "deny",
+      "docker rmi -f *": "deny",
+      "docker volume rm *": "deny",
+      "docker network rm *": "deny"
     },
     "edit": {
       "**/.ssh/**": "deny",

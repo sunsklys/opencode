@@ -10,7 +10,7 @@
 
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
-| **插件/扩展** | `plugin` / `mcp` / `lsp` | 2 plugin + 8 MCP + LSP（true = 自动检测内置） |
+| **插件/扩展** | `plugin` / `mcp` / `lsp` | 3 plugin + 8 MCP + LSP（true = 自动检测内置） |
 | **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + 智谱 glm-5-turbo 作 small（避开火山 deepseek-v4-flash 月配额限制） |
 | **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / notify / auto |
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
@@ -31,7 +31,7 @@
 | 字段 | 说明 |
 |---|---|
 | `plugin` | TUI 模式加载的 plugin（与 `opencode.json` 保持同步） |
-| `theme` / `scroll_speed` / `mouse` | tokyonight / 3 / true |
+| `theme` / `scroll_speed` / `mouse` | tokyonight / 8 / true |
 
 ### `opencode-mem.jsonc`（本地持久记忆配置，**不入 git**）
 
@@ -44,9 +44,9 @@
 
 > **迁移原则**：配置文件都进 git，新机器 `git clone` + `make install` 即可。`opencode-mem.jsonc` 不入 git（由 `make mem` 从模板生成，保持 `.template` 作权威源），避免本地实例澉移污染 git 历史。
 
-## 关于 `prompt_append` × 12 重复
+## 关于 `prompt_append` × 19（全覆盖）
 
-> 12 个 agent/category 都挂了 `"prompt_append": "始终使用中文（简体）回答..."`，看似 DRY 违反，实则是**必要的**。
+> 19 个 agent/category（11 agent + 8 category）都挂了 `prompt_append`（`file://.opencode/lang-zh.md`），看似 DRY 违反，实则是**必要的**。
 
 **为什么不依赖 `i18n.locale: "zh"`？**
 - OMO 的 `i18n.locale` 只管 **toast/UI 文案**翻译（`locales[currentLang][key]`，如 `toast.fallback_runtime`）
@@ -66,7 +66,7 @@
 | `monitor.max_runtime_ms` (1800000=30min) | oh-my-openagent.json | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | index.js:133018 `spawnMonitorProcess` |
 | `babysitting.timeout_ms` (300000=5min) | oh-my-openagent.json | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | index.js:110060-110110 `unstable-agent-babysitter` hook |
 | `runtime_fallback.timeout_seconds` (60) | oh-my-openagent.json | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | index.js:103092-103115 `prepareFallback` |
-| `experimental.mcp_timeout` (30000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
+| `experimental.mcp_timeout` (60000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
 | `model_capabilities.refresh_timeout_ms` (5000) | oh-my-openagent.json | **启动时模型能力探测**（一次性） | 跳过刷新，用缓存元数据 | index.js:81832-81857 |
 
 **关键区分**：
@@ -106,7 +106,7 @@
 | **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
 | **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
-| **experimental.mcp_timeout**（全局 MCP 超时 30s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=30000` | ✅ 已启用 |
+| **experimental.mcp_timeout**（全局 MCP 超时 60s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=60000` | ✅ 已启用 |
 | **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 6 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=6 |
 | **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |
 | **instructions**（项目级系统提示补充） | `opencode.json` → `instructions: ['.opencode/instructions.md']` | ✅ 已启用 |
@@ -129,9 +129,7 @@
 
 ## team_mode 成本控制
 
-当前 team_mode 配置无显式 token/cost 上限（`max_members=8`, `max_member_turns=500`）。
-OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 字段。
-建议保守设置：`max_member_turns: 200`（从 500 下调）作为隐性成本控制。
+当前 team_mode 配置无显式 token/cost 上限（`max_members=8`, `max_member_turns=500`）。OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 字段。如需隐性成本控制，可下调 `max_member_turns`。
 
 ## MCP 数据流向与信任边界
 
@@ -153,8 +151,30 @@ OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 
 - 项目软链 `node_modules/opencode-mem`（`npm i -g` 装的全局版本）
 - opencode 缓存 `~/.cache/opencode/packages/opencode-mem@latest/node_modules/opencode-mem/`（`@latest` 拉到的版本）
 
-两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步，或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
+两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步（**Makefile L110 已自动清 opencode-mem@latest 缓存，下次启动 opencode 重拉 npm latest，与全局软链同步**），或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
 
+## plugin git 源版本锁定（superpowers）
+
+`opencode.json` 第 3 行的 superpowers plugin 用 git 源（`superpowers@git+https://...`），不像 `@latest` 的 npm 包有 npm registry 做 semver 网关。为保证可复现性，**显式锁定到 git tag**：
+
+```json
+"superpowers@git+https://github.com/obra/superpowers.git#v6.1.1"
+```
+
+**为什么锁 tag 而非 commit SHA**：obra 维护规范的 semver tag（v3.1.0 → v6.1.1），可读性远好于 SHA；升级时一眼能看出当前锁的版本。
+
+**`make check` 第 13 项** 会检测：
+- opencode.json 是否锁定版本（无 `#vX.Y.Z` 时警告「未锁定」）
+- 远端是否有比本地新的 tag（有时警告「有新版 → 运行 make upgrade-superpowers」）
+- 无网络时软失败（仅警告「跳过」，不阻断）
+
+**升级流程**：
+
+```bash
+make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存 → 提示重启
+```
+
+升级后必须**重启 opencode**，因为 plugin 在启动时加载到内存，运行时不会重读。
 ## 如何升级 oh-my-openagent 主版本
 
 ```bash
@@ -190,4 +210,4 @@ make check
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.16.2`（非 `^4.16.2`），确保所有机器运行相同版本。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.18.2`（非 `^4.18.2`），确保所有机器运行相同版本。

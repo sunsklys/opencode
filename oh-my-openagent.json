@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.17.1/assets/oh-my-opencode.schema.json",
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.18.2/assets/oh-my-opencode.schema.json",
   "hashline_edit": true,
   "i18n": {
     "locale": "zh"
@@ -20,7 +20,7 @@
     "enabled": true,
     "retry_on_errors": [429, 500, 502, 503, 504, 529],
     "max_fallback_attempts": 4,
-    "cooldown_seconds": 60,
+    "cooldown_seconds": 30,
     "timeout_seconds": 60,
     "notify_on_fallback": true
   },
@@ -42,6 +42,7 @@
       "volcengine-plan/kimi-k2.6": 3,
       "volcengine-plan/doubao-seed-2.0-pro": 3,
       "volcengine-plan/doubao-seed-2.0-code": 3,
+      "volcengine-plan/doubao-seed-2.0-lite": 5,
       "volcengine-plan/minimax-m3": 3,
       "volcengine-plan/glm-5.2": 5,
       "zhipuai-coding-plan/glm-5.2": 5,
@@ -194,6 +195,7 @@
     },
     "multimodal-looker": {
       "model": "zhipuai-coding-plan/glm-5v-turbo",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
@@ -215,6 +217,7 @@
   "categories": {
     "visual-engineering": {
       "model": "zhipuai-coding-plan/glm-5v-turbo",
+      "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"

@@ -2,7 +2,8 @@
   "$schema": "https://opencode.ai/tui.json",
   "plugin": [
     "oh-my-openagent@latest",
-    "opencode-mem@latest"
+    "opencode-mem@latest",
+    "superpowers@git+https://github.com/obra/superpowers.git#v6.1.1"
   ],
   "theme": "tokyonight",
   "scroll_speed": 8,
