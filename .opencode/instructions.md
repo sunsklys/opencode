@@ -19,6 +19,6 @@
 - 11 agent + 8 category 的模型路由（GLM-5.2 主，DeepSeek-V4-Pro 兜底）
 - 8 MCP（智谱 web 工具 / notion / mermaid / codegraph）
 - 84 条 permission deny（bash 49 + read 17 + edit 18，三层纵深防御）
-- OMO 4.18.2
+- OMO 4.19.0
 
 详细字段地图见 `README.md` 的「配置文件结构」段。

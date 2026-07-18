@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.18.2/assets/oh-my-opencode.schema.json",
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.19.0/assets/oh-my-opencode.schema.json",
   "hashline_edit": true,
   "i18n": {
     "locale": "zh"
@@ -91,7 +91,7 @@
   "agents": {
     "sisyphus": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -103,7 +103,7 @@
     },
     "prometheus": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -115,7 +115,7 @@
     },
     "plan": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -127,7 +127,7 @@
     },
     "oracle": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -139,7 +139,7 @@
     },
     "metis": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -151,7 +151,7 @@
     },
     "momus": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -163,7 +163,7 @@
     },
     "atlas": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -203,7 +203,7 @@
     },
     "sisyphus-junior": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -225,7 +225,7 @@
     },
     "ultrabrain": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -236,7 +236,7 @@
     },
     "artistry": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "temperature": 0.7,
       "prompt_append": "file://.opencode/lang-zh.md",
@@ -248,7 +248,7 @@
     },
     "deep": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
@@ -277,7 +277,7 @@
     },
     "unspecified-high": {
       "model": "zhipuai-coding-plan/glm-5.2",
-      "variant": "high",
+      "variant": "max",
       "reasoningEffort": "max",
       "prompt_append": "file://.opencode/lang-zh.md",
       "fallback_models": [
