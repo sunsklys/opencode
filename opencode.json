@@ -86,10 +86,6 @@
         "Authorization": "Bearer {env:Z_AI_API_KEY}"
       }
     },
-    "notion": {
-      "type": "local",
-      "command": ["mcp-remote", "https://mcp.notion.com/mcp"]
-    },
     "mermaid": {
       "type": "local",
       "command": ["claude-mermaid"]
