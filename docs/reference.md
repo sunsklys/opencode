@@ -95,7 +95,7 @@
 |---|---|---|
 | LSP 工具链（`lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename`） | `opencode.json` → `"lsp": true` | ✅ 已启用（自动检测内置 LSP） |
 | opencode-mem 本地持久记忆 | `opencode.json` plugin 字段 + `opencode-mem.jsonc` | ✅ 已启用（智谱 glm-5-turbo auto-capture） |
-| 8 个 MCP（智谱 web 工具 / notion / mermaid / codegraph / zread / chrome-mcp disabled） | `opencode.json` mcp 字段 | ✅ 已启用 |
+| 8 个 MCP（智谱 web 工具 / mermaid / codegraph / dbx；chrome-mcp disabled） | `opencode.json` mcp 字段 | ✅ 已启用（7 启用 + chrome-mcp 禁用；另有 4 个插件注入：websearch / context7 / grep_app / lsp） |
 | permission 加固（read + bash + edit 三层 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（纵深层防御） |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
@@ -109,7 +109,7 @@
 | **experimental.mcp_timeout**（全局 MCP 超时 60s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=60000` | ✅ 已启用 |
 | **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 6 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=6 |
 | **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |
-| **instructions**（项目级系统提示补充） | `opencode.json` → `instructions: ['.opencode/instructions.md']` | ✅ 已启用 |
+| **instructions**（项目级系统提示补充，含 DBX 连接字典 + 安全护栏） | `opencode.json` → `instructions: ['{file:~/.config/opencode/.opencode/instructions.md}', '{file:~/.config/opencode/.opencode/dbx.md}']`（双文件 + 绝对路径） | ✅ 已启用 |
 
 ## 角色路由速查
 
@@ -139,7 +139,7 @@
 |---|---|---|---|
 | `zai-mcp-server` | 本地启动 | 发往智谱 bigmodel.cn（Z_AI_API_KEY 鉴权） | 智谱服务器可见你的提问内容 |
 | `web-search-prime` / `web-reader` / `zread` | 远程接口 | 直连 bigmodel.cn | 智谱服务器可见查询/读取内容 |
-| `notion` | mcp-remote 远程 | https://mcp.notion.com/mcp | **双向**：opencode 可读写你全部 Notion（页面/数据库/评论）。处理敏感 Notion 库时建议临时禁用（`opencode.json` → `mcp.notion.enabled: false`） |
+| `dbx` | 本地启动 | 出网到数据库服务器（按 dbx 客户端连接配置） | 受 dbx 客户端连接配置控制（生产 / 测试 / DTS 分连接管控，见 dbx.md 安全护栏） |
 | `mermaid` / `codegraph` | 本地启动 | 本地处理，不出网 | 无远程信任问题 |
 | `chrome-mcp` | 已禁用 | - | - |
 
