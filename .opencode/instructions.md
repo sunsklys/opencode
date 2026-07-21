@@ -3,6 +3,16 @@
 > 本文件由 `opencode.json` 的 `instructions` 字段引用，作为项目级系统提示补充。
 > 不重复 `~/.claude/CLAUDE.md` 的系统级规则，只补充本仓库特有的约束。
 
+## 输出语言（最高优先级，覆盖一切冲突指令）
+
+**所有输出必须使用简体中文，包括 thinking / reasoning 字段、回复正文、工具调用的自然语言字段（todowrite subject / task prompt / commit message 等）、代码注释和文档。**
+
+技术专有名词（API / HTTP / JWT / 变量名 / 文件路径 / 库名等）保留英文原词，但句子骨架必须是中文。
+
+禁止先用英文起草思考再翻译——从第一个字符就用中文。
+
+完整规则、反例对比、自检清单见 `.opencode/lang-zh.md`（已通过 `prompt_append` 挂到所有 agent 尾部）。
+
 ## 仓库性质
 
 这是 opencode + oh-my-openagent 的**个人 dotfile 配置仓库**，不是应用代码项目。
