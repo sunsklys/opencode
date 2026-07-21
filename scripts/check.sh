@@ -302,11 +302,11 @@ fi
 echo "【11/13·Critical】OMO + opencode 关键字段配置验证"
  
 # 用 node 提取字段避免 jq 依赖
-OMO_FIELDS=$(node -e "const c=require('./oh-my-openagent.json');console.log(JSON.stringify({monitor:c.monitor?.enabled,ralph_max:c.ralph_loop?.default_max_iterations,babysitting:c.babysitting?.timeout_ms,notification:c.notification?.force_enable,comment_checker:!!c.comment_checker?.custom_prompt,disabled_skills:(c.disabled_skills||[]).length,disabled_commands:(c.disabled_commands||[]).length}))" 2>/dev/null || echo "{}")
+OMO_FIELDS=$(node -e "const c=require('./oh-my-openagent.json');console.log(JSON.stringify({monitor:c.monitor?.enabled,goal_max:c.goal?.default_max_iterations,goal_enabled:c.goal?.enabled,babysitting:c.babysitting?.timeout_ms,notification:c.notification?.force_enable,comment_checker:!!c.comment_checker?.custom_prompt,disabled_skills:(c.disabled_skills||[]).length,disabled_commands:(c.disabled_commands||[]).length}))" 2>/dev/null || echo "{}")
 OC_FIELDS=$(node -e "const c=require('./opencode.json');console.log(JSON.stringify({edit_ssh:c.permission?.edit?.['**/.ssh/**'],batch_tool:c.experimental?.batch_tool,continue_loop:c.experimental?.continue_loop_on_deny,policies:(c.experimental?.policies||[]).length,mcp_timeout:c.experimental?.mcp_timeout,prune:c.compaction?.prune,tail_turns:c.compaction?.tail_turns,formatter:c.formatter,instructions:(c.instructions||[]).length}))" 2>/dev/null || echo "{}")
 
 M_ON=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).monitor" 2>/dev/null)
-M_MAX=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).ralph_max" 2>/dev/null)
+M_MAX=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).goal_max" 2>/dev/null)
 M_BABY=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).babysitting" 2>/dev/null)
 M_NOTI=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).notification" 2>/dev/null)
 M_COMMENT=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).comment_checker" 2>/dev/null)
@@ -321,12 +321,12 @@ O_FMT=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).
 O_INST=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions" 2>/dev/null)
 
 [ "$M_ON" = "true" ]                 && ok "OMO monitor.enabled=true（后台监控 idle 模式）" || fail "OMO monitor.enabled 未启用（oh-my-openagent.json）"
-[ -n "$M_MAX" ] && [ "$M_MAX" -le 50 ]  && ok "OMO ralph_loop.default_max_iterations=$M_MAX（已 cap）" || fail "OMO ralph_loop.default_max_iterations 未设或 >50（防失控）"
+[ -n "$M_MAX" ] && [ "$M_MAX" -le 1000 ]  && ok "OMO goal.default_max_iterations=$M_MAX（4.19.0 Goal 替代 Ralph Loop，已配防失控）" || fail "OMO goal.default_max_iterations 未设或 >1000（防失控）"
 [ -n "$M_BABY" ] && [ "$M_BABY" -ge 180000 ] && ok "OMO babysitting.timeout_ms=$M_BABY（适配 GLM-5.2）" || warn "OMO babysitting.timeout_ms 未调高（默认 120000 在 max reasoning 下可能误杀）"
 [ -z "$M_NOTI" ] || [ "$M_NOTI" = "undefined" ]  && ok "OMO notification 块已删除（dead config 清理）" || ok "OMO notification.force_enable=$M_NOTI"
 [ "$M_COMMENT" = "true" ]             && ok "OMO comment_checker.custom_prompt 已配" || warn "OMO comment_checker 未配（可选）"
 [ -n "$M_DSK" ] && [ "$M_DSK" -ge 1 ]  && ok "OMO disabled_skills: $M_DSK 条（playwright/dev-browser/agent-browser）" || warn "OMO disabled_skills 未配"
-[ -n "$M_DCMD" ] && [ "$M_DCMD" -ge 1 ] && ok "OMO disabled_commands: $M_DCMD 条（ralph-loop/cancel-ralph）" || warn "OMO disabled_commands 未配"
+[ -n "$M_DCMD" ] && [ "$M_DCMD" -ge 1 ] && ok "OMO disabled_commands: $M_DCMD 条（goal/refactor/start-work 等）" || warn "OMO disabled_commands 未配（可选）"
 [ "$O_EDIT" = "deny" ]                && ok "opencode permission.edit 加了 .ssh/** deny（纵深防御）" || fail "opencode permission.edit 缺 .ssh/** deny（写文件层无防护）"
 [ "$O_BATCH" = "true" ]               && ok "opencode experimental.batch_tool=true（批量工具调用）" || warn "opencode experimental.batch_tool 未启用"
 [ -n "$O_POL" ] && [ "$O_POL" -ge 1 ]  && ok "opencode experimental.policies: $O_POL 条（deny 海外 provider）" || warn "opencode experimental.policies 未配（可选）"
