@@ -22,6 +22,7 @@ snapshot/
 .omo/
 .sisyphus/
 tasks/
+lsp-install-decisions.json
 
 # === 缓存 ===
 .cache/
