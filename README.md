@@ -10,7 +10,7 @@
 | `oh-my-openagent.json` | 11 agent + 8 category 路由（sisyphus / oracle / metis 等跨厂家 fallback） |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | oh-my-openagent 4.19.0（精确锁定）+ @opencode-ai/plugin 1.18.3（精确锁定）+ postinstall 全局依赖 |
+| `package.json` | oh-my-openagent 4.19.0（精确锁定）+ @opencode-ai/plugin 1.18.4（精确锁定）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
