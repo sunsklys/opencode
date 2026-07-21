@@ -90,11 +90,6 @@
       "type": "local",
       "command": ["claude-mermaid"]
     },
-    "chrome-mcp": {
-      "type": "remote",
-      "url": "http://127.0.0.1:12306/mcp",
-      "enabled": false
-    },
     "codegraph": {
       "type": "local",
       "command": ["codegraph", "serve", "--mcp"]
@@ -132,6 +127,18 @@
     "{file:~/.config/opencode/.opencode/dbx.md}"
   ],
   "small_model": "zhipuai-coding-plan/glm-5-turbo",
+  "subagent_depth": 2,
+  "references": {
+    "omo": {
+      "repository": "code-yeongyu/oh-my-openagent",
+      "branch": "dev",
+      "description": "oh-my-openagent 上游仓库（agent/category schema、新功能跟踪）"
+    },
+    "opencode": {
+      "repository": "anomalyco/opencode",
+      "description": "opencode CLI 上游仓库（config schema、新版本字段）"
+    }
+  },
   "tool_output": {
     "max_lines": 2000,
     "max_bytes": 524288
