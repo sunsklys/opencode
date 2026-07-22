@@ -96,10 +96,7 @@
     },
     "dbx": {
       "type": "local",
-      "command": [
-        "/opt/homebrew/bin/node",
-        "/opt/homebrew/lib/node_modules/@dbx-app/mcp-server/bin/dbx-mcp-server.js"
-      ]
+      "command": ["npx", "-y", "@dbx-app/mcp-server"]
     }
   },
   "lsp": true,
