@@ -209,4 +209,4 @@ make check
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.19.0`（非 `^4.19.0`），确保所有机器运行相同版本。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.19.1`（非 `^4.19.1`），确保所有机器运行相同版本。
