@@ -105,7 +105,7 @@
   "lsp": true,
   "default_agent": "build",
   "share": "manual",
-  "autoupdate": "notify",
+  "autoupdate": true,
   "compaction": {
     "auto": true,
     "prune": true,
