@@ -91,7 +91,7 @@
     "goal": false
   },
   "goal": {
-    "enabled": true,
+    "enabled": false,
     "auto_start": false,
     "default_max_iterations": 100
   },

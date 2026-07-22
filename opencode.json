@@ -103,7 +103,7 @@
     }
   },
   "lsp": true,
-  "default_agent": "build",
+  "default_agent": "sisyphus",
   "share": "manual",
   "autoupdate": true,
   "compaction": {
