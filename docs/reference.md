@@ -20,7 +20,7 @@
 
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
-| **角色定义** | `agents` / `categories` | 11 agent + 8 category + fallback 链（详见「角色路由速查」） |
+| **角色定义** | `agents` / `categories` | 12 agent + 8 category + fallback 链（详见「角色路由速查」） |
 | **架构开关** | `team_mode` / `tmux` / `sisyphus_agent` / `default_mode` | 多 agent 协作 / TUI 可视化 / planner / ultrawork 默认值 |
 | **容错与性能** | `runtime_fallback` / `model_fallback` / `background_task` / `model_capabilities` | 4 次重试 / 跨 provider fallback / 并发控制 / 能力探测 |
 | **实验特性** | `experimental` / `keyword_detector` / `disabled_hooks` | task_system / context_pruning / intent 关键词 / hook 黑名单 |
@@ -44,17 +44,17 @@
 
 > **迁移原则**：配置文件都进 git，新机器 `git clone` + `make install` 即可。`opencode-mem.jsonc` 不入 git（由 `make mem` 从模板生成，保持 `.template` 作权威源），避免本地实例澉移污染 git 历史。
 
-## 关于 `prompt_append` × 19（全覆盖）
+## 关于 `prompt_append` × 20（全覆盖）
 
-> 19 个 agent/category（11 agent + 8 category）都挂了 `prompt_append`（`file://.opencode/lang-zh.md`），看似 DRY 违反，实则是**必要的**。
+> 20 个 agent/category（12 agent + 8 category）都挂了 `prompt_append`（`file://.opencode/lang-zh.md`），看似 DRY 违反，实则是**必要的**。
 
 **为什么不依赖 `i18n.locale: "zh"`？**
 - OMO 的 `i18n.locale` 只管 **toast/UI 文案**翻译（`locales[currentLang][key]`，如 `toast.fallback_runtime`）
 - LLM 回答什么语言**完全不由 i18n 控制**，只由 system prompt / prompt_append 决定
-- 源码证据：`index.js:85706-85759` 的 `locales` 对象全是 toast key；`index.js:123759-123763` 显示 prompt_append 被合并进 system prompt
+- 源码证据：`locales` 对象全是 toast key；`prompt_append` 被合并进 system prompt（OMO dist/index.js 搜索 `locales` / `prompt_append` 定位）
 
 **优化方向（已实施）**：
-- prompt_append 支持 `file://` 协议（源码 `index.js:149996-150022`）
+- prompt_append 支持 `file://` 协议（OMO dist/index.js 搜索 `file://` 定位）
 - 已提取到 `.opencode/lang-zh.md`，用 `prompt_append: "file://.opencode/lang-zh.md"` 单源引用
 
 ## 超时字段作用域对照
@@ -63,11 +63,11 @@
 
 | 字段 | 文件 | 作用域 | 触发动作 | 源码证据 |
 |---|---|---|---|---|
-| `monitor.max_runtime_ms` (1800000=30min) | oh-my-openagent.json | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | index.js:133018 `spawnMonitorProcess` |
-| `babysitting.timeout_ms` (300000=5min) | oh-my-openagent.json | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | index.js:110060-110110 `unstable-agent-babysitter` hook |
-| `runtime_fallback.timeout_seconds` (60) | oh-my-openagent.json | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | index.js:103092-103115 `prepareFallback` |
+| `monitor.max_runtime_ms` (1800000=30min) | oh-my-openagent.json | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | `spawnMonitorProcess` 函数（OMO dist/index.js） |
+| `babysitting.timeout_ms` (300000=5min) | oh-my-openagent.json | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | `unstable-agent-babysitter` hook（OMO dist/index.js） |
+| `runtime_fallback.timeout_seconds` (60) | oh-my-openagent.json | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | `prepareFallback` 函数（OMO dist/index.js） |
 | `experimental.mcp_timeout` (60000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
-| `model_capabilities.refresh_timeout_ms` (5000) | oh-my-openagent.json | **启动时模型能力探测**（一次性） | 跳过刷新，用缓存元数据 | index.js:81832-81857 |
+| `model_capabilities.refresh_timeout_ms` (5000) | oh-my-openagent.json | **启动时模型能力探测**（一次性） | 跳过刷新，用缓存元数据 | `model_capabilities` 刷新逻辑（OMO dist/index.js） |
 
 **关键区分**：
 - `monitor.max_runtime_ms` 是**子进程硬超时**（kill），`babysitting.timeout_ms` 是**主会话 idle 提醒**（nudge）。两者不冲突，monitor 跑 30min 时 babysitting 不会杀它

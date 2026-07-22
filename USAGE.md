@@ -225,7 +225,7 @@
 
 | 配置项 | 文件:字段 | 当前值 |
 |---|---|---|
-| 11 agents | `oh-my-openagent.json` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior |
+| 12 agents | `oh-my-openagent.json` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior/hephaestus |
 | 8 categories | `oh-my-openagent.json` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
 | team_mode | `oh-my-openagent.json` → `team_mode` | enabled, max_parallel_members=4, max_members=8 |
 | background_task | `oh-my-openagent.json` → `background_task` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
