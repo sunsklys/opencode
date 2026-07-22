@@ -15,11 +15,10 @@ npm install
 # 所以软链必须在 npm install 之后重建（见第 3 步）。
 
 echo ""
-echo "=== 2/3 全局依赖安装（opencode-mem + mcp-remote）==="
+echo "=== 2/3 全局依赖安装（opencode-mem）==="
 # npm i -g 本身幂等：已安装最新版时自动跳过，无需手动判断版本
 # - opencode-mem: 绕过 linux platform binary bug 需全局装 + 软链
-# - mcp-remote: notion MCP 直调避免每次 npx 冷启动 2s 延迟
-npm i -g opencode-mem mcp-remote
+npm i -g opencode-mem
 
 echo ""
 echo "=== 3/3 建立软链 + 验证 ==="
