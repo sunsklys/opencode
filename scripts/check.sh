@@ -116,7 +116,7 @@ echo "【6/13·Warning】opencode-mem Web UI"
 STATS=$(curl -s --max-time 3 http://127.0.0.1:4747/api/stats 2>/dev/null || echo "")
 if echo "$STATS" | grep -q '"success":true'; then
   TOTAL=$(echo "$STATS" | node -pe "JSON.parse(require('fs').readFileSync(0)).data.total" 2>/dev/null || echo "?")
-  ok "Web UI 运行中（http://127.0.0.1:4747，已记录 $TOTAL 条记忆）"
+  ok "Web UI 运行中（http://127.0.0.1:4747，已记录 ${TOTAL} 条记忆）"
 else
   warn "Web UI 未响应（启动 opencode 后自动运行）"
 fi
@@ -132,9 +132,9 @@ CACHE_DIR="$HOME/.cache/opencode/packages/opencode-mem@latest"
 if [ -d "$CACHE_DIR" ]; then
   CACHED_VER=$(node -p "require('$CACHE_DIR/node_modules/opencode-mem/package.json').version" 2>/dev/null || echo "?")
   if [ "$LINKED_VER" = "$CACHED_VER" ]; then
-    ok "opencode-mem 软链 $LINKED_VER = opencode 缓存 $CACHED_VER（@latest 一致）"
+    ok "opencode-mem 软链 ${LINKED_VER} = opencode 缓存 ${CACHED_VER}（@latest 一致）"
   else
-    warn "opencode-mem 软链 $LINKED_VER ≠ opencode 缓存 $CACHED_VER（@latest 已漂移，opencode 启动会加载缓存版本而非软链版本——运行 make update 后会自动清缓存重拉）"
+    warn "opencode-mem 软链 ${LINKED_VER} ≠ opencode 缓存 ${CACHED_VER}（@latest 已漂移，opencode 启动会加载缓存版本而非软链版本——运行 make update 后会自动清缓存重拉）"
   fi
 else
   warn "opencode-mem 未在 opencode 缓存中（首次启动 opencode 后才会缓存）"
@@ -165,7 +165,7 @@ else
       else
         ACTUAL=$(shasum -a 256 "$FULL_PATH" | awk '{print $1}')
         if [ "$ACTUAL" != "$HASH" ]; then
-          wfail "SKILL 哈希不匹配：$REL_PATH（可能被篡改）"
+          wfail "SKILL 哈希不匹配：${REL_PATH}（可能被篡改）"
           MISMATCH=$((MISMATCH+1))
         fi
       fi
@@ -279,22 +279,22 @@ PLUGIN_COUNT=$(count_complete_skills "$CACHE_PLUGIN_SKILLS")
 if [ "$PROJECT_TOTAL" -eq 0 ]; then
   fail "无法读取项目锁定 dist/skills（node_modules/oh-my-openagent 缺失或损坏）— 运行 make install / make update"
 elif [ "$PROJECT_COUNT" -ne "$PROJECT_TOTAL" ]; then
-  fail "项目锁定 dist/skills 损坏（$PROJECT_COUNT/$PROJECT_TOTAL 有 SKILL.md）— 运行 make update 重装"
+  fail "项目锁定 dist/skills 损坏（${PROJECT_COUNT}/${PROJECT_TOTAL} 有 SKILL.md）— 运行 make update 重装"
 elif [ ! -d "$CACHE_BUILTIN_SKILLS" ]; then
   # opencode 1.17.11+ 不再 builtin 装 oh-my-opencode 主包（只装 platform binary），路径不存在是正常状态
   if [ "$PLUGIN_COUNT" -eq "$PROJECT_TOTAL" ]; then
-    ok "项目锁定 + plugin 缓存完整（$PROJECT_TOTAL/$PROJECT_TOTAL，builtin 未装载，已 skip）— plugin 加载链健康"
+    ok "项目锁定 + plugin 缓存完整（${PROJECT_TOTAL}/${PROJECT_TOTAL}，builtin 未装载，已 skip）— plugin 加载链健康"
   elif [ "$PLUGIN_COUNT" -eq 0 ]; then
-    warn "opencode 缓存未创建（项目锁定 OK，$PROJECT_TOTAL/$PROJECT_TOTAL）— 首次启动 opencode 后自动缓存"
+    warn "opencode 缓存未创建（项目锁定 OK，${PROJECT_TOTAL}/${PROJECT_TOTAL}）— 首次启动 opencode 后自动缓存"
   else
-    fail "plugin 缓存不完整（$PLUGIN_COUNT/$PROJECT_TOTAL）— 运行 make update"
+    fail "plugin 缓存不完整（${PLUGIN_COUNT}/${PROJECT_TOTAL}）— 运行 make update"
   fi
 elif [ "$BUILTIN_COUNT" -eq "$PROJECT_TOTAL" ] && [ "$PLUGIN_COUNT" -eq "$PROJECT_TOTAL" ]; then
   ok "三处 dist/skills 完整（项目锁定 + builtin 缓存 + plugin 缓存，${PROJECT_TOTAL}×3）— plugin 加载链健康"
 elif [ "$BUILTIN_COUNT" -ne "$PROJECT_TOTAL" ]; then
-  fail "builtin 缓存不完整（$BUILTIN_COUNT/$PROJECT_TOTAL）— 运行 make update"
+  fail "builtin 缓存不完整（${BUILTIN_COUNT}/${PROJECT_TOTAL}）— 运行 make update"
 else
-  fail "plugin 缓存不完整（$PLUGIN_COUNT/$PROJECT_TOTAL）— 运行 make update"
+  fail "plugin 缓存不完整（${PLUGIN_COUNT}/${PROJECT_TOTAL}）— 运行 make update"
 fi
 
 # ---------- 11. [Critical] OMO + opencode 关键字段验证 ----------
@@ -320,18 +320,18 @@ O_FMT=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).
 O_INST=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions" 2>/dev/null)
 
 [ "$M_ON" = "true" ]                 && ok "OMO monitor.enabled=true（后台监控 idle 模式）" || fail "OMO monitor.enabled 未启用（oh-my-openagent.json）"
-[ -n "$M_MAX" ] && [ "$M_MAX" -le 1000 ]  && ok "OMO goal.default_max_iterations=$M_MAX（4.19.0 Goal 替代 Ralph Loop，已配防失控）" || fail "OMO goal.default_max_iterations 未设或 >1000（防失控）"
-[ -n "$M_BABY" ] && [ "$M_BABY" -ge 180000 ] && ok "OMO babysitting.timeout_ms=$M_BABY（适配 GLM-5.2）" || warn "OMO babysitting.timeout_ms 未调高（默认 120000 在 max reasoning 下可能误杀）"
-[ -z "$M_NOTI" ] || [ "$M_NOTI" = "undefined" ]  && ok "OMO notification 块已删除（dead config 清理）" || ok "OMO notification.force_enable=$M_NOTI"
+[ -n "$M_MAX" ] && [ "$M_MAX" -le 1000 ]  && ok "OMO goal.default_max_iterations=${M_MAX}（Goal 替代 Ralph Loop，已配防失控）" || fail "OMO goal.default_max_iterations 未设或 >1000（防失控）"
+[ -n "$M_BABY" ] && [ "$M_BABY" -ge 180000 ] && ok "OMO babysitting.timeout_ms=${M_BABY}（适配 GLM-5.2）" || warn "OMO babysitting.timeout_ms 未调高（默认 120000 在 max reasoning 下可能误杀）"
+[ -z "$M_NOTI" ] || [ "$M_NOTI" = "undefined" ]  && ok "OMO notification 块已删除（dead config 清理）" || ok "OMO notification.force_enable=${M_NOTI}"
 [ "$M_COMMENT" = "true" ]             && ok "OMO comment_checker.custom_prompt 已配" || warn "OMO comment_checker 未配（可选）"
-[ -n "$M_DSK" ] && [ "$M_DSK" -ge 1 ]  && ok "OMO disabled_skills: $M_DSK 条（playwright/dev-browser/agent-browser）" || warn "OMO disabled_skills 未配"
-[ -n "$M_DCMD" ] && [ "$M_DCMD" -ge 1 ] && ok "OMO disabled_commands: $M_DCMD 条（goal/refactor/start-work 等）" || warn "OMO disabled_commands 未配（可选）"
+[ -n "$M_DSK" ] && [ "$M_DSK" -ge 1 ]  && ok "OMO disabled_skills: ${M_DSK} 条（playwright/dev-browser/agent-browser）" || warn "OMO disabled_skills 未配"
+[ -n "$M_DCMD" ] && [ "$M_DCMD" -ge 1 ] && ok "OMO disabled_commands: ${M_DCMD} 条（goal/refactor/start-work 等）" || warn "OMO disabled_commands 未配（可选）"
 [ "$O_EDIT" = "deny" ]                && ok "opencode permission.edit 加了 .ssh/** deny（纵深防御）" || fail "opencode permission.edit 缺 .ssh/** deny（写文件层无防护）"
 [ "$O_BATCH" = "true" ]               && ok "opencode experimental.batch_tool=true（批量工具调用）" || warn "opencode experimental.batch_tool 未启用"
-[ -n "$O_POL" ] && [ "$O_POL" -ge 1 ]  && ok "opencode experimental.policies: $O_POL 条（deny 海外 provider）" || warn "opencode experimental.policies 未配（可选）"
+[ -n "$O_POL" ] && [ "$O_POL" -ge 1 ]  && ok "opencode experimental.policies: ${O_POL} 条（deny 海外 provider）" || warn "opencode experimental.policies 未配（可选）"
 [ "$O_PRUNE" = "true" ]               && ok "opencode compaction.prune=true（自动修剪旧工具输出）" || warn "opencode compaction.prune 未启用（默认 false 浪费 token）"
 [ "$O_FMT" = "true" ]                 && ok "opencode formatter=true（启用内置格式化器，无 prettier 时 no-op）" || warn "opencode formatter 未启用（可选）"
-[ -n "$O_INST" ] && [ "$O_INST" -ge 1 ] && ok "opencode instructions: $O_INST 条引用（.opencode/instructions.md）" || warn "opencode instructions 未配（可选）"
+[ -n "$O_INST" ] && [ "$O_INST" -ge 1 ] && ok "opencode instructions: ${O_INST} 条引用（.opencode/instructions.md）" || warn "opencode instructions 未配（可选）"
 echo ""
 
 # ---------- 12. [Warning] tui.json plugin 同步 ----------
@@ -396,7 +396,7 @@ echo ""
 # ---------- 汇总 ----------
 TOTAL_FAIL=$((FAIL + WFAIL))
 echo "═══════════════════════════════════════════"
-echo "  通过 $PASS ｜ 失败 $TOTAL_FAIL（critical $FAIL / warning $WFAIL）｜ 警告 $WARN"
+echo "  通过 ${PASS} ｜ 失败 ${TOTAL_FAIL}（critical ${FAIL} / warning ${WFAIL}）｜ 警告 ${WARN}"
 echo "═══════════════════════════════════════════"
 
 if [ "$FAIL" -gt 0 ]; then
