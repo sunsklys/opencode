@@ -20,12 +20,12 @@
 | 快通道 | DeepSeek V4 Flash (volc) | minimal | **5** | quick |
 | 重型推理(fallback) | DeepSeek V4 Pro (volc) | — | **3** | atlas/sisyphus-junior 等的 fallback 首位 |
 
-> **并发精细值**（`oh-my-openagent.json:39-50` `background_task.modelConcurrency`）：
+> **并发精细值**（`oh-my-openagent.json` → `background_task.modelConcurrency`）：
 > `deepseek-v4-pro: 3` / `deepseek-v4-flash: 5` / `glm-5.2: 5` / `glm-5-turbo: 3`。
-> `providerConcurrency` 各 provider 5（L36-37）。`defaultConcurrency: 5`（L34）。
+> `providerConcurrency` 各 provider 5。`defaultConcurrency: 5`。
 > **含义**：pro/turbo 模型并发被压到 3（rate-limit 保护），并行委派时这两个模型可能排队。
 
-### Fallback 三参数（`oh-my-openagent.json:19-26` `runtime_fallback`）
+### Fallback 三参数（`oh-my-openagent.json` → `runtime_fallback`）
 
 - `max_fallback_attempts: 4` — 最多重试 4 次
 - `cooldown_seconds: 60` — 失败后冷却 60 秒
@@ -38,7 +38,7 @@
 
 ## 二、关键词触发速查（最高频交互入口）🔥
 
-> **核心特性**：`oh-my-openagent.json:305-307` `keyword_detector.enabled_expansions`
+> **核心特性**：`oh-my-openagent.json` → `keyword_detector.enabled_expansions`
 > 在普通对话里说这些词，**自动展开为对应模式**，无需手动 `/` 命令。
 
 | 关键词 | 触发 | 适用场景 |
@@ -48,7 +48,7 @@
 | `hyperplan` | 对抗式多 agent 规划（5 个 hostile critic 交叉批判） | 高风险架构决策、需求模糊 |
 | `hyperplan-ultrawork` | 先 hyperplan 规划，再 ultrawork 执行 | 复杂工程端到端 |
 
-> **用法示例**：直接打字「ultrawork 帮我把这个模块重写」即可，无需 `/ulw-loop`。
+> **用法示例**：直接打字「ultrawork 帮我把这个模块重写」即可，无需手动 `/` 命令。
 
 ---
 
@@ -67,7 +67,7 @@
 - **何时不用 /ulw-plan**：路径明确的修复、单文件改动、文档编辑——开销大于收益
 
 ### 场景 3：提交代码
-- `/git-master` → atomic commit + repo style 匹配 + footer（`commit_footer: true` + `include_co_authored_by: true`，L281-282）
+- `/git-master` → atomic commit + repo style 匹配 + footer（`commit_footer: true` + `include_co_authored_by: true`，`oh-my-openagent.json` → `git_master` 块）
 
 ### 场景 4：审查工作
 - `/review-work` → 5 路并行子 agent（目标/质量/安全/QA/上下文）
@@ -102,8 +102,7 @@
 - **MCP 加持**：`mermaid` MCP 渲染架构图（`/mermaid_preview`）
 
 ### 场景 10：长任务 / 批量
-- `/ralph-loop` → 自引用循环直到完成
-- `/ulw-loop` → ultrawork 模式（更高精度，但更慢）
+- `/goal` → 持久化目标追踪（替代已移除的 /ralph-loop 和 /ulw-loop）
 
 ### 场景 11：清理 / 重构
 - `/remove-ai-slops` → 锁行为（先写回归测试）→ 清理 AI 代码味 → 验证
@@ -115,11 +114,11 @@
 ## 四、效率技巧
 
 ### 1. 并行委派免费
-`background_task.defaultConcurrency: 5`（L34）。最多 5 个后台 agent 同跑。
+`background_task.defaultConcurrency: 5`（`oh-my-openagent.json` → `background_task`）。最多 5 个后台 agent 同跑。
 - 说「并行探索这几个方向」→ sisyphus 自动 fan-out
 - 自己也能手动：`task(subagent_type="explore", run_in_background=true, ...)`
 
-### 2. Team Mode（`team_mode.enabled: true`，L7-18）
+### 2. Team Mode（`team_mode.enabled: true`，`oh-my-openagent.json` → `team_mode` 块）
 - `max_parallel_members: 4` / `max_members: 8`
 - 适用：多模块并行开发、planner + builders + reviewer 协作
 - **何时不用**：单文件改动、路径明确的修复、< 5 步的任务——team spec 创建开销大于收益
@@ -130,30 +129,30 @@
 - 查看：http://127.0.0.1:4747（Web UI，`webServerEnabled: true`）
 - 你不用管它——它管你
 
-### 4. TDD 是默认的（`sisyphus_agent.tdd: true`，L70）
+### 4. TDD 是默认的（`sisyphus_agent.tdd: true`，`oh-my-openagent.json` → `sisyphus_agent` 块）
 - 实现任务默认走 RED→GREEN→REFACTOR
 - **豁免场景**：纯 prompt 文本、注释、版本号 bump、rename-only、一次性脚本、配置文件——明确说「不要 TDD」
 
-### 5. 权限安全网（43 条 bash deny，`opencode.json:206-248`）
+### 5. 权限安全网（49 条 bash deny，`opencode.json` → `permission.bash`）
 - 拦：sudo / rm -rf / kill / node -e / python -c / curl POST / force push / git reset --hard / npm publish / docker / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取
 - 放：chmod / chown / git restore / git config alias（日常开发常用，但需注意 chmod 可改 ~/.ssh 权限、git restore 会丢未提交工作）
 - 放手让 agent 跑命令
 
-### 6. LSP 工具链（`opencode.json:108  "lsp": true`）
+### 6. LSP 工具链（`opencode.json` → `lsp: true`）
 - 自动检测内置 LSP（TS/Pyright/gopls/ESLint）
 - `lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename` 全可用
 - 配合 `/refactor`（AST-grep）做安全重命名
 
-### 7. hashline_edit（`oh-my-openagent.json:3  "hashline_edit": true`）
+### 7. hashline_edit（`oh-my-openagent.json` → `hashline_edit: true`）
 - 编辑工具用 `LINE#ID` 格式精确定位行
 - 你看到的文件内容每行带 hash 标识——这是特性，不是 bug
 
-### 8. ⚠️ aggressive_truncation 副作用（`oh-my-openagent.json:55`）
+### 8. ⚠️ aggressive_truncation 副作用（`oh-my-openagent.json` → `experimental.aggressive_truncation`）
 - `experimental.aggressive_truncation: true` 会激进截断上下文
 - **副作用**：长 session 中可能丢失关键历史信息
 - **缓解**：重要上下文主动重述；感觉响应变慢或信息丢失时开新 session
 
-### 9. dynamic_context_pruning（`oh-my-openagent.json:56-77`）
+### 9. dynamic_context_pruning（`oh-my-openagent.json` → `experimental.dynamic_context_pruning`）
 - `enabled: true`（动态上下文裁剪已启用）
 - `protected_tools` 保护 task/todowrite/lsp_rename/session_read 等不被裁剪；`turn_protection` 保护最近 3 轮；策略含 deduplication / supersede_writes / purge_errors
 
@@ -173,13 +172,13 @@
 | 长会话死撑 | 感觉变慢就 `/handoff` 或开新 session | aggressive_truncation 可能丢信息 |
 | 手动写 commit | `/git-master` | atomic + style 匹配 |
 | 忘记 skills 存在 | 遇事先想 skill | 你装了 40+ skill |
-| 期望自动更新 | 定期 `make update` | `disabled_hooks` 禁了 auto-update-checker（L285-287） |
+| 期望自动更新 | 定期 `make update` | `disabled_hooks` 禁了 auto-update-checker |
 
 ---
 
 ## 六、维护提醒
 
-### `disabled_hooks: ["auto-update-checker"]`（`oh-my-openagent.json:285-287`）
+### `disabled_hooks: ["auto-update-checker"]`（`oh-my-openagent.json` → `disabled_hooks`）
 **opencode 不会自动检查更新**。需主动维护：
 
 | 周期 | 动作 |
@@ -188,7 +187,7 @@
 | 每月 | `npm view oh-my-openagent version` 对比本地，参考 README「如何升级 oh-my-openagent 主版本」章节 |
 | 升级 OMO 后 | **必跑** `make check` 验证 |
 
-### `model_capabilities.auto_refresh_on_start: true`（L28-32）
+### `model_capabilities.auto_refresh_on_start: true`（`oh-my-openagent.json` → `model_capabilities`）
 首次启动会刷新模型能力探测（`refresh_timeout_ms: 5000`），冷启动稍慢属正常。
 
 ---
@@ -224,23 +223,23 @@
 
 ## 八、配置事实索引（审计用）
 
-| 配置项 | 文件:行 | 当前值 |
+| 配置项 | 文件:字段 | 当前值 |
 |---|---|---|
-| 11 agents | `oh-my-openagent.json:90-214` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior |
-| 8 categories | `oh-my-openagent.json:215-296` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
-| team_mode | `oh-my-openagent.json:7-18` | enabled, max_parallel_members=4, max_members=8 |
-| background_task | `oh-my-openagent.json:33-51` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
-| runtime_fallback | `oh-my-openagent.json:19-26` | 4 retries / 60s cooldown / 60s timeout / notify_on_fallback=true |
-| experimental | `oh-my-openagent.json:52-78` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
-| sisyphus_agent | `oh-my-openagent.json:79-85` | tdd=true / planner_enabled=true / replace_plan=true |
-| keyword_detector | `oh-my-openagent.json:305-307` | ultrawork/team/hyperplan/hyperplan-ultrawork |
-| disabled_hooks | `oh-my-openagent.json:302-304` | auto-update-checker |
-| git_master | `oh-my-openagent.json:297-301` | commit_footer=true / include_co_authored_by=true |
-| compaction | `opencode.json:112-114` | auto=true |
-| lsp | `opencode.json:108` | true（自动检测） |
-| permission.bash | `opencode.json:205-258` | 52 条规则（1 default allow + 2 force-with-lease allow + 49 deny，含 rm/docker 危险操作白名单） |
-| permission.read | `opencode.json:184-204` | 19 条规则（2 allow + 17 deny，含私钥保护） |
-| MCP 启用 | `opencode.json:59-109` | zai/web-search-prime/web-reader/zread/mermaid/codegraph/dbx（7 个启用，chrome-mcp disabled） |
+| 11 agents | `oh-my-openagent.json` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior |
+| 8 categories | `oh-my-openagent.json` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
+| team_mode | `oh-my-openagent.json` → `team_mode` | enabled, max_parallel_members=4, max_members=8 |
+| background_task | `oh-my-openagent.json` → `background_task` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
+| runtime_fallback | `oh-my-openagent.json` → `runtime_fallback` | 4 retries / 60s cooldown / 60s timeout / notify_on_fallback=true |
+| experimental | `oh-my-openagent.json` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
+| sisyphus_agent | `oh-my-openagent.json` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |
+| keyword_detector | `oh-my-openagent.json` → `keyword_detector` | ultrawork/team/hyperplan/hyperplan-ultrawork |
+| disabled_hooks | `oh-my-openagent.json` → `disabled_hooks` | auto-update-checker |
+| git_master | `oh-my-openagent.json` → `git_master` | commit_footer=true / include_co_authored_by=true |
+| compaction | `opencode.json` → `compaction` | auto=true / prune=true / tail_turns=6 |
+| lsp | `opencode.json` → `lsp` | true（自动检测） |
+| permission.bash | `opencode.json` → `permission.bash` | 52 条规则（1 default allow + 2 force-with-lease allow + 49 deny，含 rm/docker 危险操作白名单） |
+| permission.read | `opencode.json` → `permission.read` | 19 条规则（2 allow + 17 deny，含私钥保护） |
+| MCP 启用 | `opencode.json` → `mcp` | zai/web-search-prime/web-reader/zread/mermaid/codegraph/dbx（7 个，全部启用） |
 | opencode-mem | `opencode-mem.jsonc` | autoCapture=true / injectProfile=true / Web UI :4747 |
 
 ---
