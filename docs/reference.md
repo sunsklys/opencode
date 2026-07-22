@@ -10,9 +10,9 @@
 
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
-| **插件/扩展** | `plugin` / `mcp` / `lsp` | 3 plugin + 8 MCP + LSP（true = 自动检测内置） |
+| **插件/扩展** | `plugin` / `mcp` / `lsp` | 3 plugin + 7 MCP + LSP（true = 自动检测内置） |
 | **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + 智谱 glm-5-turbo 作 small（避开火山 deepseek-v4-flash 月配额限制） |
-| **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / notify / auto |
+| **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / true(patch 自动,minor/major 仅通知) / auto |
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
 | **安全** | `permission.read` / `permission.bash` / `watcher.ignore` | deny 列表 + 文件监听忽略 |
 
@@ -95,15 +95,15 @@
 |---|---|---|
 | LSP 工具链（`lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename`） | `opencode.json` → `"lsp": true` | ✅ 已启用（自动检测内置 LSP） |
 | opencode-mem 本地持久记忆 | `opencode.json` plugin 字段 + `opencode-mem.jsonc` | ✅ 已启用（智谱 glm-5-turbo auto-capture） |
-| 8 个 MCP（智谱 web 工具 / mermaid / codegraph / dbx；chrome-mcp disabled） | `opencode.json` mcp 字段 | ✅ 已启用（7 启用 + chrome-mcp 禁用；另有 4 个插件注入：websearch / context7 / grep_app / lsp） |
+| 7 个 MCP（智谱 web 工具 / mermaid / codegraph / dbx，全部启用） | `opencode.json` mcp 字段 | ✅ 已启用（另有 4 个插件注入：websearch / context7 / grep_app / lsp） |
 | permission 加固（read + bash + edit 三层 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（纵深层防御） |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
 | **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `oh-my-openagent.json` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
-| **ralph_loop 迭代上限**（防 ralph 失控烧钱） | `oh-my-openagent.json` → `ralph_loop.default_max_iterations=30` | ✅ 显式 cap（默认 100） |
+| **goal 迭代上限**（防 goal 失控烧钱） | `oh-my-openagent.json` → `goal.default_max_iterations=100` | ✅ 显式 cap |
 | **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `oh-my-openagent.json` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
 | **comment_checker**（中文注释质量检查） | `oh-my-openagent.json` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
-| **disabled_skills/commands**（禁用 playwright-cli/dev-browser/agent-browser + ralph-loop/cancel-ralph） | `oh-my-openagent.json` → `disabled_skills/disabled_commands` | ✅ 已禁用不用的内置功能 |
+| **disabled_skills**（禁用 playwright/dev-browser/agent-browser） | `oh-my-openagent.json` → `disabled_skills` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
 | **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
 | **experimental.mcp_timeout**（全局 MCP 超时 60s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=60000` | ✅ 已启用 |
@@ -141,7 +141,6 @@
 | `web-search-prime` / `web-reader` / `zread` | 远程接口 | 直连 bigmodel.cn | 智谱服务器可见查询/读取内容 |
 | `dbx` | 本地启动 | 出网到数据库服务器（按 dbx 客户端连接配置） | 受 dbx 客户端连接配置控制（生产 / 测试 / DTS 分连接管控，见 dbx.md 安全护栏） |
 | `mermaid` / `codegraph` | 本地启动 | 本地处理，不出网 | 无远程信任问题 |
-| `chrome-mcp` | 已禁用 | - | - |
 
 > **敏感项目建议**：临时关 `opencode-mem.jsonc` → `autoCaptureEnabled: false`，避免会话要点出网到智谱做元数据推理。
 
