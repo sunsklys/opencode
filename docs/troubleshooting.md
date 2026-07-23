@@ -81,6 +81,54 @@
   # 期望收到包含 "serverInfo":{"name":"dbx",...} 的 JSON 响应
   ```
   最后重启 opencode，`opencode mcp list` 看到 `✓ dbx connected`。
+## opencode 进程崩溃 / `panic: NAPI FATAL ERROR`
+
+症状：opencode 运行一段时间后整个进程 crash，终端输出：
+```
+panic: NAPI FATAL ERROR: Error::New napi_create_error
+oh no: Bun has crashed. This indicates a bug in Bun, not your code.
+```
+
+**根因**：opencode 内嵌 Bun v1.3.14 的 NAPI 实现存在 panic bug。在 `opencode.db` 膨胀（event 表 16 万行 / data 列 500MB+）+ 长时间运行（实测 18 小时）的压力下，`bun:sqlite` 的错误处理路径触发 `napi_create_error` 致命错误，进程整体崩溃。崩溃发生在原生层（C/Zig），无法被 try/catch 捕获。
+
+这是 Bun 运行时的 bug，不是你的配置或代码问题。stable opencode 1.18.4 已是最新，仍内嵌同一版本 Bun，短期无法通过升级消除根因。
+
+**修复（降低触发概率）**：
+
+1. 体检当前风险：
+   ```bash
+   make db-check
+   ```
+   出现 `❌ 高风险` 说明 DB 已接近崩溃临界。
+
+2. **完全退出 opencode**（Ctrl+C 或 `:q`），执行维护：
+   ```bash
+   make db-maintain                       # 安全：仅备份 + VACUUM 压缩
+   make db-maintain CLEAN=1               # 清理 30 天前旧 session + VACUUM
+   make db-maintain CLEAN=1 KEEP_DAYS=7   # 保留 7 天
+   make db-maintain CLEAN=1 INCREMENTAL=1 # 首次额外切 auto_vacuum=INCREMENTAL（未来自动增量回收）
+   ```
+   维护脚本会自动备份（保留最近 5 份）、开启 foreign_keys 让 CASCADE 删除关联 message/part/event、WAL checkpoint + VACUUM 回收空间。
+
+3. 预览将删除什么（不实际执行）：
+   ```bash
+   ./scripts/opencode-db-maintain.sh --dry-run --clean
+   ```
+
+4. 重启 opencode。
+
+**预防**：
+- 避免单个 session 连续运行超 8 小时（goal enforcer 已随 `goal.enabled: false` 关闭）
+- 每月跑一次 `make db-check`，DB 超 500MB 或 event 超 8 万行时维护
+- 跑 `make check-upgrade` 监控 opencode 新版，当内嵌 Bun > 1.3.14 时升级可根治
+
+**验证修复**：
+   ```bash
+   make db-check
+   # 期望：✅ DB 大小正常（< 500MB） / ✅ event 表行数正常（< 8 万）
+   ```
+
+
 ## 还没解决？
 
 1. 跑 `make check` 看 12 项体检报告

@@ -36,7 +36,7 @@ if [ -n "$NODE_VER" ]; then
   if [ "$NODE_MAJOR" -ge 22 ]; then
     ok "Node.js $NODE_VER"
   else
-    fail "Node.js $NODE_VER（需要 ≥22，运行 fnm install 22）"
+    fail "Node.js ${NODE_VER}（需要 ≥22，运行 fnm install 22）"
   fi
 else
   fail "Node.js 未安装"
@@ -384,7 +384,7 @@ else
     if [ "$R_MAJOR" -gt "$L_MAJOR" ] || \
        { [ "$R_MAJOR" -eq "$L_MAJOR" ] && [ "$R_MINOR" -gt "$L_MINOR" ]; } || \
        { [ "$R_MAJOR" -eq "$L_MAJOR" ] && [ "$R_MINOR" -eq "$L_MINOR" ] && [ "$R_PATCH" -gt "$L_PATCH" ]; }; then
-      warn "superpowers 有新版：$SP_LOCKED → $SP_REMOTE（运行 make upgrade-superpowers）"
+      warn "superpowers 有新版：$SP_LOCKED → ${SP_REMOTE}（运行 make upgrade-superpowers）"
     else
       warn "superpowers 本地 $SP_LOCKED 比远端 $SP_REMOTE 还新（异常，请检查）"
     fi
