@@ -51,3 +51,17 @@ opencode auth login zhipuai-coding-plan && opencode
 ```
 
 > 详细说明（含运行时数据表 / git 保护范围 / 手动分步备选）已迁移到 [docs/quickstart.md](./docs/quickstart.md) 的「灾备 / 恢复」段。
+
+## 数据库维护
+
+`opencode.db` 长期使用会膨胀（实测 1GB / event 表 16 万行会触发内嵌 Bun v1.3.14 的 NAPI panic 崩溃）。每月体检一次：
+
+```bash
+make db-check                          # 体检（只读，运行时安全）
+make db-maintain CLEAN=1               # 维护（需先退出 opencode；清理 30 天前 session + VACUUM）
+make db-maintain CLEAN=1 KEEP_DAYS=7   # 保留 7 天
+make db-maintain CLEAN=1 INCREMENTAL=1 # 首次额外切 auto_vacuum=INCREMENTAL（未来自动增量回收）
+make check-upgrade                     # 监控 opencode 新版 + 内嵌 Bun 是否已修复 NAPI bug
+```
+
+详见 [docs/troubleshooting.md](./docs/troubleshooting.md)「opencode 进程崩溃」段。
