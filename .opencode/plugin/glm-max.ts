@@ -1,5 +1,5 @@
 /**
- * reasoningEffort / variant 恢复 plugin
+ * reasoningEffort 恢复 plugin
  *
  * 背景：OMO 的 model-capability 兼容性检查在 chat.params hook 里会：
  * 1. 把 GLM 5.2 的 variant:"max" 降级为 "high"（heuristic glm 不含 max）
@@ -7,7 +7,13 @@
  *    删除 reasoningEffort（reason: unknown-model-family）
  *
  * 本 plugin 在 OMO 之后执行（.opencode/plugin/*.ts 自动发现，排在 plugin_origins
- * 末尾），恢复被错误降级/删除的值。
+ * 末尾），恢复被删除的 reasoningEffort。
+ *
+ * 为何只恢复 reasoningEffort，不恢复 variant：
+ *   variant 在 chat.params 之前（session/llm/request.ts:80-83）就已被解析成
+ *   options 对象，chat.params hook 改任何 variant 字段都来不及影响合并结果。
+ *   且 GLM 的 model.variants 映射表无 "max" 键，variant:"max" 本就是空 options。
+ *   GLM 的 max reasoning 通过 reasoningEffort option 直接传递，绕过 variant 机制。
  */
 import type { Plugin } from "@opencode-ai/plugin"
 
@@ -31,13 +37,12 @@ const plugin: { id: string; server: Plugin } = {
       const id = modelID.toLowerCase()
       const providerID = (readString(model, "providerID") ?? "").toLowerCase()
 
-      // 1. GLM 5.2: 强制 variant=max + reasoningEffort=max
-      //    OMO heuristic glm family 不含 max variant/reasoningEfforts
+      // 1. GLM 5.2: 强制 reasoningEffort=max
+      //    OMO heuristic glm family 不含 reasoningEfforts，会丢弃 reasoningEffort
+      //    GLM 的 max reasoning 通过此 option 直接传递（variant 机制见顶部注释）
       const isGlm52 = ["glm-5.2", "glm-5-2", "glm-5p2"].some((name) => id.includes(name))
       if (isGlm52) {
         output.options.reasoningEffort = "max"
-        const message = input.message as unknown
-        if (isRecord(message)) message.variant = "max"
         return
       }
 
