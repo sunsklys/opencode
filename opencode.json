@@ -106,7 +106,9 @@
   "compaction": {
     "auto": true,
     "prune": true,
-    "tail_turns": 6
+    "tail_turns": 6,
+    "preserve_recent_tokens": 4096,
+    "reserved": 1024
   },
   "experimental": {
     "batch_tool": true,
@@ -125,6 +127,8 @@
   ],
   "small_model": "zhipuai-coding-plan/glm-5-turbo",
   "subagent_depth": 2,
+  "snapshots": true,
+  "shell": "zsh",
   "references": {
     "omo": {
       "repository": "code-yeongyu/oh-my-openagent",
