@@ -99,6 +99,7 @@
       "command": ["npx", "-y", "@dbx-app/mcp-server"]
     }
   },
+  "lsp": true,
   "default_agent": "sisyphus",
   "share": "manual",
   "autoupdate": true,
