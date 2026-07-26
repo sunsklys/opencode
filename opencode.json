@@ -99,16 +99,12 @@
       "command": ["npx", "-y", "@dbx-app/mcp-server"]
     }
   },
-  "lsp": true,
   "default_agent": "sisyphus",
   "share": "manual",
   "autoupdate": true,
   "compaction": {
-    "auto": true,
     "prune": true,
-    "tail_turns": 6,
-    "preserve_recent_tokens": 4096,
-    "reserved": 1024
+    "tail_turns": 6
   },
   "experimental": {
     "batch_tool": true,
@@ -127,7 +123,6 @@
   ],
   "small_model": "zhipuai-coding-plan/glm-5-turbo",
   "subagent_depth": 2,
-  "snapshots": true,
   "shell": "zsh",
   "references": {
     "omo": {
@@ -141,12 +136,10 @@
     }
   },
   "tool_output": {
-    "max_lines": 2000,
     "max_bytes": 524288
   },
   "attachment": {
     "image": {
-      "auto_resize": true,
       "max_width": 1600,
       "max_height": 1600
     }
