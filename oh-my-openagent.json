@@ -157,8 +157,8 @@
       "reasoningEffort": "max",
       "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
+        "volcengine-plan/glm-5.2",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
       ],
       "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
@@ -199,8 +199,8 @@
       "reasoningEffort": "max",
       "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
+        "volcengine-plan/glm-5.2",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
       ],
       "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
@@ -211,8 +211,8 @@
       "reasoningEffort": "max",
       "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
+        "volcengine-plan/glm-5.2",
         "volcengine-plan/deepseek-v4-pro",
-        "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
       ],
       "compaction": { "model": "volcengine-plan/deepseek-v4-flash" }
@@ -220,11 +220,14 @@
   },
   "categories": {
     "visual-engineering": {
-      "model": "zhipuai-coding-plan/glm-5v-turbo",
+      "model": "zhipuai-coding-plan/glm-5.2",
+      "variant": "max",
+      "reasoningEffort": "max",
       "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
-        "volcengine-plan/minimax-m3",
-        "volcengine-plan/doubao-seed-2.0-code"
+        "volcengine-plan/glm-5.2",
+        "volcengine-plan/kimi-k2.6",
+        "volcengine-plan/doubao-seed-2.0-pro"
       ]
     },
     "ultrabrain": {
@@ -263,7 +266,7 @@
     },
     "quick": {
       "model": "volcengine-plan/deepseek-v4-flash",
-      "reasoningEffort": "minimal",
+      "reasoningEffort": "low",
       "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
