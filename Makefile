@@ -14,7 +14,7 @@ help: ## 显示帮助
 	@echo "  make check     体检所有组件状态（13 项：critical 4 + warning 9）"
 	@echo "  make bootstrap 一键灾备恢复（install + prime-cache + check）"
 	@echo "  make update    重装依赖（按 package.json 精确版本）"
-	@echo "  make upgrade   升级 OMO + plugin 到 npm 最新"
+	@echo "  make upgrade   一键升级 OMO + plugin + superpowers 到最新（npm 包 + git tag 源）"
 	@echo "  make upgrade-superpowers   升级 superpowers plugin 到远端最新 tag"
 	@echo ""
 	@echo "分步命令："
@@ -115,8 +115,9 @@ update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync
 	@echo ""
 	@echo "✓ 依赖已更新（含 skill 软链同步），运行 make check 验证"
 
-upgrade: ## 升级 OMO 和 plugin 到 npm 最新版（含 $schema URL 同步）
+upgrade: ## 一键升级 OMO + plugin + superpowers 到最新版（npm 包 + git tag 源）
 	@bash scripts/upgrade.sh
+	@bash scripts/upgrade-superpowers.sh
 
 upgrade-superpowers: ## 升级 superpowers plugin 到远端最新 tag（查远端 → 改 opencode.json → 清缓存）
 	@bash scripts/upgrade-superpowers.sh
