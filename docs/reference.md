@@ -46,7 +46,7 @@
 
 ## 关于 `prompt_append` × 20（全覆盖）
 
-> 20 个 agent/category（12 agent + 8 category）都挂了 `prompt_append`（`file://.opencode/lang-zh.md`），看似 DRY 违反，实则是**必要的**。
+> 20 个 agent/category（12 agent + 8 category）都挂了 `prompt_append`（`file://~/.config/opencode/.opencode/lang-zh.md`），看似 DRY 违反，实则是**必要的**。
 
 **为什么不依赖 `i18n.locale: "zh"`？**
 - OMO 的 `i18n.locale` 只管 **toast/UI 文案**翻译（`locales[currentLang][key]`，如 `toast.fallback_runtime`）
@@ -55,7 +55,8 @@
 
 **优化方向（已实施）**：
 - prompt_append 支持 `file://` 协议（OMO dist/index.js 搜索 `file://` 定位）
-- 已提取到 `.opencode/lang-zh.md`，用 `prompt_append: "file://.opencode/lang-zh.md"` 单源引用
+- 已提取到 `.opencode/lang-zh.md`，用 `prompt_append: "file://~/.config/opencode/.opencode/lang-zh.md"` 单源引用
+- **必须用 `~/` 绝对锚定**，不能用相对路径 `file://.opencode/...`：相对路径依赖 opencode 启动 cwd，当 cwd ≠ `~/.config/opencode/`（如从家目录启动）时 `resolvePromptAppend` 会解析到错误位置并静默失败，agent system prompt 会嵌入 `[WARNING: Could not resolve file URI]` 而非中文指令——上游支持 tilde 展开见 `resolve-file-uri.ts:30` + 测试 `resolve-file-uri.test.ts:76`（issue #4593）
 
 ## 超时字段作用域对照
 

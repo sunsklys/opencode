@@ -100,7 +100,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -113,7 +113,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -125,7 +125,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -137,7 +137,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -149,7 +149,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -161,7 +161,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -173,7 +173,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -184,7 +184,7 @@
     "librarian": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "medium",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -195,7 +195,7 @@
     "explore": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "medium",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -205,7 +205,7 @@
     },
     "multimodal-looker": {
       "model": "zhipuai-coding-plan/glm-5v-turbo",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
@@ -215,7 +215,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -227,7 +227,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -239,7 +239,7 @@
   "categories": {
     "visual-engineering": {
       "model": "zhipuai-coding-plan/glm-5v-turbo",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/minimax-m3",
         "volcengine-plan/doubao-seed-2.0-code"
@@ -249,7 +249,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -261,7 +261,7 @@
       "variant": "max",
       "reasoningEffort": "max",
       "temperature": 0.7,
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -272,7 +272,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
@@ -282,7 +282,7 @@
     "quick": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "minimal",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -291,7 +291,7 @@
     "unspecified-low": {
       "model": "volcengine-plan/deepseek-v4-flash",
       "reasoningEffort": "low",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "zhipuai-coding-plan/glm-5-turbo",
         "volcengine-plan/doubao-seed-2.0-lite"
@@ -301,7 +301,7 @@
       "model": "zhipuai-coding-plan/glm-5.2",
       "variant": "max",
       "reasoningEffort": "max",
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/deepseek-v4-pro",
         "volcengine-plan/minimax-m3",
@@ -311,7 +311,7 @@
     "writing": {
       "model": "zhipuai-coding-plan/glm-5.2",
       "temperature": 0.7,
-      "prompt_append": "file://.opencode/lang-zh.md",
+      "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
       "fallback_models": [
         "volcengine-plan/glm-5.2",
         "volcengine-plan/kimi-k2.6",
