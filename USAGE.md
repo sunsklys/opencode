@@ -28,7 +28,7 @@
 ### Fallback 三参数（`oh-my-openagent.json` → `runtime_fallback`）
 
 - `max_fallback_attempts: 4` — 最多重试 4 次
-- `cooldown_seconds: 60` — 失败后冷却 60 秒
+- `cooldown_seconds: 30` — 失败后冷却 30 秒
 - `timeout_seconds: 60` — 单次请求超时 60 秒
 - `notify_on_fallback: true` — 触发 fallback 时弹 toast 提醒（**注意字段名是 `notify_on_fallback`，不是 `notify_on_footer`**）
 
@@ -133,7 +133,7 @@
 - 实现任务默认走 RED→GREEN→REFACTOR
 - **豁免场景**：纯 prompt 文本、注释、版本号 bump、rename-only、一次性脚本、配置文件——明确说「不要 TDD」
 
-### 5. 权限安全网（49 条 bash deny，`opencode.json` → `permission.bash`）
+### 5. 权限安全网（53 条 bash deny，`opencode.json` → `permission.bash`）
 - 拦：sudo / rm -rf / kill / node -e / python -c / curl POST / force push / git reset --hard / npm publish / docker / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取
 - 放：chmod / chown / git restore / git config alias（日常开发常用，但需注意 chmod 可改 ~/.ssh 权限、git restore 会丢未提交工作）
 - 放手让 agent 跑命令
@@ -229,7 +229,7 @@
 | 8 categories | `oh-my-openagent.json` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
 | team_mode | `oh-my-openagent.json` → `team_mode` | enabled, max_parallel_members=4, max_members=8 |
 | background_task | `oh-my-openagent.json` → `background_task` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
-| runtime_fallback | `oh-my-openagent.json` → `runtime_fallback` | 4 retries / 60s cooldown / 60s timeout / notify_on_fallback=true |
+| runtime_fallback | `oh-my-openagent.json` → `runtime_fallback` | 4 retries / 30s cooldown / 60s timeout / notify_on_fallback=true |
 | experimental | `oh-my-openagent.json` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
 | sisyphus_agent | `oh-my-openagent.json` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |
 | keyword_detector | `oh-my-openagent.json` → `keyword_detector` | ultrawork/team/hyperplan/hyperplan-ultrawork |
@@ -237,7 +237,7 @@
 | git_master | `oh-my-openagent.json` → `git_master` | commit_footer=true / include_co_authored_by=true |
 | compaction | `opencode.json` → `compaction` | auto=true / prune=true / tail_turns=6 |
 | lsp | `opencode.json` → `lsp` | true（自动检测） |
-| permission.bash | `opencode.json` → `permission.bash` | 52 条规则（1 default allow + 2 force-with-lease allow + 49 deny，含 rm/docker 危险操作白名单） |
+| permission.bash | `opencode.json` → `permission.bash` | 56 条规则（3 allow + 53 deny，含 rm/docker 危险操作白名单） |
 | permission.read | `opencode.json` → `permission.read` | 19 条规则（2 allow + 17 deny，含私钥保护） |
 | MCP 启用 | `opencode.json` → `mcp` | zai/web-search-prime/web-reader/zread/mermaid/codegraph/dbx（7 个，全部启用） |
 | opencode-mem | `opencode-mem.jsonc` | autoCapture=true / injectProfile=true / Web UI :4747 |
