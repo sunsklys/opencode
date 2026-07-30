@@ -48,12 +48,12 @@
   "autoCaptureEnabled": true,
 
   "memoryProvider": "openai-chat",
-  "memoryModel": "glm-5-turbo",
+  "memoryModel": "glm-4.5-air",
   "memoryApiUrl": "https://open.bigmodel.cn/api/coding/paas/v4",
   "memoryApiKey": "env://Z_AI_API_KEY",
 
   "autoCaptureMaxIterations": 3,
-  "autoCaptureIterationTimeout": 30000,
+  "autoCaptureIterationTimeout": 90000,
   "aiSessionRetentionDays": 7,
   "memoryTemperature": 0.3,
 
