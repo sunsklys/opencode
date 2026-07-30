@@ -52,7 +52,7 @@
   "memoryApiUrl": "https://open.bigmodel.cn/api/coding/paas/v4",
   "memoryApiKey": "env://Z_AI_API_KEY",
 
-  "autoCaptureMaxIterations": 5,
+  "autoCaptureMaxIterations": 3,
   "autoCaptureIterationTimeout": 30000,
   "aiSessionRetentionDays": 7,
   "memoryTemperature": 0.3,
@@ -67,7 +67,7 @@
   // ============================================
   // User Profile System
   // ============================================
-  "userProfileAnalysisInterval": 10,
+  "userProfileAnalysisInterval": 25,
   "userProfileMaxPreferences": 20,
   "userProfileMaxPatterns": 15,
   "userProfileMaxWorkflows": 10,
@@ -78,7 +78,7 @@
   // Search Settings
   // ============================================
   "similarityThreshold": 0.6,
-  "maxMemories": 10,
+  "maxMemories": 5,
 
   // ============================================
   // Advanced
