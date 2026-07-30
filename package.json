@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@opencode-ai/plugin": "1.18.5",
-    "oh-my-openagent": "4.19.2"
+    "@opencode-ai/plugin": "1.18.9",
+    "oh-my-openagent": "4.19.3"
   },
   "scripts": {
     "postinstall": "bash scripts/postinstall.sh"
