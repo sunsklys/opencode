@@ -10,6 +10,7 @@ node_modules/
 .env.*.local
 auth.json
 opencode-mem.jsonc
+.opencode/dbx.md
 
 # === 运行时数据 ===
 *.db
