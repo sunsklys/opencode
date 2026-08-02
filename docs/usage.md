@@ -244,4 +244,4 @@
 
 ---
 
-> **反馈循环**：配置变更后跑 `make check` 验证，然后 `git diff USAGE.md` 看是否需同步更新本指南。
+> **反馈循环**：配置变更后跑 `make check` 验证，然后 `git diff docs/usage.md` 看是否需同步更新本指南。

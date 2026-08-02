@@ -175,6 +175,23 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 ```
 
 升级后必须**重启 opencode**，因为 plugin 在启动时加载到内存，运行时不会重读。
+
+## 自定义 plugin：`.opencode/plugin/glm-max.ts`
+
+**作用**：恢复 GLM 5.2 的 `reasoningEffort: "max"` 被 OMO `chat.params` hook 降级为 `"high"` 的问题。
+
+**背景**：OMO 的 model-capability 兼容性检查在 `chat.params` hook 里：
+1. 把 GLM 5.2 的 `variant: "max"` 降级为 `"high"`（heuristic glm family 不含 max）
+2. 对不匹配 heuristic family 的 volcengine-plan 模型（doubao/minimax 等）删除 `reasoningEffort`（reason: unknown-model-family）
+
+本 plugin 在 OMO 之后执行（`.opencode/plugin/*.ts` 自动发现，排在 plugin_origins 末尾），恢复被删除的 `reasoningEffort`。
+
+**升级风险**：
+- 依赖 OMO 内部 hook 执行顺序，OMO 升级可能改变顺序导致失效
+- 硬编码 volcengine fallback `reasoningEffort = "high"` 对 doubao/minimax/kimi 一刀切
+- OMO 修复后可移除此 plugin
+
+**状态**：已知技术债，当前能工作，暂不处理。
 ## 如何升级 oh-my-openagent 主版本
 
 ```bash

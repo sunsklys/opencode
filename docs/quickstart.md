@@ -5,7 +5,7 @@
 ## 前置依赖（`make install` 之前）
 
 ```bash
-# Node.js（.nvmrc 已锁定 v22，fnm/nvm 自动识别）
+# Node.js v22
 curl -fsSL https://fnm.vercel.app/install | bash
 fnm install 22 && fnm default 22
 

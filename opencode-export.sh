@@ -31,7 +31,6 @@ cp "$CONFIG_DIR/.gitignore" "$TMP/config/opencode/" 2>/dev/null || true
 [[ -f "$CONFIG_DIR/package-lock.json" ]] && cp "$CONFIG_DIR/package-lock.json" "$TMP/config/opencode/"
 # 完整目录结构（Makefile / scripts / 模板）一起带上，让 make install 可用
 cp "$CONFIG_DIR/Makefile" "$TMP/config/opencode/" 2>/dev/null || true
-cp "$CONFIG_DIR/.nvmrc" "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR/opencode-mem.jsonc.template" "$TMP/config/opencode/" 2>/dev/null || true
 [[ -d "$CONFIG_DIR/scripts" ]] && cp -r "$CONFIG_DIR/scripts" "$TMP/config/opencode/" 2>/dev/null || true
 
@@ -81,12 +80,12 @@ opencode auth login zhipuai-coding-plan
 make check
 
 ## 包含文件
+
+见根目录 `README.md` 的「包含什么」表格。核心文件：
 - opencode.json / tui.json - 配置（OMO 统一配置在 ~/.omo/omo.jsonc，不入包）
-- Makefile + scripts/*.sh - 一键安装/体检编排
+- Makefile + scripts/ - 一键安装/体检编排
 - package.json + package-lock.json - 依赖锁
 - opencode-mem.jsonc.template - 智谱直连记忆配置模板
-- .nvmrc - Node.js 版本锁
-- tui.json        - 主题
 EOF
 
 # 打包

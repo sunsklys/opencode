@@ -14,7 +14,6 @@
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
 | `opencode-mem.jsonc.template` | 智谱直连模板（`make mem` 生成 `opencode-mem.jsonc`） |
-| `.nvmrc` | 锁定 Node.js v22（fnm/nvm 自动识别） |
 | `opencode-export.sh` | 配置导出脚本（`make export` 调用，打包 tar.gz 供新机恢复） |
 | `docs/` | 详细文档（见下） |
 
@@ -39,6 +38,7 @@
 | [docs/quickstart.md](./docs/quickstart.md) | 新机器安装 / Makefile 命令速查 / Git Hooks / 多机同步 |
 | [docs/reference.md](./docs/reference.md) | 配置文件字段地图 / experimental 归属 / 超时对照 / 功能开关 / 角色路由 / MCP 信任边界 / @latest 缓存机制 / 升级流程 |
 | [docs/troubleshooting.md](./docs/troubleshooting.md) | 常见报错和修复路径 |
+| [docs/usage.md](./docs/usage.md) | 日常使用指南 / 关键词触发 / 场景速查 / 避坑指南 / 配置事实索引 |
 
 ## 灾备 / 恢复
 
@@ -50,6 +50,7 @@ make bootstrap         # install + prime-cache + check
 opencode auth login zhipuai-coding-plan && opencode
 ```
 
+> ⚠️ `.opencode/dbx.md`（DBX 数据库连接字典）不在 git 内（含生产 host），需从备份恢复或手动重建。
 > 详细说明（含运行时数据表 / git 保护范围 / 手动分步备选）已迁移到 [docs/quickstart.md](./docs/quickstart.md) 的「灾备 / 恢复」段。
 
 ## 数据库维护

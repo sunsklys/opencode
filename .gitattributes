@@ -3,8 +3,11 @@
 *.json  text eol=lf
 *.jsonc text eol=lf
 *.md    text eol=lf
-*.py    text eol=lf
+*.ts    text eol=lf
 Makefile text eol=lf
+*.mjs   text eol=lf
+*.yml   text eol=lf
+*.lock  text eol=lf
 
 # 二进制文件标记（避免误改）
 *.patch binary

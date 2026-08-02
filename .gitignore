@@ -50,3 +50,4 @@ lsp-install-decisions.json
 *.bak
 .tmp/
 .upgrade-backup-*/
+sbom.cdx.json

@@ -7,6 +7,7 @@
     "postinstall": "bash scripts/postinstall.sh"
   },
   "overrides": {
+    "//": "pin posthog-node@5.38.2 - 修 @posthog/core@^1.37.0 不存在的 npm 注册表冲突（8785f98）",
     "posthog-node": "5.38.2"
   }
 }
