@@ -28,7 +28,7 @@ cd ~/.config/opencode
 make install                              # 一键：依赖 + 环境变量 + 记忆配置 + 飞书 CLI
 opencode auth login zhipuai-coding-plan   # 登录智谱凭证（同时初始化 opencode 进程）
 opencode                                  # 启动验证（首次会初始化 plugin 缓存）
-make check                                # 体检（12 项全绿即就绪）
+make check                                # 体检（13 项全绿即就绪）
 ```
 
 ### `make install` 依次执行
@@ -38,8 +38,9 @@ make check                                # 体检（12 项全绿即就绪）
 | 1 | `make deps` | npm install + opencode-mem 全局装 + 软链 |
 | 2 | `make config` | 交互式输入 3 个 API key → 写入 `~/.zshrc` + `launchctl setenv` |
 | 3 | `make mem` | 从模板生成 `opencode-mem.jsonc`（智谱直连，复用 `Z_AI_API_KEY`） |
-| 4 | `make feishu` | 飞书 CLI + 27 个 SKILL |
-| 5 | `make sync-skills` | 软链 oh-my-openagent 内置 skill 到 `~/.agents/skills/`（让 `ulw-plan` / `git-master` / `frontend` 等 20 个在 TUI 可见） |
+| 4 | `make omo-config` | 从模板生成 `~/.omo/omo.jsonc`（OMO 统一配置，含 12 agent + 8 category 路由 + goal 禁用） |
+| 5 | `make feishu` | 飞书 CLI + 27 个 SKILL |
+| 6 | `make sync-skills` | 软链 oh-my-openagent 内置 skill 到 `~/.agents/skills/`（让 `ulw-plan` / `git-master` / `frontend` 等 20 个在 TUI 可见） |
 
 ## API key 获取地址
 
@@ -56,7 +57,7 @@ make check                                # 体检（12 项全绿即就绪）
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（12 项：环境 / 变量 / 依赖 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康 / OMO+opencode 字段验证） |
+| `make check` | 体检（13 项：环境 / 变量 / 依赖 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康 / OMO+opencode 字段验证 / superpowers 版本） |
 | `make update` | 重装依赖（按 package.json 精确版本） |
 | `make upgrade` | 升级 OMO + plugin 到 npm 最新（含 $schema URL 同步） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
@@ -124,6 +125,8 @@ opencode auth login zhipuai-coding-plan
 # 4. 启动 opencode 验证
 opencode
 ```
+> ⚠️ `.opencode/dbx.md`（DBX 数据库连接字典）不在 git 内（含生产 host），需从备份恢复或手动重建。
+> ⚠️ `~/.omo/omo.jsonc` 已由 `make install` 自动从模板生成（含 12 agent + 8 category 路由、goal 禁用等自定义配置）。
 
 > 手动分步（备选，等价于 `make bootstrap`）：
 >

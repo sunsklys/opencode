@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install bootstrap deps config mem feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks db-check db-maintain check-upgrade
+.PHONY: help install bootstrap deps config mem omo-config feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks db-check db-maintain check-upgrade
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -21,6 +21,7 @@ help: ## 显示帮助
 	@echo "  make deps      仅装 npm 依赖 + opencode-mem 软链"
 	@echo "  make config    仅配置环境变量（交互式，写 ~/.zshrc）"
 	@echo "  make mem       仅生成 opencode-mem.jsonc（智谱直连）"
+	@echo "  make omo-config  仅生成 ~/.omo/omo.jsonc（OMO 统一配置，含 12 agent + 8 category 路由）"
 	@echo "  make feishu    仅装飞书 CLI + SKILL"
 	@echo "  make sync-skills  软链 oh-my-openagent 内置 skill 到 ~/.agents/skills/（让 ulw-plan 等在 TUI 可见）"
 	@echo "  make clean     清理 node_modules"
@@ -43,7 +44,7 @@ help: ## 显示帮助
 	@echo "  opencode                                  # 启动即可使用"
 	@echo "  make check"
 
-install: deps config mem feishu sync-skills install-hooks ## 完整安装（新机器首次）
+install: deps config mem omo-config feishu sync-skills install-hooks ## 完整安装（新机器首次）
 	@echo ""
 	@echo "═══════════════════════════════════════════"
 	@echo "  ✅ 安装完成！"
@@ -88,6 +89,16 @@ mem: ## 生成 opencode-mem.jsonc（智谱直连模板）
 		cp opencode-mem.jsonc.template opencode-mem.jsonc; \
 		echo "✓ 已生成 opencode-mem.jsonc（智谱直连，复用 Z_AI_API_KEY 环境变量）"; \
 		echo "  注意：需重启 opencode 生效"; \
+	fi
+
+omo-config: ## 生成 ~/.omo/omo.jsonc（OMO 统一配置，从模板复制，含 12 agent + 8 category 路由）
+	@if [ -f "$$HOME/.omo/omo.jsonc" ]; then \
+		echo "~/.omo/omo.jsonc 已存在。如需重新生成，先删除：rm ~/.omo/omo.jsonc && make omo-config"; \
+	else \
+		mkdir -p "$$HOME/.omo"; \
+		cp omo.jsonc.template "$$HOME/.omo/omo.jsonc"; \
+		echo "✓ 已生成 ~/.omo/omo.jsonc（OMO 统一配置，含自定义路由 + goal 禁用）"; \
+		echo "  注意：OMO plugin 首次启动会检测到已存在，不覆盖"; \
 	fi
 
 feishu: ## 安装飞书 CLI + 27 个 SKILL（需要 FEISHU_APP_SECRET）

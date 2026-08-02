@@ -14,6 +14,7 @@
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
 | `opencode-mem.jsonc.template` | 智谱直连模板（`make mem` 生成 `opencode-mem.jsonc`） |
+| `omo.jsonc.template` | OMO 统一配置模板（`make omo-config` 生成 `~/.omo/omo.jsonc`，含 12 agent + 8 category 路由） |
 | `opencode-export.sh` | 配置导出脚本（`make export` 调用，打包 tar.gz 供新机恢复） |
 | `docs/` | 详细文档（见下） |
 
@@ -23,7 +24,7 @@
 - `opencode.db` - 会话历史
 - `opencode-mem.jsonc` - 本地持久记忆配置（`make mem` 从模板自动生成，智谱直连）
 - `~/.opencode-mem/` - opencode-mem 数据目录（向量库 + SQLite + Web UI 缓存）
-- `~/.omo/omo.jsonc` - OMO 统一配置（4.19.4+，12 agent + 8 category 路由；插件启动自动生成/迁移，不进 git）
+- `~/.omo/omo.jsonc` - OMO 统一配置（`make omo-config` 从模板自动生成，含 12 agent + 8 category 路由 + goal 禁用）
 
 ## 快速开始
 
