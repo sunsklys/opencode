@@ -122,6 +122,7 @@
     "{file:~/.config/opencode/.opencode/instructions.md}",
     "{file:~/.config/opencode/.opencode/dbx.md}"
   ],
+  "model": "zhipuai-coding-plan/glm-5.2",
   "small_model": "zhipuai-coding-plan/glm-5-turbo",
   "subagent_depth": 2,
   "shell": "zsh",
