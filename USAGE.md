@@ -11,19 +11,19 @@
 
 ### 模型分层（`~/.omo/omo.jsonc` agents + categories）
 
-| 层级 | 模型 | reasoningEffort | 并发上限 | 角色 |
+| 组 | 主模型 | reasoning | 并发 | 成员（agents / categories） |
 |---|---|---|---|---|
-| 重型推理 | GLM-5.2 (zhipu) | max | **5** | sisyphus / oracle / prometheus / momus / metis / plan / ultrabrain / deep / writing |
-| 编码实现 | GLM-5.2 (zhipu) | max | **5** | atlas / sisyphus-junior / unspecified-high / artistry |
-| 检索轻量 | DeepSeek V4 Flash (volc) | low | **5** | librarian / explore / unspecified-low |
-| 多模态 | GLM-5v-Turbo (zhipu) | — | — | multimodal-looker / visual-engineering |
-| 快通道 | DeepSeek V4 Flash (volc) | minimal | **5** | quick |
-| 重型推理(fallback) | DeepSeek V4 Pro (volc) | — | **3** | atlas/sisyphus-junior 等的 fallback 首位 |
+| 重型推理（标准 fallback） | GLM-5.2 (zhipu) | max | 默认 | sisyphus / prometheus / plan / oracle / metis / momus；categories: ultrabrain / deep
+| 重型推理（pro/code fallback） | GLM-5.2 (zhipu) | max | 默认 | atlas / sisyphus-junior / hephaestus；category: unspecified-high
+| 检索轻量（只读） | DeepSeek V4 Flash (volc) | medium | 默认 | librarian / explore（`permission.edit: deny`）；categories: quick / unspecified-low
+| 多模态 | GLM-5v-Turbo (zhipu) | — | **3** | multimodal-looker；category: visual-engineering
+| 创意/写作 | GLM-5.2 (zhipu) | max | 默认 | categories: artistry / writing（带 `temperature: 0.7`） |
+| Fallback 常客 | DeepSeek V4 Pro (volc) | — | **3** | atlas / sisyphus-junior / hephaestus / unspecified-high 的 fallback 首位 |
 
-> **并发精细值**（`~/.omo/omo.jsonc` → `background_task.modelConcurrency`）：
-> `deepseek-v4-pro: 3` / `deepseek-v4-flash: 5` / `glm-5.2: 5` / `glm-5-turbo: 3`。
-> `providerConcurrency` 各 provider 5。`defaultConcurrency: 5`。
-> **含义**：pro/turbo 模型并发被压到 3（rate-limit 保护），并行委派时这两个模型可能排队。
+> **modelConcurrency**（`~/.omo/omo.jsonc` → `background_task.modelConcurrency`）：
+> 显式压到 **3** 的模型（7 个，rate-limit 保护）：`deepseek-v4-pro` / `kimi-k2.6` / `doubao-seed-2.0-pro` / `doubao-seed-2.0-code` / `minimax-m3` / `glm-5-turbo` / `glm-5v-turbo`。
+> 未配（用 OMO 默认，不压限）：`deepseek-v4-flash` / `glm-5.2` / `doubao-seed-2.0-lite`。
+> **含义**：主模型 glm-5.2 未压限，并行委派不受阻；被压到 3 的 fallback 模型在并发高峰时可能排队。
 
 ### Fallback 三参数（`~/.omo/omo.jsonc` → `runtime_fallback`）
 
@@ -114,12 +114,12 @@
 ## 四、效率技巧
 
 ### 1. 并行委派免费
-`background_task.defaultConcurrency: 5`（`~/.omo/omo.jsonc` → `background_task`）。最多 5 个后台 agent 同跑。
+未压限主模型可并行（`glm-5.2` 未在 `background_task.modelConcurrency` 显式压限），fallback 模型被压到 3。
 - 说「并行探索这几个方向」→ sisyphus 自动 fan-out
 - 自己也能手动：`task(subagent_type="explore", run_in_background=true, ...)`
 
 ### 2. Team Mode（`team_mode.enabled: true`，`~/.omo/omo.jsonc` → `team_mode` 块）
-- `max_parallel_members: 4` / `max_members: 8`
+- `max_parallel_members` / `max_members` 用 OMO 默认值（omo.jsonc 仅显式设 `enabled: true`）
 - 适用：多模块并行开发、planner + builders + reviewer 协作
 - **何时不用**：单文件改动、路径明确的修复、< 5 步的任务——team spec 创建开销大于收益
 
@@ -134,7 +134,7 @@
 - **豁免场景**：纯 prompt 文本、注释、版本号 bump、rename-only、一次性脚本、配置文件——明确说「不要 TDD」
 
 ### 5. 权限安全网（53 条 bash deny，`opencode.json` → `permission.bash`）
-- 拦：sudo / rm -rf / kill / node -e / python -c / curl POST / force push / git reset --hard / npm publish / docker / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取
+- 拦：sudo / rm -rf / kill / force push / git reset --hard / npm publish / docker prune/rm / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取
 - 放：chmod / chown / git restore / git config alias（日常开发常用，但需注意 chmod 可改 ~/.ssh 权限、git restore 会丢未提交工作）
 - 放手让 agent 跑命令
 
@@ -227,8 +227,8 @@
 |---|---|---|
 | 12 agents | `~/.omo/omo.jsonc` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior/hephaestus |
 | 8 categories | `~/.omo/omo.jsonc` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
-| team_mode | `~/.omo/omo.jsonc` → `team_mode` | enabled, max_parallel_members=4, max_members=8 |
-| background_task | `~/.omo/omo.jsonc` → `background_task` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
+| team_mode | `~/.omo/omo.jsonc` → `team_mode` | enabled=true（`max_parallel_members`/`max_members` 用 OMO 默认） |
+| background_task | `~/.omo/omo.jsonc` → `background_task` | modelConcurrency 显式压 3 的有 7 个模型（pro/k2.6/doubao-pro/doubao-code/minimax/glm-5-turbo/glm-5v-turbo）；flash/glm-5.2/doubao-lite 未配 |
 | runtime_fallback | `~/.omo/omo.jsonc` → `runtime_fallback` | 4 retries / 30s cooldown / 60s timeout / notify_on_fallback=true |
 | experimental | `~/.omo/omo.jsonc` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
 | sisyphus_agent | `~/.omo/omo.jsonc` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |
