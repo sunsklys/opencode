@@ -29,5 +29,8 @@ ln -sf "$(npm root -g)/opencode-mem" node_modules/opencode-mem
 MEM_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 2>/dev/null) || MEM_VER="未知"
 echo "✓ opencode-mem@${MEM_VER}（软链 → $(readlink node_modules/opencode-mem)）"
 
+# 清 opencode-mem @latest 缓存（下次启动 opencode 重拉，与全局版本同步）
+rm -rf "$HOME/.cache/opencode/packages/opencode-mem@latest" 2>/dev/null || true
+
 echo ""
 echo "✅ 依赖安装完成"
