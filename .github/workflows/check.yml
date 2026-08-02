@@ -35,19 +35,13 @@ jobs:
 
       - name: JSON 语法验证
         run: |
-          for f in opencode.json oh-my-openagent.json tui.json package.json; do
+          for f in opencode.json tui.json package.json; do
             node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || exit 1
             echo "✓ $f 语法正确"
           done
 
-      - name: OMO 配置 schema 校验（ajv）
-        run: |
-          # 用项目自带 ajv（npm install 后可用），跑 OMO 官方 schema 校验 oh-my-openagent.json
-          if [ ! -d node_modules/ajv ]; then
-            echo "⚠️  ajv 未安装，跳过 schema 校验"
-            exit 0
-          fi
-          node -e "const Ajv=require('ajv');const s=require('./node_modules/oh-my-openagent/dist/oh-my-opencode.schema.json');const d=require('./oh-my-openagent.json');const a=new Ajv({strict:false,allErrors:true});const v=a.compile(s);if(!v(d)){console.error('❌ OMO schema 校验失败:');console.error(JSON.stringify(v.errors,null,2));process.exit(1)}else{console.log('✓ oh-my-openagent.json 符合 OMO schema')}"
+      # 注：OMO 配置（~/.omo/omo.jsonc）不在仓库内（4.19.4+ 迁移），CI 无法校验；
+      # schema 文件随 npm 包发布已自校验，项目侧无需重复
 
       - name: skills.lock 存在性验证
         run: |
