@@ -16,7 +16,7 @@
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
 | **安全** | `permission.read` / `permission.bash` / `watcher.ignore` | deny 列表 + 文件监听忽略 |
 
-### `oh-my-openagent.json`（OMO 框架配置）
+### `~/.omo/omo.jsonc`（OMO 统一配置）
 
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
@@ -60,15 +60,15 @@
 
 ## 超时字段作用域对照
 
-> 5 个超时相关字段分散在 opencode.json 和 oh-my-openagent.json，作用域完全不重叠。配置审查时必读。
+> 5 个超时相关字段分散在 opencode.json 和 ~/.omo/omo.jsonc，作用域完全不重叠。配置审查时必读。
 
 | 字段 | 文件 | 作用域 | 触发动作 | 源码证据 |
 |---|---|---|---|---|
-| `monitor.max_runtime_ms` (1800000=30min) | oh-my-openagent.json | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | `spawnMonitorProcess` 函数（OMO dist/index.js） |
-| `babysitting.timeout_ms` (300000=5min) | oh-my-openagent.json | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | `unstable-agent-babysitter` hook（OMO dist/index.js） |
-| `runtime_fallback.timeout_seconds` (60) | oh-my-openagent.json | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | `prepareFallback` 函数（OMO dist/index.js） |
+| `monitor.max_runtime_ms` (1800000=30min) | ~/.omo/omo.jsonc | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | `spawnMonitorProcess` 函数（OMO dist/index.js） |
+| `babysitting.timeout_ms` (300000=5min) | ~/.omo/omo.jsonc | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | `unstable-agent-babysitter` hook（OMO dist/index.js） |
+| `runtime_fallback.timeout_seconds` (60) | ~/.omo/omo.jsonc | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | `prepareFallback` 函数（OMO dist/index.js） |
 | `experimental.mcp_timeout` (60000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
-| `model_capabilities.refresh_timeout_ms` (5000) | oh-my-openagent.json | **启动时模型能力探测**（一次性） | 跳过刷新，用缓存元数据 | `model_capabilities` 刷新逻辑（OMO dist/index.js） |
+| `model_capabilities.refresh_timeout_ms` (5000) | ~/.omo/omo.jsonc | **启动时模型能力探测**（一次性） | 跳过刷新，用缓存元数据 | `model_capabilities` 刷新逻辑（OMO dist/index.js） |
 
 **关键区分**：
 - `monitor.max_runtime_ms` 是**子进程硬超时**（kill），`babysitting.timeout_ms` 是**主会话 idle 提醒**（nudge）。两者不冲突，monitor 跑 30min 时 babysitting 不会杀它
@@ -76,7 +76,7 @@
 
 ## experimental 命名空间归属澄清
 
-> `opencode.json` 和 `oh-my-openagent.json` 都有 `experimental` 块，但归属完全不同。
+> `opencode.json` 和 `~/.omo/omo.jsonc` 都有 `experimental` 块，但归属完全不同。
 
 | 字段 | 归属 | 说明 |
 |---|---|---|
@@ -88,7 +88,7 @@
 | `experimental.preemptive_compaction` | OMO 注入 | 预防性压缩 |
 | `experimental.aggressive_truncation` | OMO 注入 | 激进截断 |
 
-> 配置审查时先看字段在哪一边：opencode 本体字段在 `opencode.json` 写一次就生效；OMO 注入字段在 `oh-my-openagent.json`，opencode 本体不识别。
+> 配置审查时先看字段在哪一边：opencode 本体字段在 `opencode.json` 写一次就生效；OMO 注入字段在 `~/.omo/omo.jsonc`，opencode 本体不识别。
 
 ## 功能开关速查
 
@@ -100,11 +100,11 @@
 | permission 加固（read + bash + edit 三层 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（纵深层防御） |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
-| **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `oh-my-openagent.json` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
-| **goal 迭代上限**（防 goal 失控烧钱） | `oh-my-openagent.json` → `goal.default_max_iterations=100` | ✅ 显式 cap |
-| **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `oh-my-openagent.json` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
-| **comment_checker**（中文注释质量检查） | `oh-my-openagent.json` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
-| **disabled_skills**（禁用 playwright/dev-browser/agent-browser） | `oh-my-openagent.json` → `disabled_skills` | ✅ 已禁用不用的内置功能 |
+| **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `~/.omo/omo.jsonc` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
+| **goal 迭代上限**（防 goal 失控烧钱） | `~/.omo/omo.jsonc` → `goal.default_max_iterations=100` | ✅ 显式 cap |
+| **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `~/.omo/omo.jsonc` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
+| **comment_checker**（中文注释质量检查） | `~/.omo/omo.jsonc` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
+| **disabled_skills**（禁用 playwright/dev-browser/agent-browser） | `~/.omo/omo.jsonc` → `disabled_skills` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
 | **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
 | **experimental.mcp_timeout**（全局 MCP 超时 60s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=60000` | ✅ 已启用 |
@@ -190,10 +190,10 @@ make check              # 体检
 # 2. 重装依赖（含 postinstall: 全局 MCP）
 make update
 
-# 3. 同步 $schema URL（oh-my-openagent.json 顶部）改到新版本号
+# 3. 同步 $schema URL（~/.omo/omo.jsonc 顶部）改到新版本号
 # 4. 体检
 make check
-# 5. 提交：package.json + oh-my-openagent.json
+# 5. 提交：package.json + package-lock.json + skills.lock + 文档（OMO 配置 ~/.omo/omo.jsonc 不在 git 内）
 ```
 
 ## 手动分步安装（备选）
@@ -210,4 +210,4 @@ make check
 
 **飞书 CLI**（`make feishu` 底层）：见 `setup-feishu-cli.sh`。Bot 身份无需审批即可读文档。
 
-**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.19.3`（非 `^4.19.3`），确保所有机器运行相同版本。
+**oh-my-openagent 版本锁定**：`package.json` 精确锁定 `4.19.4`（非 `^4.19.4`），确保所有机器运行相同版本。

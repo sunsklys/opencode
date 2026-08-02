@@ -7,7 +7,7 @@
 #   - upgrade: 查 npm 最新版 → 改 package.json → 重装 → 同步 $schema URL
 #
 # 设计原则：
-#   - $schema URL 同步到新版本（oh-my-openagent.json 顶部）
+#   - $schema URL 同步到新版本（~/.omo/omo.jsonc 顶部）
 #   - 不自动跑 check：重装后直接 make check 验证
 # ============================================================
 set -euo pipefail
@@ -22,7 +22,7 @@ if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
 fi
 
 # ---------- 1. 查询 npm 最新版（用官方源避免 npmmirror 同步延迟）----------
-echo "=== 1/4 查询 npm 最新版 ==="
+echo "=== 1/5 查询 npm 最新版 ==="
 OMO_CURRENT=$(node -p "require('./package.json').dependencies['oh-my-openagent']")
 PLG_CURRENT=$(node -p "require('./package.json').dependencies['@opencode-ai/plugin']")
 OMO_LATEST=$(npm view oh-my-openagent version --registry=https://registry.npmjs.org)
@@ -42,11 +42,15 @@ BACKUP_DIR=".upgrade-backup-$(date +%s)"
 mkdir -p "$BACKUP_DIR"
 cp -r package.json package-lock.json "$BACKUP_DIR/" 2>/dev/null || true
 [ -d node_modules ] && cp -r node_modules "$BACKUP_DIR/" 2>/dev/null || true
+# OMO 统一配置（4.19.4+，~/.omo/omo.jsonc）不在 git 内，升级写 $schema 前单独备份
+OMO_CONFIG="$HOME/.omo/omo.jsonc"
+[ -f "$OMO_CONFIG" ] && cp "$OMO_CONFIG" "$BACKUP_DIR/omo.jsonc.bak" 2>/dev/null || true
 
 _restore_upgrade() {
   if [ -d "$BACKUP_DIR" ]; then
     echo "↩ 升级失败，恢复备份..." >&2
     cp -r "$BACKUP_DIR"/* . 2>/dev/null || true
+    [ -f "$BACKUP_DIR/omo.jsonc.bak" ] && cp "$BACKUP_DIR/omo.jsonc.bak" "$HOME/.omo/omo.jsonc" 2>/dev/null || true
     rm -rf "$BACKUP_DIR"
   fi
 }
@@ -54,7 +58,7 @@ trap _restore_upgrade ERR INT TERM
 
 # ---------- 2. 更新 package.json ----------
 echo ""
-echo "=== 2/4 更新 package.json ==="
+echo "=== 2/5 更新 package.json ==="
 node -e "
 const fs = require('fs');
 const p = './package.json';
@@ -75,18 +79,19 @@ console.log('  ✓ 已更新: ' + changed.join(', '));
 
 # ---------- 3. 清 node_modules + npm install（触发 postinstall: claude-mermaid + codegraph）----------
 echo ""
-echo "=== 3/4 清理 node_modules 并重装 ==="
+echo "=== 3/5 清理 node_modules 并重装 ==="
 node -e "require('fs').rmSync('node_modules',{recursive:true,force:true}); console.log('  ✓ node_modules 已清除')"
 rm -f package-lock.json
 bash scripts/install.sh
 bash scripts/sync-omo-skills.sh
 
-# ---------- 4. 更新 oh-my-openagent.json 的 $schema URL ----------
+# ---------- 4. 更新 ~/.omo/omo.jsonc 的 $schema URL ----------
 echo ""
-echo "=== 4/4 更新 oh-my-openagent.json 的 \$schema URL ==="
+echo "=== 4/5 更新 ~/.omo/omo.jsonc 的 \$schema URL ==="
 node -e "
 const fs = require('fs');
-const p = './oh-my-openagent.json';
+const p = '$OMO_CONFIG';
+if (!fs.existsSync(p)) { console.log('  ⚠ ~/.omo/omo.jsonc 不存在（首次安装由插件迁移自动生成），跳过'); process.exit(0); }
 let s = fs.readFileSync(p, 'utf8');
 const re = /oh-my-openagent\/v[0-9]+\.[0-9]+\.[0-9]+\/assets/;
 const replacement = 'oh-my-openagent/v$OMO_LATEST/assets';
@@ -152,6 +157,6 @@ echo ""
 echo "  1. 体检："
 echo "     make check"
 echo ""
-echo "  2. 提交改动（skills.lock + 文档版本号已自动同步）："
-echo "     git add package.json oh-my-openagent.json package-lock.json skills.lock README.md docs/reference.md .opencode/instructions.md"
+echo "  2. 提交改动（skills.lock + 文档版本号已自动同步；OMO 配置在 ~/.omo/omo.jsonc，不在 git 内，无需提交）："
+echo "     git add package.json package-lock.json skills.lock README.md docs/reference.md .opencode/instructions.md"
 echo "     git commit -m \"upgrade: oh-my-openagent → $OMO_LATEST, plugin → $PLG_LATEST\""

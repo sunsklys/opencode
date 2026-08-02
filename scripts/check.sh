@@ -301,7 +301,7 @@ fi
 echo "【11/13·Critical】OMO + opencode 关键字段配置验证"
  
 # 用 node 提取字段避免 jq 依赖
-OMO_FIELDS=$(node -e "const c=require('./oh-my-openagent.json');console.log(JSON.stringify({monitor:c.monitor?.enabled,goal_max:c.goal?.default_max_iterations,goal_enabled:c.goal?.enabled,babysitting:c.babysitting?.timeout_ms,notification:c.notification?.force_enable,comment_checker:!!c.comment_checker?.custom_prompt,disabled_skills:(c.disabled_skills||[]).length,disabled_commands:(c.disabled_commands||[]).length}))" 2>/dev/null || echo "{}")
+OMO_FIELDS=$(node scripts/read-omo-config.mjs 2>/dev/null || echo "{}")
 OC_FIELDS=$(node -e "const c=require('./opencode.json');console.log(JSON.stringify({edit_ssh:c.permission?.edit?.['**/.ssh/**'],batch_tool:c.experimental?.batch_tool,continue_loop:c.experimental?.continue_loop_on_deny,policies:(c.experimental?.policies||[]).length,mcp_timeout:c.experimental?.mcp_timeout,prune:c.compaction?.prune,tail_turns:c.compaction?.tail_turns,formatter:c.formatter,instructions:(c.instructions||[]).length}))" 2>/dev/null || echo "{}")
 
 M_ON=$(echo "$OMO_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).monitor" 2>/dev/null)
@@ -319,7 +319,7 @@ O_PRUNE=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)
 O_FMT=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).formatter" 2>/dev/null)
 O_INST=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions" 2>/dev/null)
 
-[ "$M_ON" = "true" ]                 && ok "OMO monitor.enabled=true（后台监控 idle 模式）" || fail "OMO monitor.enabled 未启用（oh-my-openagent.json）"
+[ "$M_ON" = "true" ]                 && ok "OMO monitor.enabled=true（后台监控 idle 模式）" || fail "OMO monitor.enabled 未启用（~/.omo/omo.jsonc）"
 [ -n "$M_MAX" ] && [ "$M_MAX" -le 1000 ]  && ok "OMO goal.default_max_iterations=${M_MAX}（Goal 替代 Ralph Loop，已配防失控）" || fail "OMO goal.default_max_iterations 未设或 >1000（防失控）"
 [ -n "$M_BABY" ] && [ "$M_BABY" -ge 180000 ] && ok "OMO babysitting.timeout_ms=${M_BABY}（适配 GLM-5.2）" || warn "OMO babysitting.timeout_ms 未调高（默认 120000 在 max reasoning 下可能误杀）"
 [ -z "$M_NOTI" ] || [ "$M_NOTI" = "undefined" ]  && ok "OMO notification 块已删除（dead config 清理）" || ok "OMO notification.force_enable=${M_NOTI}"

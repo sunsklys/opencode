@@ -1,6 +1,6 @@
 # OMO 日常开发高效使用指南
 
-> 基于 `oh-my-openagent.json` + `opencode.json` 实际配置。配置变更后请重新核对。
+> 基于 `~/.omo/omo.jsonc` + `opencode.json` 实际配置。配置变更后请重新核对。
 > 配置事实均带 `file:line` 证据，便于审计。
 
 ---
@@ -9,7 +9,7 @@
 
 你是调度官，不是执行者。默认走 sisyphus（主调度），它自动委派给对的专家。
 
-### 模型分层（`oh-my-openagent.json` agents + categories）
+### 模型分层（`~/.omo/omo.jsonc` agents + categories）
 
 | 层级 | 模型 | reasoningEffort | 并发上限 | 角色 |
 |---|---|---|---|---|
@@ -20,12 +20,12 @@
 | 快通道 | DeepSeek V4 Flash (volc) | minimal | **5** | quick |
 | 重型推理(fallback) | DeepSeek V4 Pro (volc) | — | **3** | atlas/sisyphus-junior 等的 fallback 首位 |
 
-> **并发精细值**（`oh-my-openagent.json` → `background_task.modelConcurrency`）：
+> **并发精细值**（`~/.omo/omo.jsonc` → `background_task.modelConcurrency`）：
 > `deepseek-v4-pro: 3` / `deepseek-v4-flash: 5` / `glm-5.2: 5` / `glm-5-turbo: 3`。
 > `providerConcurrency` 各 provider 5。`defaultConcurrency: 5`。
 > **含义**：pro/turbo 模型并发被压到 3（rate-limit 保护），并行委派时这两个模型可能排队。
 
-### Fallback 三参数（`oh-my-openagent.json` → `runtime_fallback`）
+### Fallback 三参数（`~/.omo/omo.jsonc` → `runtime_fallback`）
 
 - `max_fallback_attempts: 4` — 最多重试 4 次
 - `cooldown_seconds: 30` — 失败后冷却 30 秒
@@ -38,7 +38,7 @@
 
 ## 二、关键词触发速查（最高频交互入口）🔥
 
-> **核心特性**：`oh-my-openagent.json` → `keyword_detector.enabled_expansions`
+> **核心特性**：`~/.omo/omo.jsonc` → `keyword_detector.enabled_expansions`
 > 在普通对话里说这些词，**自动展开为对应模式**，无需手动 `/` 命令。
 
 | 关键词 | 触发 | 适用场景 |
@@ -67,7 +67,7 @@
 - **何时不用 /ulw-plan**：路径明确的修复、单文件改动、文档编辑——开销大于收益
 
 ### 场景 3：提交代码
-- `/git-master` → atomic commit + repo style 匹配 + footer（`commit_footer: true` + `include_co_authored_by: true`，`oh-my-openagent.json` → `git_master` 块）
+- `/git-master` → atomic commit + repo style 匹配 + footer（`commit_footer: true` + `include_co_authored_by: true`，`~/.omo/omo.jsonc` → `git_master` 块）
 
 ### 场景 4：审查工作
 - `/review-work` → 5 路并行子 agent（目标/质量/安全/QA/上下文）
@@ -114,11 +114,11 @@
 ## 四、效率技巧
 
 ### 1. 并行委派免费
-`background_task.defaultConcurrency: 5`（`oh-my-openagent.json` → `background_task`）。最多 5 个后台 agent 同跑。
+`background_task.defaultConcurrency: 5`（`~/.omo/omo.jsonc` → `background_task`）。最多 5 个后台 agent 同跑。
 - 说「并行探索这几个方向」→ sisyphus 自动 fan-out
 - 自己也能手动：`task(subagent_type="explore", run_in_background=true, ...)`
 
-### 2. Team Mode（`team_mode.enabled: true`，`oh-my-openagent.json` → `team_mode` 块）
+### 2. Team Mode（`team_mode.enabled: true`，`~/.omo/omo.jsonc` → `team_mode` 块）
 - `max_parallel_members: 4` / `max_members: 8`
 - 适用：多模块并行开发、planner + builders + reviewer 协作
 - **何时不用**：单文件改动、路径明确的修复、< 5 步的任务——team spec 创建开销大于收益
@@ -129,7 +129,7 @@
 - 查看：http://127.0.0.1:4747（Web UI，`webServerEnabled: true`）
 - 你不用管它——它管你
 
-### 4. TDD 是默认的（`sisyphus_agent.tdd: true`，`oh-my-openagent.json` → `sisyphus_agent` 块）
+### 4. TDD 是默认的（`sisyphus_agent.tdd: true`，`~/.omo/omo.jsonc` → `sisyphus_agent` 块）
 - 实现任务默认走 RED→GREEN→REFACTOR
 - **豁免场景**：纯 prompt 文本、注释、版本号 bump、rename-only、一次性脚本、配置文件——明确说「不要 TDD」
 
@@ -143,16 +143,16 @@
 - `lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename` 全可用
 - 配合 `/refactor`（AST-grep）做安全重命名
 
-### 7. hashline_edit（`oh-my-openagent.json` → `hashline_edit: true`）
+### 7. hashline_edit（`~/.omo/omo.jsonc` → `hashline_edit: true`）
 - 编辑工具用 `LINE#ID` 格式精确定位行
 - 你看到的文件内容每行带 hash 标识——这是特性，不是 bug
 
-### 8. ⚠️ aggressive_truncation 副作用（`oh-my-openagent.json` → `experimental.aggressive_truncation`）
+### 8. ⚠️ aggressive_truncation 副作用（`~/.omo/omo.jsonc` → `experimental.aggressive_truncation`）
 - `experimental.aggressive_truncation: true` 会激进截断上下文
 - **副作用**：长 session 中可能丢失关键历史信息
 - **缓解**：重要上下文主动重述；感觉响应变慢或信息丢失时开新 session
 
-### 9. dynamic_context_pruning（`oh-my-openagent.json` → `experimental.dynamic_context_pruning`）
+### 9. dynamic_context_pruning（`~/.omo/omo.jsonc` → `experimental.dynamic_context_pruning`）
 - `enabled: true`（动态上下文裁剪已启用）
 - `protected_tools` 保护 task/todowrite/lsp_rename/session_read 等不被裁剪；`turn_protection` 保护最近 3 轮；策略含 deduplication / supersede_writes / purge_errors
 
@@ -178,7 +178,7 @@
 
 ## 六、维护提醒
 
-### `disabled_hooks: ["auto-update-checker"]`（`oh-my-openagent.json` → `disabled_hooks`）
+### `disabled_hooks: ["auto-update-checker"]`（`~/.omo/omo.jsonc` → `disabled_hooks`）
 **opencode 不会自动检查更新**。需主动维护：
 
 | 周期 | 动作 |
@@ -187,7 +187,7 @@
 | 每月 | `npm view oh-my-openagent version` 对比本地，参考 README「如何升级 oh-my-openagent 主版本」章节 |
 | 升级 OMO 后 | **必跑** `make check` 验证 |
 
-### `model_capabilities.auto_refresh_on_start: true`（`oh-my-openagent.json` → `model_capabilities`）
+### `model_capabilities.auto_refresh_on_start: true`（`~/.omo/omo.jsonc` → `model_capabilities`）
 首次启动会刷新模型能力探测（`refresh_timeout_ms: 5000`），冷启动稍慢属正常。
 
 ---
@@ -225,16 +225,16 @@
 
 | 配置项 | 文件:字段 | 当前值 |
 |---|---|---|
-| 12 agents | `oh-my-openagent.json` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior/hephaestus |
-| 8 categories | `oh-my-openagent.json` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
-| team_mode | `oh-my-openagent.json` → `team_mode` | enabled, max_parallel_members=4, max_members=8 |
-| background_task | `oh-my-openagent.json` → `background_task` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
-| runtime_fallback | `oh-my-openagent.json` → `runtime_fallback` | 4 retries / 30s cooldown / 60s timeout / notify_on_fallback=true |
-| experimental | `oh-my-openagent.json` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
-| sisyphus_agent | `oh-my-openagent.json` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |
-| keyword_detector | `oh-my-openagent.json` → `keyword_detector` | ultrawork/team/hyperplan/hyperplan-ultrawork |
-| disabled_hooks | `oh-my-openagent.json` → `disabled_hooks` | auto-update-checker |
-| git_master | `oh-my-openagent.json` → `git_master` | commit_footer=true / include_co_authored_by=true |
+| 12 agents | `~/.omo/omo.jsonc` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior/hephaestus |
+| 8 categories | `~/.omo/omo.jsonc` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
+| team_mode | `~/.omo/omo.jsonc` → `team_mode` | enabled, max_parallel_members=4, max_members=8 |
+| background_task | `~/.omo/omo.jsonc` → `background_task` | defaultConcurrency=5, providerConcurrency 各 5, modelConcurrency 精细值见上 |
+| runtime_fallback | `~/.omo/omo.jsonc` → `runtime_fallback` | 4 retries / 30s cooldown / 60s timeout / notify_on_fallback=true |
+| experimental | `~/.omo/omo.jsonc` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
+| sisyphus_agent | `~/.omo/omo.jsonc` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |
+| keyword_detector | `~/.omo/omo.jsonc` → `keyword_detector` | ultrawork/team/hyperplan/hyperplan-ultrawork |
+| disabled_hooks | `~/.omo/omo.jsonc` → `disabled_hooks` | auto-update-checker |
+| git_master | `~/.omo/omo.jsonc` → `git_master` | commit_footer=true / include_co_authored_by=true |
 | compaction | `opencode.json` → `compaction` | auto=true / prune=true / tail_turns=6 |
 | lsp | `opencode.json` → `lsp` | true（自动检测） |
 | permission.bash | `opencode.json` → `permission.bash` | 56 条规则（3 allow + 53 deny，含 rm/docker 危险操作白名单） |

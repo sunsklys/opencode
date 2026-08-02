@@ -155,7 +155,7 @@ opencode
 
 ### 版本控制保护的（git clone 即得）
 
-- 所有配置文件（`opencode.json` / `oh-my-openagent.json` / `tui.json` / `Makefile` / `scripts/`）
+- 所有配置文件（`opencode.json` / `tui.json` / `Makefile` / `scripts/`；OMO 统一配置在 `~/.omo/omo.jsonc`，不入 git）
 - 锁文件（`package-lock.json` + `skills.lock`）
 - CI 配置（`.github/workflows/`）
 

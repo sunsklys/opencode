@@ -81,7 +81,7 @@ opencode auth login zhipuai-coding-plan
 make check
 
 ## 包含文件
-- opencode.json / oh-my-openagent.json / tui.json - 配置
+- opencode.json / tui.json - 配置（OMO 统一配置在 ~/.omo/omo.jsonc，不入包）
 - Makefile + scripts/*.sh - 一键安装/体检编排
 - package.json + package-lock.json - 依赖锁
 - opencode-mem.jsonc.template - 智谱直连记忆配置模板
