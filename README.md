@@ -9,7 +9,7 @@
 | `opencode.json` | provider 定义（火山引擎 8 模型）+ 7 MCP 条目（全部启用）+ 3 plugin（superpowers 锁 #v6.2.0）+ LSP + permission |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | oh-my-openagent 4.19.4（精确锁定）+ @opencode-ai/plugin 1.18.14（精确锁定）+ postinstall 全局依赖 |
+| `package.json` | oh-my-openagent 4.19.4（精确锁定）+ @opencode-ai/plugin 1.18.15（精确锁定）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
