@@ -49,6 +49,7 @@ skipped_exists=0
 skipped_broken=0
 conflicts=0
 failed=0
+orphans=0
 
 for skill_dir in "$SOURCE_DIR"/*/; do
   [ -d "$skill_dir" ] || continue
@@ -90,6 +91,23 @@ for skill_dir in "$SOURCE_DIR"/*/; do
   fi
 done
 
+# --- 清理孤儿软链：指向 oh-my-openagent/dist/skills 但 target 已消失 ---
+# 主循环只遍历源目录里当前存在的 skill；源里被移除的 skill 留下的断链不会进入
+# 主循环，需要在此主动清理。仅清理指向 OMO dist/skills 的软链，避免误删用户
+# 自有文件或指向其他包的软链。
+for orphan_link in "$TARGET_DIR"/*; do
+  [ -L "$orphan_link" ] || continue
+  orphan_target=$(readlink "$orphan_link")
+  case "$orphan_target" in
+    */oh-my-openagent/dist/skills/*) ;;
+    *) continue ;;
+  esac
+  [ -e "$orphan_link" ] && continue
+  rm "$orphan_link"
+  orphans=$((orphans+1))
+  echo "🧹 清理孤儿软链 $(basename "$orphan_link")（target 已消失）"
+done
+
 echo ""
 echo "═══════════════════════════════════════════"
 echo "  源: $SOURCE_DIR ($SOURCE_TAG)"
@@ -98,6 +116,7 @@ echo "  跳过（已存在有效软链）: $skipped_exists"
 echo "  跳过（清理断链后重建）: $skipped_broken"
 echo "  冲突（用户自有文件）: $conflicts"
 echo "  失败: $failed"
+echo "  清理孤儿软链: $orphans"
 echo "═══════════════════════════════════════════"
 
 # 失败则非零退出
