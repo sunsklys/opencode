@@ -21,6 +21,10 @@ ok()    { echo "  ✅ $1"; PASS=$((PASS+1)); }
 fail()  { echo "  ❌ $1"; FAIL=$((FAIL+1)); }         # critical fail
 wfail() { echo "  ❌ $1"; WFAIL=$((WFAIL+1)); }       # warning fail
 warn()  { echo "  ⚠️  $1"; WARN=$((WARN+1)); }
+info()  { echo "  ⏭️  $1"; }                              # SKIP / informational，不计入任何计数
+# 守卫：仅无符号整数才返回 0。避免 node -pe 在字段缺失时返回字面 "undefined"
+# 触发 bash `[ X -ge N ]` 的 `integer expression expected` stderr 噪音。
+is_uint() { case "${1:-}" in ''|*[!0-9]*) return 1;; *) return 0;; esac; }
 
 echo "╔══════════════════════════════════════════╗"
 echo "║     opencode 配置体检                    ║"
@@ -76,15 +80,17 @@ else
   wfail "opencode-mem 软链未建立（make deps）"
 fi
 
-# 检查配置文件是否为智谱直连
-if [ -f "opencode-mem.jsonc" ]; then
-  if grep -q "glm-5-turbo" opencode-mem.jsonc && grep -q "env://Z_AI_API_KEY" opencode-mem.jsonc; then
-    ok "opencode-mem.jsonc 已配置智谱直连"
-  else
-    warn "opencode-mem.jsonc 仍是默认 OpenAI 配置（make mem 生成智谱直连版）"
-  fi
-else
+# 检查 opencode-mem 配置文件就绪状态（provider-agnostic，不强制特定厂商）
+# 该文件必需（插件加载需要），但用哪个 provider 是用户选择，不应当伪体检项。
+if [ ! -f "opencode-mem.jsonc" ]; then
   warn "opencode-mem.jsonc 不存在（make mem 生成）"
+elif grep -q '"memoryApiKey":\s*"env://' opencode-mem.jsonc && grep -q '"memoryProvider"' opencode-mem.jsonc; then
+  # 提取实际使用的 model 和 host 展示（awk 精确匹配 JSON key，避免被注释行干扰）
+  MEM_MODEL=$(awk -F'"' '/^[[:space:]]*"memoryModel"[[:space:]]*:/{print $4; exit}' opencode-mem.jsonc)
+  MEM_HOST=$(awk -F'"' '/^[[:space:]]*"memoryApiUrl"[[:space:]]*:/{print $4; exit}' opencode-mem.jsonc | awk -F/ '{print $3}' | awk -F@ '{print $NF}')  # 按 @ 分隔后取末段，去掉 userinfo 避免凭证泄露（https://key@host 场景）
+  ok "opencode-mem.jsonc 已配置（model=${MEM_MODEL:-?}, host=${MEM_HOST:-?}）"
+else
+  warn "opencode-mem.jsonc 未配置有效 provider（检查 memoryProvider / memoryApiKey 字段）"
 fi
 echo ""
 
@@ -113,12 +119,19 @@ echo ""
 # ---------- 6. [Warning] Web UI ----------
 echo "【6/13·Warning】opencode-mem Web UI"
  
-STATS=$(curl -s --max-time 3 http://127.0.0.1:4747/api/stats 2>/dev/null || echo "")
-if echo "$STATS" | grep -q '"success":true'; then
-  TOTAL=$(echo "$STATS" | node -pe "JSON.parse(require('fs').readFileSync(0)).data.total" 2>/dev/null || echo "?")
-  ok "Web UI 运行中（http://127.0.0.1:4747，已记录 ${TOTAL} 条记忆）"
+# opencode-mem Web UI 只在 opencode 主进程启动时才拉起；check 脚本通常在 opencode 外部运行，
+# 直接 curl 端口会把"opencode 没开"误报为配置警告。先探测进程状态再决定怎么报。
+# 注意端点选择：/api/stats 需要 auth token（返回 Unauthorized），用公开的 /api/health 才能探活性。
+if ! pgrep -x opencode >/dev/null 2>&1 && ! pgrep -f "node.*opencode" >/dev/null 2>&1; then
+  info "opencode 进程未运行 → 跳过 Web UI 探测（启动 opencode 后 Web UI 自动拉起，:4747）"
 else
-  warn "Web UI 未响应（启动 opencode 后自动运行）"
+  HEALTH=$(curl -s --max-time 3 http://127.0.0.1:4747/api/health 2>/dev/null || echo "")
+  if echo "$HEALTH" | grep -q '"success":true'; then
+    AUTH=$(echo "$HEALTH" | node -pe "JSON.parse(require('fs').readFileSync(0)).authEnabled ? '（已开认证，详情需 token）' : ''" 2>/dev/null || echo "")
+    ok "Web UI 运行中（http://127.0.0.1:4747/api/health ✓ ${AUTH})"
+  else
+    warn "opencode 进程在跑但 Web UI :4747/api/health 未响应（可能未加载 opencode-mem 插件）"
+  fi
 fi
 echo ""
 # ---------- 7. [Warning] plugin @latest 漂移检测（opencode 缓存 vs 项目软链） ----------
@@ -320,18 +333,67 @@ O_FMT=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).
 O_INST=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions" 2>/dev/null)
 
 [ "$M_ON" = "true" ]                 && ok "OMO monitor.enabled=true（后台监控 idle 模式）" || fail "OMO monitor.enabled 未启用（~/.omo/omo.jsonc）"
-[ -n "$M_MAX" ] && [ "$M_MAX" -le 1000 ]  && ok "OMO goal.default_max_iterations=${M_MAX}（Goal 替代 Ralph Loop，已配防失控）" || fail "OMO goal.default_max_iterations 未设或 >1000（防失控）"
-[ -n "$M_BABY" ] && [ "$M_BABY" -ge 180000 ] && ok "OMO babysitting.timeout_ms=${M_BABY}（适配 GLM-5.2）" || warn "OMO babysitting.timeout_ms 未调高（默认 120000 在 max reasoning 下可能误杀）"
+is_uint "$M_MAX" && [ "$M_MAX" -le 1000 ]  && ok "OMO goal.default_max_iterations=${M_MAX}（Goal 替代 Ralph Loop，已配防失控）" || fail "OMO goal.default_max_iterations 未设或 >1000（防失控）"
+# babysitting.timeout_ms 是模型/负载特定调优（GLM-5.2 + max reasoning 需要 ≥180s，简单任务默认 120s 够用）。
+# 配了就展示当前值；没配就是默认 120s，info 提示即可，不应当成异常。
+if is_uint "$M_BABY" && [ "$M_BABY" -ge 180000 ]; then
+  ok "OMO babysitting.timeout_ms=${M_BABY}（适配 GLM-5.2 + max reasoning）"
+elif is_uint "$M_BABY"; then
+  info "OMO babysitting.timeout_ms=${M_BABY}（默认值；max reasoning 下如遇误杀可调到 ≥180000）"
+else
+  info "OMO babysitting.timeout_ms 未显式设置（使用默认 120000；max reasoning 下如遇误杀可调到 ≥180000）"
+fi
 [ -z "$M_NOTI" ] || [ "$M_NOTI" = "undefined" ]  && ok "OMO notification 块已删除（dead config 清理）" || ok "OMO notification.force_enable=${M_NOTI}"
-[ "$M_COMMENT" = "true" ]             && ok "OMO comment_checker.custom_prompt 已配" || warn "OMO comment_checker 未配（可选）"
-[ -n "$M_DSK" ] && [ "$M_DSK" -ge 1 ]  && ok "OMO disabled_skills: ${M_DSK} 条（playwright/dev-browser/agent-browser）" || warn "OMO disabled_skills 未配"
-[ -n "$M_DCMD" ] && [ "$M_DCMD" -ge 1 ] && ok "OMO disabled_commands: ${M_DCMD} 条（goal/refactor/start-work 等）" || warn "OMO disabled_commands 未配（可选）"
+# comment_checker 是可选的注释质检特性。启用 → 展示；未启用 → info（默认状态，不是错）。
+if [ "$M_COMMENT" = "true" ]; then
+  ok "OMO comment_checker.custom_prompt 已配"
+else
+  info "OMO comment_checker 未启用（默认）"
+fi
+# disabled_skills 是用户偏好（决定哪些 skill 不被加载），和 disabled_commands 一样没有“应该配什么”的通用答案。
+if is_uint "$M_DSK" && [ "$M_DSK" -ge 1 ]; then
+  ok "OMO disabled_skills: ${M_DSK} 条（手动配置，拦截指定 skill 加载）"
+else
+  info "OMO disabled_skills 未配（默认，所有 skill 均可加载）"
+fi
+# disabled_commands 是高度个性化的配置（决定哪些 slash 命令完全不注册），没有“应该配什么”的通用答案。
+# 体检不应该把“未配”当异常报。仅在用户配了的情况下展示条数，未配则 SKIP。
+if is_uint "$M_DCMD" && [ "$M_DCMD" -ge 1 ]; then
+  ok "OMO disabled_commands: ${M_DCMD} 条（手动配置，会影响用户自身调用）"
+else
+  info "OMO disabled_commands 未配（默认，所有 / 命令均可用）"
+fi
 [ "$O_EDIT" = "deny" ]                && ok "opencode permission.edit 加了 .ssh/** deny（纵深防御）" || fail "opencode permission.edit 缺 .ssh/** deny（写文件层无防护）"
-[ "$O_BATCH" = "true" ]               && ok "opencode experimental.batch_tool=true（批量工具调用）" || warn "opencode experimental.batch_tool 未启用"
-[ -n "$O_POL" ] && [ "$O_POL" -ge 1 ]  && ok "opencode experimental.policies: ${O_POL} 条（deny 海外 provider）" || warn "opencode experimental.policies 未配（可选）"
-[ "$O_PRUNE" = "true" ]               && ok "opencode compaction.prune=true（自动修剪旧工具输出）" || warn "opencode compaction.prune 未启用（默认 false 浪费 token）"
-[ "$O_FMT" = "true" ]                 && ok "opencode formatter=true（启用内置格式化器，无 prettier 时 no-op）" || warn "opencode formatter 未启用（可选）"
-[ -n "$O_INST" ] && [ "$O_INST" -ge 1 ] && ok "opencode instructions: ${O_INST} 条引用（.opencode/instructions.md）" || warn "opencode instructions 未配（可选）"
+# experimental.batch_tool 是性能优化项（批量工具调用），未启用是合理默认（与 policies/prune/formatter 同类）。
+if [ "$O_BATCH" = "true" ]; then
+  ok "opencode experimental.batch_tool=true（启用，批量工具调用）"
+else
+  info "opencode experimental.batch_tool 未启用（默认，逐个调用工具）"
+fi
+# experimental.policies 是策略选择（如 deny 海外 provider），不是硬性要求。
+if is_uint "$O_POL" && [ "$O_POL" -ge 1 ]; then
+  ok "opencode experimental.policies: ${O_POL} 条（手动配置路由策略）"
+else
+  info "opencode experimental.policies 未配（默认，未限制任何 provider）"
+fi
+# compaction.prune 是 token 优化 vs 完整历史的权衡，默认 false 是合理选择。
+if [ "$O_PRUNE" = "true" ]; then
+  ok "opencode compaction.prune=true（启用，自动修剪旧工具输出节省 token）"
+else
+  info "opencode compaction.prune 未启用（默认，保留全部历史）"
+fi
+# formatter 是可选特性，无 prettier 时 no-op。开不开都不应当报 warn。
+if [ "$O_FMT" = "true" ]; then
+  ok "opencode formatter=true（已启用，无 prettier 时 no-op）"
+else
+  info "opencode formatter 未启用（默认）"
+fi
+# instructions 是可选的上下文增强机制。用户可以选择不用。
+if is_uint "$O_INST" && [ "$O_INST" -ge 1 ]; then
+  ok "opencode instructions: ${O_INST} 条引用（.opencode/instructions.md）"
+else
+  info "opencode instructions 未配（默认，无额外上下文注入）"
+fi
 echo ""
 
 # ---------- 12. [Warning] tui.json plugin 同步 ----------
