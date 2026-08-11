@@ -134,7 +134,7 @@
 - **豁免场景**：纯 prompt 文本、注释、版本号 bump、rename-only、一次性脚本、配置文件——明确说「不要 TDD」
 
 ### 5. 权限安全网（53 条 bash deny，`opencode.json` → `permission.bash`）
-- 拦：sudo / rm -rf / kill / force push / git reset --hard / npm publish / docker prune/rm / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取
+- 拦：sudo / rm -rf / force push / npm publish / docker prune/rm / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取（注：kill / git reset --hard 默认放行）
 - 放：chmod / chown / git restore / git config alias（日常开发常用，但需注意 chmod 可改 ~/.ssh 权限、git restore 会丢未提交工作）
 - 放手让 agent 跑命令
 

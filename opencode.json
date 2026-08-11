@@ -48,10 +48,7 @@
         "minimax-m3": {
           "name": "minimax-m3",
           "limit": { "context": 800000, "output": 131072 },
-          "modalities": { "input": ["text"], "output": ["text"] },
-          "options": {
-            "thinking": { "type": "enabled", "budgetTokens": 32768 }
-          }
+          "modalities": { "input": ["text"], "output": ["text"] }
         }
       }
     }
@@ -110,12 +107,7 @@
   "experimental": {
     "batch_tool": true,
     "continue_loop_on_deny": true,
-    "mcp_timeout": 60000,
-    "policies": [
-      { "effect": "deny", "action": "provider.use", "resource": "openai" },
-      { "effect": "deny", "action": "provider.use", "resource": "anthropic" },
-      { "effect": "deny", "action": "provider.use", "resource": "google" }
-    ]
+    "mcp_timeout": 60000
   },
   "formatter": true,
   "instructions": [
@@ -135,6 +127,10 @@
     "opencode": {
       "repository": "anomalyco/opencode",
       "description": "opencode CLI 上游仓库（config schema、新版本字段）"
+    },
+    "superpowers": {
+      "repository": "obra/superpowers",
+      "description": "superpowers 上游仓库（process skill 方法论：TDD/systematic-debugging/plans/code-review 等 14 个 skill）"
     }
   },
   "tool_output": {

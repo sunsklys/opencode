@@ -64,7 +64,7 @@
 
 | 字段 | 文件 | 作用域 | 触发动作 | 源码证据 |
 |---|---|---|---|---|
-| `monitor.max_runtime_ms` (1800000=30min) | ~/.omo/omo.jsonc | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | `spawnMonitorProcess` 函数（OMO dist/index.js） |
+| `monitor.max_runtime_ms` (OMO 默认 1800000=30min，未显式覆写) | ~/.omo/omo.jsonc | **外部子进程**（monitor 启动的 shell command） | setTimeout 强制 SIGTERM 杀子进程 | `spawnMonitorProcess` 函数（OMO dist/index.js） |
 | `babysitting.timeout_ms` (300000=5min) | ~/.omo/omo.jsonc | **主会话 idle 检测**（`session.idle` 事件后） | 给用户发提醒（不杀进程） | `unstable-agent-babysitter` hook（OMO dist/index.js） |
 | `runtime_fallback.timeout_seconds` (60) | ~/.omo/omo.jsonc | **单 session 单次调用**（含主模型 + fallback 累计） | 触发 fallback 切换 | `prepareFallback` 函数（OMO dist/index.js） |
 | `experimental.mcp_timeout` (60000) | opencode.json | **单次 MCP 工具调用**（网络超时） | MCP 调用失败，agent 收到错误 | opencode 本体字段 |
@@ -83,7 +83,7 @@
 | `experimental.batch_tool` | opencode 本体 | 批量工具调用 |
 | `experimental.continue_loop_on_deny` | opencode 本体 | 拒绝后继续循环 |
 | `experimental.mcp_timeout` | opencode 本体 | 全局 MCP 超时 |
-| `experimental.policies` | opencode 本体 | provider 访问策略 |
+| `experimental.policies` | opencode 本体 | provider 访问策略（本项目未启用，改用 OMO `disabled_providers`） |
 | `experimental.task_system` | OMO 注入 | task 跟踪系统 |
 | `experimental.preemptive_compaction` | OMO 注入 | 预防性压缩 |
 | `experimental.aggressive_truncation` | OMO 注入 | 激进截断 |
@@ -101,12 +101,12 @@
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
 | **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `~/.omo/omo.jsonc` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
-| **goal 迭代上限**（防 goal 失控烧钱） | `~/.omo/omo.jsonc` → `goal.default_max_iterations=100` | ✅ 显式 cap |
+| **goal 迭代上限**（防 goal 失控烧钱） | `~/.omo/omo.jsonc` → `goal.default_max_iterations=100` | ⚠️ enabled=false（仅 cap 预留） |
 | **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `~/.omo/omo.jsonc` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
 | **comment_checker**（中文注释质量检查） | `~/.omo/omo.jsonc` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
 | **disabled_skills**（禁用 playwright/dev-browser/agent-browser） | `~/.omo/omo.jsonc` → `disabled_skills` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
-| **experimental.policies**（deny openai/anthropic/google provider，防误用海外模型） | `opencode.json` → `experimental.policies` | ✅ 已启用 |
+| **海外 provider 防误用**（deny openai/anthropic/google，防误用海外模型） | `~/.omo/omo.jsonc` → `disabled_providers` | ✅ 已启用（OMO 层过滤，替代原 experimental.policies） |
 | **experimental.mcp_timeout**（全局 MCP 超时 60s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=60000` | ✅ 已启用 |
 | **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 6 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=6 |
 | **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |
@@ -130,7 +130,7 @@
 
 ## team_mode 成本控制
 
-当前 team_mode 配置无显式 token/cost 上限（`max_members=8`, `max_member_turns=500`）。OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 字段。如需隐性成本控制，可下调 `max_member_turns`。
+当前 team_mode 配置只显式启用 `enabled: true`，未显式设置 token/cost 上限（`max_members=8`, `max_member_turns=500` 为 OMO 默认值，未显式覆写）。OMO schema 暂不暴露 `max_total_tokens_per_run` 或 `max_cost_cents_per_run` 字段。如需隐性成本控制，可显式下调 `max_member_turns`。
 
 ## MCP 数据流向与信任边界
 
@@ -188,7 +188,8 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 
 **升级风险**：
 - 依赖 OMO 内部 hook 执行顺序，OMO 升级可能改变顺序导致失效
-- 硬编码 volcengine fallback `reasoningEffort = "high"` 对 doubao/minimax/kimi 一刀切
+- 硬编码 volcengine fallback `reasoningEffort = "high"` 对 doubao-seed-2.0-pro/code 补 high；依赖火山引擎 API 实际接受该参数（⚠ OMO snapshot 标 reasoning:false，与此决策冲突，建议运行时抓包验证）
+- `SKIP_HIGH_REASONING` 列表（lite/kimi-k2.6/minimax-m3）依赖 OMO heuristic family 不暴露 reasoningEfforts 字段；OMO 升级若新增字段需重新评估
 - OMO 修复后可移除此 plugin
 
 **状态**：已知技术债，当前能工作，暂不处理。

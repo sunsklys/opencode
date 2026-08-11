@@ -46,10 +46,19 @@ const plugin: { id: string; server: Plugin } = {
         return
       }
 
-      // 2. volcengine-plan fallback: 恢复被 OMO 删除的 reasoningEffort
-      //    OMO 对 unknown-family 模型（doubao/minimax/kimi）删除 reasoningEffort
-      //    这些模型实际支持 reasoning，恢复为安全默认值
-      if (providerID.includes("volcengine") && !("reasoningEffort" in output.options)) {
+      // 2. volcengine-plan fallback: 恢复被 OMO 删除的 reasoningEffort（仅对真正支持的模型）
+      //    OMO 对 unknown-family 模型删除 reasoningEffort；以下模型实际支持 reasoning，
+      //    恢复为安全默认值 high：
+      //      - doubao-seed-2.0-pro / doubao-seed-2.0-code（火山引擎 doubao seed 系列；
+      //        ⚠ 注意：OMO snapshot 标 reasoning:false 与此决策冲突，建议运行时抓包验证）
+      //    以下模型跳过强制 high（heuristic family 不暴露 reasoningEfforts 字段，补了无效）：
+      //      - doubao-seed-2.0-lite（轻量模型，OMO snapshot 明确标 reasoning:false）
+      //      - kimi-k2.6（kimi family L24380-85 无 reasoningEfforts 字段；火山引擎走 thinking 通道）
+      //      - minimax-m3（minimax family L24391-96 无 reasoningEfforts 字段；火山引擎走 thinking 通道）
+      const SKIP_HIGH_REASONING = ["doubao-seed-2.0-lite", "kimi-k2.6", "minimax-m3"]
+      const modelSuffix = id.split("/").pop() ?? ""
+      const shouldSkip = SKIP_HIGH_REASONING.some(m => modelSuffix.includes(m))
+      if (providerID.includes("volcengine") && !shouldSkip && !("reasoningEffort" in output.options)) {
         output.options.reasoningEffort = "high"
       }
     },
