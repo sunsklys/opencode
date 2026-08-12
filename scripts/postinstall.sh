@@ -7,13 +7,21 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+REGISTRY="${NPM_REGISTRY:-}"
+_npm() {
+  if [ -n "$REGISTRY" ]; then
+    npm "$@" --registry="$REGISTRY"
+  else
+    npm "$@"
+  fi
+}
 echo "=== 1/2 全局安装 claude-mermaid ==="
-npm i -g claude-mermaid
+_npm i -g claude-mermaid
 echo "  ✓ claude-mermaid 完成"
 
 echo ""
 echo "=== 2/2 全局安装 codegraph ==="
-npm i -g @colbymchenry/codegraph
+_npm i -g @colbymchenry/codegraph
 echo "  ✓ codegraph 完成"
 
 echo ""
