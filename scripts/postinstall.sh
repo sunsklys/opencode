@@ -7,14 +7,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-REGISTRY="${NPM_REGISTRY:-}"
-_npm() {
-  if [ -n "$REGISTRY" ]; then
-    npm "$@" --registry="$REGISTRY"
-  else
-    npm "$@"
-  fi
-}
+source scripts/_lib.sh
+
 echo "=== 1/2 全局安装 claude-mermaid ==="
 _npm i -g claude-mermaid
 echo "  ✓ claude-mermaid 完成"

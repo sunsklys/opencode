@@ -11,25 +11,21 @@ cd "$(dirname "$0")/.."
 # ---------- 镜像延迟预检 ----------
 # npmmirror 对 @opencode-ai/* 同步滞后会导致 plugin 已发但 sdk 未同步 → ETARGET。
 # 检测到延迟时全程使用官方源（install.sh + postinstall.sh 内所有 npm 调用）。
-REGISTRY="${NPM_REGISTRY:-}"
-if [ -z "$REGISTRY" ]; then
-  OFFICIAL_VER=$(npm view @opencode-ai/sdk version --registry=https://registry.npmjs.org 2>/dev/null || echo "")
-  MIRROR_VER=$(npm view @opencode-ai/sdk version 2>/dev/null || echo "")
+if [ -z "${NPM_REGISTRY:-}" ]; then
+  # 并行查官方源 + 镜像源（官方源国内较慢，并行后总耗时 = max 而非 sum）
+  _off=$(mktemp); _mir=$(mktemp)
+  npm view @opencode-ai/sdk version --registry=https://registry.npmjs.org > "$_off" 2>/dev/null &
+  npm view @opencode-ai/sdk version > "$_mir" 2>/dev/null &
+  wait || true
+  OFFICIAL_VER=$(cat "$_off"); MIRROR_VER=$(cat "$_mir")
+  rm -f "$_off" "$_mir"
   if [ -n "$OFFICIAL_VER" ] && [ "$OFFICIAL_VER" != "$MIRROR_VER" ]; then
-    REGISTRY="https://registry.npmjs.org"
-    echo "⚠️ 镜像源 @opencode-ai/sdk 同步延迟（镜像 $MIRROR_VER / 官方 $OFFICIAL_VER），本次全程使用官方源"
+    export NPM_REGISTRY="https://registry.npmjs.org"
+    echo "[WARN] 镜像源 @opencode-ai/sdk 同步延迟（镜像 $MIRROR_VER / 官方 $OFFICIAL_VER），本次全程使用官方源"
   fi
 fi
-[ -n "$REGISTRY" ] && export NPM_REGISTRY  # 传递给 postinstall.sh
 
-# npm wrapper：REGISTRY 非空时自动加 --registry
-_npm() {
-  if [ -n "$REGISTRY" ]; then
-    npm "$@" --registry="$REGISTRY"
-  else
-    npm "$@"
-  fi
-}
+source scripts/_lib.sh
 
 echo "=== 1/3 npm install（含 postinstall: 全局 MCP 依赖）==="
 _npm install
