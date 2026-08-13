@@ -53,7 +53,8 @@ fi
 # 不备份 node_modules（515M/18k 文件，cp 耗时 ~15s）：失败后恢复 package.json + lock，跑 make update 重建
 BACKUP_DIR=".upgrade-backup-$(date +%s)"
 mkdir -p "$BACKUP_DIR"
-cp package.json package-lock.json "$BACKUP_DIR/" 2>/dev/null || true
+cp package.json "$BACKUP_DIR/" || { echo "❌ 备份 package.json 失败" >&amp;2; exit 1; }
+cp package-lock.json "$BACKUP_DIR/" 2>/dev/null || true  # lock 可能不存在（首次安装）
 
 _restore_upgrade() {
   if [ -d "$BACKUP_DIR" ]; then
@@ -70,7 +71,7 @@ echo ""
 echo "=== 2/4 更新 package.json ==="
 node -e '
 const fs = require("fs");
-const [omoLatest, plgLatest] = process.argv.slice(2);
+const [omoLatest, plgLatest] = process.argv.slice(process.argv[1] === "[eval]" ? 2 : 1);
 const pkg = JSON.parse(fs.readFileSync("./package.json", "utf8"));
 const changed = [];
 if (pkg.dependencies["oh-my-openagent"] !== omoLatest) {
@@ -109,7 +110,7 @@ fi
 # 用 argv 传参（避免 shell 插值注入），node 做精确字面替换
 node -e '
 const fs = require("fs");
-const [omoCurrent, omoLatest, plgCurrent, plgLatest] = process.argv.slice(2);
+const [omoCurrent, omoLatest, plgCurrent, plgLatest] = process.argv.slice(process.argv[1] === "[eval]" ? 2 : 1);
 const files = ["README.md", "docs/reference.md", ".opencode/instructions.md"];
 const replacements = [
   [omoCurrent, omoLatest],

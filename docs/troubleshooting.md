@@ -16,7 +16,8 @@
 ## npm install 卡住
 
 → 国内网络问题。
-→ 解决：`npm config set registry https://registry.npmmirror.com`
+→ install.sh 已内置镜像延迟检测（自动切官方源），通常无需手动干预。
+→ 如仍卡住：`npm config set registry https://registry.npmmirror.com` 切国内镜像加速。
 
 ## MCP 服务报错（mermaid / codegraph 不可用）
 

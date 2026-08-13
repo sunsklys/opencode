@@ -41,7 +41,13 @@ _npm i -g opencode-mem
 echo ""
 echo "=== 3/3 建立软链 + 验证 ==="
 # 软链必须在 npm install 之后建（npm 会清理 extraneous 软链）
-ln -sf "$(npm root -g)/opencode-mem" node_modules/opencode-mem
+# 先检查全局 opencode-mem 是否存在（ln -sf 目标不存在会创建悬空软链 → 误报成功）
+GLOBAL_MEM="$(npm root -g)/opencode-mem"
+if [ ! -d "$GLOBAL_MEM" ]; then
+  echo "❌ opencode-mem 全局安装失败（$GLOBAL_MEM 不存在）" >&amp;2
+  exit 1
+fi
+ln -sf "$GLOBAL_MEM" node_modules/opencode-mem
 
 # opencode-mem 软链 + 版本验证（防御性赋值：node -p 失败时 fallback 到"未知"）
 MEM_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 2>/dev/null) || MEM_VER="未知"

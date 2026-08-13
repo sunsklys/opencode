@@ -158,10 +158,10 @@
 `opencode.json` 第 3 行的 superpowers plugin 用 git 源（`superpowers@git+https://...`），不像 `@latest` 的 npm 包有 npm registry 做 semver 网关。为保证可复现性，**显式锁定到 git tag**：
 
 ```json
-"superpowers@git+https://github.com/obra/superpowers.git#v6.2.0"
+"superpowers@git+https://github.com/obra/superpowers.git#v6.3.0"
 ```
 
-**为什么锁 tag 而非 commit SHA**：obra 维护规范的 semver tag（v3.1.0 → v6.2.0），可读性远好于 SHA；升级时一眼能看出当前锁的版本。
+**为什么锁 tag 而非 commit SHA**：obra 维护规范的 semver tag（v3.1.0 → v6.3.0），可读性远好于 SHA；升级时一眼能看出当前锁的版本。
 
 **`make check` 第 13 项** 会检测：
 - opencode.json 是否锁定版本（无 `#vX.Y.Z` 时警告「未锁定」）

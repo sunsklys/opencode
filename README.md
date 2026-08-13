@@ -6,7 +6,7 @@
 
 | 文件 | 说明 |
 |---|---|
-| `opencode.json` | provider 定义（火山引擎 8 模型）+ 7 MCP 条目（全部启用）+ 3 plugin（superpowers 锁 #v6.2.0）+ LSP + permission |
+| `opencode.json` | provider 定义（火山引擎 8 模型）+ 7 MCP 条目（全部启用）+ 3 plugin（superpowers 锁 #v6.3.0）+ LSP + permission |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
 | `package.json` | oh-my-openagent 4.19.4（精确锁定）+ @opencode-ai/plugin 1.18.17（精确锁定）+ postinstall 全局依赖 |
