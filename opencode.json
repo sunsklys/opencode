@@ -1,58 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": ["oh-my-openagent@latest", "opencode-mem@latest", "superpowers@git+https://github.com/obra/superpowers.git#v6.3.0"],
-  "provider": {
-    "volcengine-plan": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Volcano Engine",
-      "options": {
-        "baseURL": "https://ark.cn-beijing.volces.com/api/coding/v3",
-        "apiKey": "{env:VOLC_API_KEY}"
-      },
-      "models": {
-        "deepseek-v4-flash": {
-          "name": "deepseek-v4-flash",
-          "limit": { "context": 1000000, "output": 384000 },
-          "modalities": { "input": ["text"], "output": ["text"] }
-        },
-        "deepseek-v4-pro": {
-          "name": "deepseek-v4-pro",
-          "limit": { "context": 1000000, "output": 384000 },
-          "modalities": { "input": ["text"], "output": ["text"] }
-        },
-        "doubao-seed-2.0-code": {
-          "name": "doubao-seed-2.0-code",
-          "limit": { "context": 256000, "output": 131072 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] }
-        },
-        "doubao-seed-2.0-lite": {
-          "name": "doubao-seed-2.0-lite",
-          "limit": { "context": 256000, "output": 131072 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] }
-        },
-        "doubao-seed-2.0-pro": {
-          "name": "doubao-seed-2.0-pro",
-          "limit": { "context": 256000, "output": 131072 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] }
-        },
-        "glm-5.2": {
-          "name": "glm-5.2",
-          "limit": { "context": 1024000, "output": 128000 },
-          "modalities": { "input": ["text"], "output": ["text"] }
-        },
-        "kimi-k2.6": {
-          "name": "kimi-k2.6",
-          "limit": { "context": 256000, "output": 32768 },
-          "modalities": { "input": ["text"], "output": ["text"] }
-        },
-        "minimax-m3": {
-          "name": "minimax-m3",
-          "limit": { "context": 800000, "output": 131072 },
-          "modalities": { "input": ["text"], "output": ["text"] }
-        }
-      }
-    }
-  },
   "mcp": {
     "zai-mcp-server": {
       "type": "local",

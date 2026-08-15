@@ -38,12 +38,9 @@
     },
     "background_task": {
       "modelConcurrency": {
-        "volcengine-plan/deepseek-v4-pro": 3,
-        "volcengine-plan/kimi-k2.6": 3,
-        "volcengine-plan/doubao-seed-2.0-pro": 3,
-        "volcengine-plan/doubao-seed-2.0-code": 3,
-        "volcengine-plan/minimax-m3": 3,
         "zhipuai-coding-plan/glm-5-turbo": 3,
+        "zhipuai-coding-plan/glm-5.1": 3,
+        "zhipuai-coding-plan/glm-4.6v": 3,
         "zhipuai-coding-plan/glm-5v-turbo": 3
       }
     },
@@ -102,7 +99,7 @@
       "sisyphus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "ultrawork": {
           "model": "zhipuai-coding-plan/glm-5.3",
@@ -114,99 +111,92 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "prometheus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "plan": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "oracle": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "metis": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "momus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "atlas": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/deepseek-v4-pro",
-          "volcengine-plan/doubao-seed-2.0-code"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "librarian": {
@@ -216,11 +206,10 @@
         },
         "models": [
           {
-            "model": "volcengine-plan/deepseek-v4-flash",
+            "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "medium"
           },
-          "zhipuai-coding-plan/glm-5-turbo",
-          "volcengine-plan/doubao-seed-2.0-lite"
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "explore": {
@@ -230,49 +219,45 @@
         },
         "models": [
           {
-            "model": "volcengine-plan/deepseek-v4-flash",
+            "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "medium"
           },
-          "zhipuai-coding-plan/glm-5-turbo",
-          "volcengine-plan/doubao-seed-2.0-lite"
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "multimodal-looker": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           "zhipuai-coding-plan/glm-5v-turbo",
-          "volcengine-plan/doubao-seed-2.0-code",
-          "volcengine-plan/minimax-m3"
+          "zhipuai-coding-plan/glm-4.6v"
         ]
       },
       "sisyphus-junior": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/deepseek-v4-pro",
-          "volcengine-plan/doubao-seed-2.0-code"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "hephaestus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "volcengine-plan/deepseek-v4-flash"
+          "model": "zhipuai-coding-plan/glm-5-turbo"
         },
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/deepseek-v4-pro",
-          "volcengine-plan/doubao-seed-2.0-code"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       }
     },
@@ -281,8 +266,7 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           "zhipuai-coding-plan/glm-5v-turbo",
-          "volcengine-plan/doubao-seed-2.0-code",
-          "volcengine-plan/minimax-m3"
+          "zhipuai-coding-plan/glm-4.6v"
         ]
       },
       "ultrabrain": {
@@ -292,9 +276,8 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "artistry": {
@@ -305,9 +288,8 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/deepseek-v4-pro",
-          "volcengine-plan/minimax-m3",
-          "volcengine-plan/doubao-seed-2.0-code"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "deep": {
@@ -317,31 +299,28 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "quick": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "volcengine-plan/deepseek-v4-flash",
+            "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "low"
           },
-          "zhipuai-coding-plan/glm-5-turbo",
-          "volcengine-plan/doubao-seed-2.0-lite"
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "unspecified-low": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "volcengine-plan/deepseek-v4-flash",
+            "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "low"
           },
-          "zhipuai-coding-plan/glm-5-turbo",
-          "volcengine-plan/doubao-seed-2.0-lite"
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "unspecified-high": {
@@ -351,9 +330,8 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "volcengine-plan/deepseek-v4-pro",
-          "volcengine-plan/minimax-m3",
-          "volcengine-plan/doubao-seed-2.0-code"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       },
       "writing": {
@@ -361,9 +339,8 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           "zhipuai-coding-plan/glm-5.3",
-          "volcengine-plan/glm-5.2",
-          "volcengine-plan/kimi-k2.6",
-          "volcengine-plan/doubao-seed-2.0-pro"
+          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.1"
         ]
       }
     },

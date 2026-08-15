@@ -11,7 +11,7 @@
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
 | **插件/扩展** | `plugin` / `mcp` / `lsp` | 3 plugin + 7 MCP + LSP（true = 自动检测内置） |
-| **模型路由** | `provider` / `small_model` | 火山引擎 8 模型 + 智谱 glm-5-turbo 作 small（避开火山 deepseek-v4-flash 月配额限制） |
+| **模型路由** | `model` / `small_model` | 智谱单栈：glm-5.3 主 + glm-5-turbo 作 small（火山引擎已停订，provider 块已删） |
 | **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / true(patch 自动,minor/major 仅通知) / auto |
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
 | **安全** | `permission.read` / `permission.bash` / `watcher.ignore` | deny 列表 + 文件监听忽略 |
@@ -119,14 +119,14 @@
 | 主调度 (sisyphus) | GLM-5.3 (zhipu, max) |
 | 架构/深度推理 (oracle/prometheus/momus/metis/plan) | GLM-5.3 (zhipu, max) |
 | 高难度自主 (ultrabrain/deep) | GLM-5.3 (zhipu, max) |
-| 创意/非常规 (artistry) | GLM-5.3 (zhipu, max)（fallback → DeepSeek V4-Pro） |
-| 编码实现 (atlas/sisyphus-junior/unspecified-high) | GLM-5.3 (zhipu, max)（fallback → DeepSeek V4-Pro） |
+| 创意/非常规 (artistry) | GLM-5.3 (zhipu, max)（fallback → GLM-5.2 → GLM-5.1） |
+| 编码实现 (atlas/sisyphus-junior/unspecified-high) | GLM-5.3 (zhipu, max)（fallback → GLM-5.2 → GLM-5.1） |
 | 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-Turbo |
-| 检索/轻量 (librarian/explore/unspecified-low) | DeepSeek V4-Flash (low) |
-| 快速执行 (quick) | DeepSeek V4-Flash (minimal) |
+| 检索/轻量 (librarian/explore/unspecified-low) | GLM-5-Turbo (medium) |
+| 快速执行 (quick) | GLM-5-Turbo (low) |
 | 写作 (writing) | GLM-5.3 |
 
-> **调度与深度推理类** GLM-5.3 主模型（sisyphus / oracle / prometheus / momus / metis / plan / ultrabrain / deep / writing）均配置 `volcengine-plan/glm-5.2` 作跨 provider 同系降级 fallback（zhipuai 宕机先走火山通道 5.3→5.2，再退化到异构模型）。编码实现类（atlas / sisyphus-junior / artistry / unspecified-high）的 fallback 首位是 `deepseek-v4-pro`。`max_fallback_attempts=4`。
+> 全部重型组（agents + ultrabrain/deep/unspecified-high/artistry/writing）fallback 链统一为智谱内部降级 `glm-5.2 → glm-5.1`；轻量组主力 glm-5-turbo、fallback glm-5.1；多模态组 glm-5v-turbo → glm-4.6v。单 provider 部署，智谱整体宕机时无跨厂商兜底（火山引擎已停订）。`max_fallback_attempts=4`。
 
 ## team_mode 成本控制
 
@@ -180,16 +180,12 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 
 **作用**：恢复 GLM 5.2/5.3 的 `reasoningEffort: "max"` 被 OMO `chat.params` hook 降级为 `"high"` 的问题。
 
-**背景**：OMO 的 model-capability 兼容性检查在 `chat.params` hook 里：
-1. 把 GLM 5.2/5.3 的 `variant: "max"` 降级为 `"high"`（heuristic glm family 不含 max）
-2. 对不匹配 heuristic family 的 volcengine-plan 模型（doubao/minimax 等）删除 `reasoningEffort`（reason: unknown-model-family）
+**背景**：OMO 的 model-capability 兼容性检查在 `chat.params` hook 里，会把 GLM 5.2/5.3 的 `variant: "max"` 降级为 `"high"` 并删除 `reasoningEffort`（heuristic glm family 不含 reasoningEfforts）。
 
 本 plugin 在 OMO 之后执行（`.opencode/plugin/*.ts` 自动发现，排在 plugin_origins 末尾），恢复被删除的 `reasoningEffort`。
 
 **升级风险**：
 - 依赖 OMO 内部 hook 执行顺序，OMO 升级可能改变顺序导致失效
-- 硬编码 volcengine fallback `reasoningEffort = "high"` 对 doubao-seed-2.0-pro/code 补 high；依赖火山引擎 API 实际接受该参数（⚠ OMO snapshot 标 reasoning:false，与此决策冲突，建议运行时抓包验证）
-- `SKIP_HIGH_REASONING` 列表（lite/kimi-k2.6/minimax-m3）依赖 OMO heuristic family 不暴露 reasoningEfforts 字段；OMO 升级若新增字段需重新评估
 - OMO 修复后可移除此 plugin
 
 **状态**：已知技术债，当前能工作，暂不处理。

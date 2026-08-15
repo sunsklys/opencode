@@ -26,7 +26,7 @@
 
 ## 当前活跃配置主题
 
-- 12 agent + 8 category 的模型路由（GLM-5.3 主，DeepSeek-V4-Pro 兜底）
+- 12 agent + 8 category 的模型路由（GLM-5.3 主，GLM-5.2/5.1 兜底，智谱单栈）
 - 7 MCP（智谱 web 工具 / mermaid / codegraph / dbx，全部启用）
 - 89 条 permission deny（bash 53 + read 17 + edit 19，三层纵深防御）
 - OMO 4.19.4

@@ -46,11 +46,10 @@ make check                                # 体检（13 项全绿即就绪）
 
 | 变量 | 服务 | 获取地址 |
 |---|---|---|
-| `VOLC_API_KEY` | 火山引擎 Ark | https://console.volcengine.com/ark |
 | `Z_AI_API_KEY` | 智谱 BigModel | https://www.bigmodel.cn/usercenter/apikeys |
 | `FEISHU_APP_SECRET` | 飞书开放平台 App Secret | https://open.feishu.cn/app/<YOUR_APP_ID> |
 
-> 一行版：[火山引擎](https://console.volcengine.com/ark) ｜ [智谱](https://www.bigmodel.cn/usercenter/apikeys) ｜ [飞书](https://open.feishu.cn/app/<YOUR_APP_ID>)
+> 一行版：[智谱](https://www.bigmodel.cn/usercenter/apikeys) ｜ [飞书](https://open.feishu.cn/app/<YOUR_APP_ID>)
 
 ## Makefile 命令速查
 

@@ -4,9 +4,9 @@
 
 ## `opencode` 启动报 "missing apiKey"
 
-→ 环境变量没加载。检查 `echo $VOLC_API_KEY` 是否为空。
-→ 解决：确认 `~/.zshrc` 里的 `export VOLC_API_KEY=...` 存在且正确，然后 `source ~/.zshrc` 或重开终端。
-→ 如果从 LazyVim/Neovim GUI 启动，还需确认 `launchctl getenv VOLC_API_KEY` 有值。
+→ 环境变量没加载。检查 `echo $Z_AI_API_KEY` 是否为空。
+→ 解决：确认 `~/.zshrc` 里的 `export Z_AI_API_KEY=...` 存在且正确，然后 `source ~/.zshrc` 或重开终端。
+→ 如果从 LazyVim/Neovim GUI 启动，还需确认 `launchctl getenv Z_AI_API_KEY` 有值。
 
 ## 智谱模型调不通
 
