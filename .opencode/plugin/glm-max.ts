@@ -2,7 +2,7 @@
  * reasoningEffort 恢复 plugin
  *
  * 背景：OMO 的 model-capability 兼容性检查在 chat.params hook 里会：
- * 1. 把 GLM 5.2 的 variant:"max" 降级为 "high"（heuristic glm 不含 max）
+ * 1. 把 GLM 5.2/5.3 的 variant:"max" 降级为 "high"（heuristic glm 不含 max）
  * 2. 对不匹配 heuristic family 的 volcengine-plan 模型（doubao/minimax 等）
  *    删除 reasoningEffort（reason: unknown-model-family）
  *
@@ -37,11 +37,11 @@ const plugin: { id: string; server: Plugin } = {
       const id = modelID.toLowerCase()
       const providerID = (readString(model, "providerID") ?? "").toLowerCase()
 
-      // 1. GLM 5.2: 强制 reasoningEffort=max
+      // 1. GLM 5.2 / 5.3: 强制 reasoningEffort=max
       //    OMO heuristic glm family 不含 reasoningEfforts，会丢弃 reasoningEffort
       //    GLM 的 max reasoning 通过此 option 直接传递（variant 机制见顶部注释）
-      const isGlm52 = ["glm-5.2", "glm-5-2", "glm-5p2"].some((name) => id.includes(name))
-      if (isGlm52) {
+      const isGlm5Max = ["glm-5.2", "glm-5-2", "glm-5p2", "glm-5.3", "glm-5-3", "glm-5p3"].some((name) => id.includes(name))
+      if (isGlm5Max) {
         output.options.reasoningEffort = "max"
         return
       }

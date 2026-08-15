@@ -334,10 +334,10 @@ O_INST=$(echo "$OC_FIELDS" | node -pe "JSON.parse(require('fs').readFileSync(0))
 
 [ "$M_ON" = "true" ]                 && ok "OMO monitor.enabled=true（后台监控 idle 模式）" || fail "OMO monitor.enabled 未启用（~/.omo/omo.jsonc）"
 is_uint "$M_MAX" && [ "$M_MAX" -le 1000 ]  && ok "OMO goal.default_max_iterations=${M_MAX}（Goal 替代 Ralph Loop，已配防失控）" || fail "OMO goal.default_max_iterations 未设或 >1000（防失控）"
-# babysitting.timeout_ms 是模型/负载特定调优（GLM-5.2 + max reasoning 需要 ≥180s，简单任务默认 120s 够用）。
+# babysitting.timeout_ms 是模型/负载特定调优（GLM-5.3 + max reasoning 需要 ≥180s，简单任务默认 120s 够用）。
 # 配了就展示当前值；没配就是默认 120s，info 提示即可，不应当成异常。
 if is_uint "$M_BABY" && [ "$M_BABY" -ge 180000 ]; then
-  ok "OMO babysitting.timeout_ms=${M_BABY}（适配 GLM-5.2 + max reasoning）"
+  ok "OMO babysitting.timeout_ms=${M_BABY}（适配 GLM-5.3 + max reasoning）"
 elif is_uint "$M_BABY"; then
   info "OMO babysitting.timeout_ms=${M_BABY}（默认值；max reasoning 下如遇误杀可调到 ≥180000）"
 else

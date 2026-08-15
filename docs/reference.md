@@ -102,7 +102,7 @@
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
 | **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `~/.omo/omo.jsonc` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
 | **goal 迭代上限**（防 goal 失控烧钱） | `~/.omo/omo.jsonc` → `goal.default_max_iterations=100` | ⚠️ enabled=false（仅 cap 预留） |
-| **babysitting 超时**（适配 GLM-5.2 max reasoning 首响应延迟） | `~/.omo/omo.jsonc` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
+| **babysitting 超时**（适配 GLM-5.3 max reasoning 首响应延迟） | `~/.omo/omo.jsonc` → `babysitting.timeout_ms=300000` | ✅ 5min（默认 2min） |
 | **comment_checker**（中文注释质量检查） | `~/.omo/omo.jsonc` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
 | **disabled_skills**（禁用 playwright/dev-browser/agent-browser） | `~/.omo/omo.jsonc` → `disabled_skills` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
@@ -116,17 +116,17 @@
 
 | 场景 | 路由 |
 |---|---|
-| 主调度 (sisyphus) | GLM-5.2 (zhipu, max) |
-| 架构/深度推理 (oracle/prometheus/momus/metis/plan) | GLM-5.2 (zhipu, max) |
-| 高难度自主 (ultrabrain/deep) | GLM-5.2 (zhipu, max) |
-| 创意/非常规 (artistry) | GLM-5.2 (zhipu, max)（fallback → DeepSeek V4-Pro） |
-| 编码实现 (atlas/sisyphus-junior/unspecified-high) | GLM-5.2 (zhipu, max)（fallback → DeepSeek V4-Pro） |
+| 主调度 (sisyphus) | GLM-5.3 (zhipu, max) |
+| 架构/深度推理 (oracle/prometheus/momus/metis/plan) | GLM-5.3 (zhipu, max) |
+| 高难度自主 (ultrabrain/deep) | GLM-5.3 (zhipu, max) |
+| 创意/非常规 (artistry) | GLM-5.3 (zhipu, max)（fallback → DeepSeek V4-Pro） |
+| 编码实现 (atlas/sisyphus-junior/unspecified-high) | GLM-5.3 (zhipu, max)（fallback → DeepSeek V4-Pro） |
 | 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-Turbo |
 | 检索/轻量 (librarian/explore/unspecified-low) | DeepSeek V4-Flash (low) |
 | 快速执行 (quick) | DeepSeek V4-Flash (minimal) |
-| 写作 (writing) | GLM-5.2 |
+| 写作 (writing) | GLM-5.3 |
 
-> **调度与深度推理类** GLM-5.2 主模型（sisyphus / oracle / prometheus / momus / metis / plan / ultrabrain / deep / writing）均配置 `volcengine-plan/glm-5.2` 作同模型跨 provider fallback（zhipuai 宕机先走火山通道保持模型一致，再退化到异构模型）。编码实现类（atlas / sisyphus-junior / artistry / unspecified-high）的 fallback 首位是 `deepseek-v4-pro`。`max_fallback_attempts=4`。
+> **调度与深度推理类** GLM-5.3 主模型（sisyphus / oracle / prometheus / momus / metis / plan / ultrabrain / deep / writing）均配置 `volcengine-plan/glm-5.2` 作跨 provider 同系降级 fallback（zhipuai 宕机先走火山通道 5.3→5.2，再退化到异构模型）。编码实现类（atlas / sisyphus-junior / artistry / unspecified-high）的 fallback 首位是 `deepseek-v4-pro`。`max_fallback_attempts=4`。
 
 ## team_mode 成本控制
 
@@ -178,10 +178,10 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 
 ## 自定义 plugin：`.opencode/plugin/glm-max.ts`
 
-**作用**：恢复 GLM 5.2 的 `reasoningEffort: "max"` 被 OMO `chat.params` hook 降级为 `"high"` 的问题。
+**作用**：恢复 GLM 5.2/5.3 的 `reasoningEffort: "max"` 被 OMO `chat.params` hook 降级为 `"high"` 的问题。
 
 **背景**：OMO 的 model-capability 兼容性检查在 `chat.params` hook 里：
-1. 把 GLM 5.2 的 `variant: "max"` 降级为 `"high"`（heuristic glm family 不含 max）
+1. 把 GLM 5.2/5.3 的 `variant: "max"` 降级为 `"high"`（heuristic glm family 不含 max）
 2. 对不匹配 heuristic family 的 volcengine-plan 模型（doubao/minimax 等）删除 `reasoningEffort`（reason: unknown-model-family）
 
 本 plugin 在 OMO 之后执行（`.opencode/plugin/*.ts` 自动发现，排在 plugin_origins 末尾），恢复被删除的 `reasoningEffort`。

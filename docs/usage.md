@@ -13,17 +13,17 @@
 
 | 组 | 主模型 | reasoning | 并发 | 成员（agents / categories） |
 |---|---|---|---|---|
-| 重型推理（标准 fallback） | GLM-5.2 (zhipu) | max | 默认 | sisyphus / prometheus / plan / oracle / metis / momus；categories: ultrabrain / deep
-| 重型推理（pro/code fallback） | GLM-5.2 (zhipu) | max | 默认 | atlas / sisyphus-junior / hephaestus；category: unspecified-high
+| 重型推理（标准 fallback） | GLM-5.3 (zhipu) | max | 默认 | sisyphus / prometheus / plan / oracle / metis / momus；categories: ultrabrain / deep
+| 重型推理（pro/code fallback） | GLM-5.3 (zhipu) | max | 默认 | atlas / sisyphus-junior / hephaestus；category: unspecified-high
 | 检索轻量（只读） | DeepSeek V4 Flash (volc) | medium | 默认 | librarian / explore（`permission.edit: deny`）；categories: quick / unspecified-low
 | 多模态 | GLM-5v-Turbo (zhipu) | — | **3** | multimodal-looker；category: visual-engineering
-| 创意/写作 | GLM-5.2 (zhipu) | max | 默认 | categories: artistry / writing（带 `temperature: 0.7`） |
+| 创意/写作 | GLM-5.3 (zhipu) | max | 默认 | categories: artistry / writing（带 `temperature: 0.7`） |
 | Fallback 常客 | DeepSeek V4 Pro (volc) | — | **3** | atlas / sisyphus-junior / hephaestus / unspecified-high 的 fallback 首位 |
 
 > **modelConcurrency**（`~/.omo/omo.jsonc` → `background_task.modelConcurrency`）：
 > 显式压到 **3** 的模型（7 个，rate-limit 保护）：`deepseek-v4-pro` / `kimi-k2.6` / `doubao-seed-2.0-pro` / `doubao-seed-2.0-code` / `minimax-m3` / `glm-5-turbo` / `glm-5v-turbo`。
-> 未配（用 OMO 默认，不压限）：`deepseek-v4-flash` / `glm-5.2` / `doubao-seed-2.0-lite`。
-> **含义**：主模型 glm-5.2 未压限，并行委派不受阻；被压到 3 的 fallback 模型在并发高峰时可能排队。
+> 未配（用 OMO 默认，不压限）：`deepseek-v4-flash` / `glm-5.3` / `doubao-seed-2.0-lite`。
+> **含义**：主模型 glm-5.3 未压限，并行委派不受阻；被压到 3 的 fallback 模型在并发高峰时可能排队。
 
 ### Fallback 三参数（`~/.omo/omo.jsonc` → `runtime_fallback`）
 
@@ -32,7 +32,7 @@
 - `timeout_seconds: 60` — 单次请求超时 60 秒
 - `notify_on_fallback: true` — 触发 fallback 时弹 toast 提醒（**注意字段名是 `notify_on_fallback`，不是 `notify_on_footer`**）
 
-> GLM-5.2 宕机 → 火山 GLM-5.2 → kimi-k2.6 → doubao-seed-2.0-pro（自动）。
+> GLM-5.3 宕机 → 火山 GLM-5.2 → kimi-k2.6 → doubao-seed-2.0-pro（自动）。
 
 ---
 
@@ -114,7 +114,7 @@
 ## 四、效率技巧
 
 ### 1. 并行委派免费
-未压限主模型可并行（`glm-5.2` 未在 `background_task.modelConcurrency` 显式压限），fallback 模型被压到 3。
+未压限主模型可并行（`glm-5.3` 未在 `background_task.modelConcurrency` 显式压限），fallback 模型被压到 3。
 - 说「并行探索这几个方向」→ sisyphus 自动 fan-out
 - 自己也能手动：`task(subagent_type="explore", run_in_background=true, ...)`
 
@@ -228,7 +228,7 @@
 | 12 agents | `~/.omo/omo.jsonc` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior/hephaestus |
 | 8 categories | `~/.omo/omo.jsonc` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
 | team_mode | `~/.omo/omo.jsonc` → `team_mode` | enabled=true（`max_parallel_members`/`max_members` 用 OMO 默认） |
-| background_task | `~/.omo/omo.jsonc` → `background_task` | modelConcurrency 显式压 3 的有 7 个模型（pro/k2.6/doubao-pro/doubao-code/minimax/glm-5-turbo/glm-5v-turbo）；flash/glm-5.2/doubao-lite 未配 |
+| background_task | `~/.omo/omo.jsonc` → `background_task` | modelConcurrency 显式压 3 的有 7 个模型（pro/k2.6/doubao-pro/doubao-code/minimax/glm-5-turbo/glm-5v-turbo）；flash/glm-5.3/doubao-lite 未配 |
 | runtime_fallback | `~/.omo/omo.jsonc` → `runtime_fallback` | 4 retries / 30s cooldown / 60s timeout / notify_on_fallback=true |
 | experimental | `~/.omo/omo.jsonc` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
 | sisyphus_agent | `~/.omo/omo.jsonc` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |

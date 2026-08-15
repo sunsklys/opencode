@@ -105,13 +105,13 @@
           "model": "volcengine-plan/deepseek-v4-flash"
         },
         "ultrawork": {
-          "model": "zhipuai-coding-plan/glm-5.2",
+          "model": "zhipuai-coding-plan/glm-5.3",
           "variant": "max",
           "reasoningEffort": "max"
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -126,7 +126,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -141,7 +141,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -156,7 +156,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -171,7 +171,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -186,7 +186,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -201,7 +201,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -252,7 +252,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -267,7 +267,7 @@
         },
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -289,7 +289,7 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -302,7 +302,7 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/deepseek-v4-pro",
@@ -314,7 +314,7 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/glm-5.2",
@@ -348,7 +348,7 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.2",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
           "volcengine-plan/deepseek-v4-pro",
@@ -360,7 +360,7 @@
         "temperature": 0.7,
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
-          "zhipuai-coding-plan/glm-5.2",
+          "zhipuai-coding-plan/glm-5.3",
           "volcengine-plan/glm-5.2",
           "volcengine-plan/kimi-k2.6",
           "volcengine-plan/doubao-seed-2.0-pro"
