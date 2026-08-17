@@ -126,7 +126,7 @@
 | 快速执行 (quick) | GLM-5-Turbo (low) |
 | 写作 (writing) | GLM-5.3 |
 
-> 全部重型组（agents + ultrabrain/deep/unspecified-high/artistry/writing）fallback 链统一为智谱内部降级 `glm-5.2 → glm-5.2-highspeed`（链尾 1M ctx 与主力对齐，防 200K 断崖）；轻量组主力 glm-5-turbo、fallback glm-5.2-highspeed；多模态组 glm-5v-turbo → glm-4.6v。单 provider 部署，智谱整体宕机时无跨厂商兜底（火山引擎已停订）。`max_fallback_attempts=4`；`providerConcurrency zhipuai-coding-plan=3` 防账户级限流。
+> 全部重型组（agents + ultrabrain/deep/unspecified-high/artistry/writing）fallback 链统一为智谱内部降级 `glm-5.2 → glm-5.2-highspeed`（链尾 1M ctx 与主力对齐，防 200K 断崖）；轻量组主力 glm-5-turbo、fallback glm-5.2-highspeed；多模态组 glm-5v-turbo → glm-4.6v。单 provider 部署，智谱整体宕机时无跨厂商兜底（火山引擎已停订）。`max_fallback_attempts=4`；`providerConcurrency zhipuai-coding-plan=3` 仅辖后台任务中无模型级条目的 glm-5.3/glm-5.2（详见 usage.md 并发控制块）。
 
 ## team_mode 成本控制
 

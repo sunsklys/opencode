@@ -21,8 +21,8 @@
 
 > **并发控制**（`~/.omo/omo.jsonc` → `background_task`）：
 > `providerConcurrency: {"zhipuai-coding-plan": 3}` — 供应商级总闸（防账户级限流，对齐 OMO ConcurrencyManager 解析顺序 model → provider → default → 兜底 5）。
-> `modelConcurrency` 显式压 **3** 的模型（4 个）：`glm-5-turbo` / `glm-5.1`（已退出路由）/ `glm-4.6v` / `glm-5v-turbo`。
-> **含义**：所有智谱模型并发总和上限 3（模型级条目优先，未配条目回落到供应商闸）；并行委派高峰时在供应商层排队，不再打爆账户配额。
+> `modelConcurrency` 显式压 **3** 的模型（4 个）：`glm-5-turbo` / `glm-5.2-highspeed` / `glm-4.6v` / `glm-5v-turbo`（glm-5.1 已随链尾替换退出全部路由）。
+> **含义（key 互斥选择，非叠加）**：无模型级条目的 glm-5.3/glm-5.2 共享供应商闸 3（防主力车道 stampede 触发账户限流）；4 个带模型级条目的模型各自独立 3 槽，**不占**供应商闸（隔离设计，后台轻量任务不与主力 lane 抢槽），后台总并发理论峰值 3+3×4=15。闸门仅覆盖后台委派任务，主会话交互请求不受控。
 
 ### Fallback 三参数（`~/.omo/omo.jsonc` → `runtime_fallback`）
 
@@ -227,7 +227,7 @@
 | 12 agents | `~/.omo/omo.jsonc` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior/hephaestus |
 | 8 categories | `~/.omo/omo.jsonc` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
 | team_mode | `~/.omo/omo.jsonc` → `team_mode` | enabled=true（`max_parallel_members`/`max_members` 用 OMO 默认） |
-| background_task | `~/.omo/omo.jsonc` → `background_task` | providerConcurrency zhipuai-coding-plan=3（供应商总闸）；modelConcurrency 显式压 3 的有 4 个模型（glm-5-turbo/glm-4.6v/glm-5v-turbo/glm-5.1 已退出路由） |
+| background_task | `~/.omo/omo.jsonc` → `background_task` | providerConcurrency zhipuai-coding-plan=3（供应商闸，仅辖无模型级条目的 5.3/5.2 及后台任务）；modelConcurrency 显式压 3 的 4 模型：glm-5-turbo/glm-5.2-highspeed/glm-4.6v/glm-5v-turbo（各自独立计数，不占供应商闸） |
 | runtime_fallback | `~/.omo/omo.jsonc` → `runtime_fallback` | 4 retries / 30s cooldown / 60s timeout / notify_on_fallback=true |
 | experimental | `~/.omo/omo.jsonc` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
 | sisyphus_agent | `~/.omo/omo.jsonc` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |
