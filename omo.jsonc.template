@@ -43,7 +43,6 @@
       },
       "modelConcurrency": {
         "zhipuai-coding-plan/glm-5-turbo": 3,
-        "zhipuai-coding-plan/glm-5.2-highspeed": 3,
         "zhipuai-coding-plan/glm-4.6v": 3,
         "zhipuai-coding-plan/glm-5v-turbo": 3
       }
@@ -115,12 +114,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "prometheus": {
@@ -133,12 +130,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "plan": {
@@ -151,12 +146,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "oracle": {
@@ -169,12 +162,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "metis": {
@@ -187,12 +178,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "momus": {
@@ -205,12 +194,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "atlas": {
@@ -223,12 +210,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "librarian": {
@@ -241,10 +226,10 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "medium"
           },
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "explore": {
@@ -257,10 +242,10 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "medium"
           },
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "multimodal-looker": {
@@ -283,12 +268,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "hephaestus": {
@@ -301,12 +284,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       }
     },
@@ -328,12 +309,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "artistry": {
@@ -344,12 +323,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "deep": {
@@ -359,12 +336,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "quick": {
@@ -374,10 +349,10 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "low"
           },
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "unspecified-low": {
@@ -387,10 +362,10 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "low"
           },
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "unspecified-high": {
@@ -400,12 +375,10 @@
             "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "max"
           },
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "writing": {
@@ -413,12 +386,10 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           "zhipuai-coding-plan/glm-5.3",
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ],
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.2-highspeed"
+          "zhipuai-coding-plan/glm-5.2"
         ]
       }
     },
