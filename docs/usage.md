@@ -17,7 +17,7 @@
 | 检索轻量（只读） | GLM-5 Turbo (zhipu) | medium | **3** | librarian / explore（`permission.edit: deny`）；categories: quick / unspecified-low |
 | 多模态 | GLM-5v-Turbo (zhipu) | — | **3** | multimodal-looker（fallback → glm-4.6v）；category: visual-engineering |
 | 创意/写作 | GLM-5.3 (zhipu) | max | 默认 | categories: artistry / writing（带 `temperature: 0.7`） |
-| Fallback 常客 | GLM-5.2 (zhipu) | — | 供应商级 **3** | 全部重型组的同 provider 降级链（5.3 → 5.2；5.2-highspeed 因套餐无权限已于 2026-08-17 下线） |
+| Fallback 常客 | GLM-5.2 + 各组首模型 (zhipu) | — | 供应商级 **3** | 全部 holder 的降级链 = models 轮转（去首项 + 首模型兜底，单模型故障栈内闭环；5.2-highspeed 因套餐无权限已于 2026-08-17 下线） |
 
 > **并发控制**（`~/.omo/omo.jsonc` → `background_task`）：
 > `providerConcurrency: {"zhipuai-coding-plan": 3}` — 供应商级总闸（防账户级限流，对齐 OMO ConcurrencyManager 解析顺序 model → provider → default → 兜底 5）。
@@ -31,7 +31,7 @@
 - `timeout_seconds: 60` — 单次请求超时 60 秒
 - `notify_on_fallback: true` — 触发 fallback 时弹 toast 提醒（**注意字段名是 `notify_on_fallback`，不是 `notify_on_footer`**）
 
-> GLM-5.3 宕机 → 智谱 GLM-5.2（自动，同 provider 降级；火山引擎已停订，无跨厂商兜底）。
+> GLM-5.3 宕机 → 智谱 GLM-5.2 → GLM-5.3 重试（models 轮转，同 provider 闭环；火山引擎已停订，无跨厂商兑底）。
 
 ---
 
