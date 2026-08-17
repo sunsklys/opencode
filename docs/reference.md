@@ -119,14 +119,14 @@
 | 主调度 (sisyphus) | GLM-5.3 (zhipu, max) |
 | 架构/深度推理 (oracle/prometheus/momus/metis/plan) | GLM-5.3 (zhipu, max) |
 | 高难度自主 (ultrabrain/deep) | GLM-5.3 (zhipu, max) |
-| 创意/非常规 (artistry) | GLM-5.3 (zhipu, max)（fallback → GLM-5.2 → GLM-5.1） |
-| 编码实现 (atlas/sisyphus-junior/unspecified-high) | GLM-5.3 (zhipu, max)（fallback → GLM-5.2 → GLM-5.1） |
+| 创意/非常规 (artistry) | GLM-5.3 (zhipu, max)（fallback → GLM-5.2 → GLM-5.2-highspeed） |
+| 编码实现 (atlas/sisyphus-junior/unspecified-high) | GLM-5.3 (zhipu, max)（fallback → GLM-5.2 → GLM-5.2-highspeed） |
 | 多模态/前端 (multimodal-looker/visual-engineering) | GLM-5v-Turbo |
 | 检索/轻量 (librarian/explore/unspecified-low) | GLM-5-Turbo (medium) |
 | 快速执行 (quick) | GLM-5-Turbo (low) |
 | 写作 (writing) | GLM-5.3 |
 
-> 全部重型组（agents + ultrabrain/deep/unspecified-high/artistry/writing）fallback 链统一为智谱内部降级 `glm-5.2 → glm-5.1`；轻量组主力 glm-5-turbo、fallback glm-5.1；多模态组 glm-5v-turbo → glm-4.6v。单 provider 部署，智谱整体宕机时无跨厂商兜底（火山引擎已停订）。`max_fallback_attempts=4`。
+> 全部重型组（agents + ultrabrain/deep/unspecified-high/artistry/writing）fallback 链统一为智谱内部降级 `glm-5.2 → glm-5.2-highspeed`（链尾 1M ctx 与主力对齐，防 200K 断崖）；轻量组主力 glm-5-turbo、fallback glm-5.2-highspeed；多模态组 glm-5v-turbo → glm-4.6v。单 provider 部署，智谱整体宕机时无跨厂商兜底（火山引擎已停订）。`max_fallback_attempts=4`；`providerConcurrency zhipuai-coding-plan=3` 防账户级限流。
 
 ## team_mode 成本控制
 

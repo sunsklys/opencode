@@ -38,9 +38,12 @@
       "refresh_timeout_ms": 5000
     },
     "background_task": {
+      "providerConcurrency": {
+        "zhipuai-coding-plan": 3
+      },
       "modelConcurrency": {
         "zhipuai-coding-plan/glm-5-turbo": 3,
-        "zhipuai-coding-plan/glm-5.1": 3,
+        "zhipuai-coding-plan/glm-5.2-highspeed": 3,
         "zhipuai-coding-plan/glm-4.6v": 3,
         "zhipuai-coding-plan/glm-5v-turbo": 3
       }
@@ -113,7 +116,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "prometheus": {
@@ -127,7 +130,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "plan": {
@@ -141,7 +144,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "oracle": {
@@ -155,7 +158,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "metis": {
@@ -169,7 +172,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "momus": {
@@ -183,7 +186,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "atlas": {
@@ -197,7 +200,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "librarian": {
@@ -210,7 +213,7 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "medium"
           },
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "explore": {
@@ -223,7 +226,7 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "medium"
           },
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "multimodal-looker": {
@@ -244,7 +247,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "hephaestus": {
@@ -258,7 +261,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       }
     },
@@ -278,7 +281,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "artistry": {
@@ -290,7 +293,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "deep": {
@@ -301,7 +304,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "quick": {
@@ -311,7 +314,7 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "low"
           },
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "unspecified-low": {
@@ -321,7 +324,7 @@
             "model": "zhipuai-coding-plan/glm-5-turbo",
             "reasoning": "low"
           },
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "unspecified-high": {
@@ -332,7 +335,7 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       },
       "writing": {
@@ -341,7 +344,7 @@
         "models": [
           "zhipuai-coding-plan/glm-5.3",
           "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.1"
+          "zhipuai-coding-plan/glm-5.2-highspeed"
         ]
       }
     },

@@ -17,12 +17,12 @@
 | 检索轻量（只读） | GLM-5 Turbo (zhipu) | medium | **3** | librarian / explore（`permission.edit: deny`）；categories: quick / unspecified-low |
 | 多模态 | GLM-5v-Turbo (zhipu) | — | **3** | multimodal-looker（fallback → glm-4.6v）；category: visual-engineering |
 | 创意/写作 | GLM-5.3 (zhipu) | max | 默认 | categories: artistry / writing（带 `temperature: 0.7`） |
-| Fallback 常客 | GLM-5.2 / GLM-5.1 (zhipu) | — | 5.2 默认 / 5.1 **3** | 全部重型组的同 provider 降级链（5.3 → 5.2 → 5.1） |
+| Fallback 常客 | GLM-5.2 / GLM-5.2-highspeed (zhipu) | — | 供应商级 **3** | 全部重型组的同 provider 降级链（5.3 → 5.2 → 5.2-highspeed，链尾 1M ctx 对齐） |
 
-> **modelConcurrency**（`~/.omo/omo.jsonc` → `background_task.modelConcurrency`）：
-> 显式压到 **3** 的模型（4 个，rate-limit 保护）：`glm-5-turbo` / `glm-5.1` / `glm-4.6v` / `glm-5v-turbo`。
-> 未配（用 OMO 默认，不压限）：`glm-5.3` / `glm-5.2`。
-> **含义**：主力与第一 fallback（glm-5.3 / glm-5.2）未压限，并行委派不受阻；轻量主力与深层 fallback 被压到 3，并发高峰时可能排队。
+> **并发控制**（`~/.omo/omo.jsonc` → `background_task`）：
+> `providerConcurrency: {"zhipuai-coding-plan": 3}` — 供应商级总闸（防账户级限流，对齐 OMO ConcurrencyManager 解析顺序 model → provider → default → 兜底 5）。
+> `modelConcurrency` 显式压 **3** 的模型（4 个）：`glm-5-turbo` / `glm-5.1`（已退出路由）/ `glm-4.6v` / `glm-5v-turbo`。
+> **含义**：所有智谱模型并发总和上限 3（模型级条目优先，未配条目回落到供应商闸）；并行委派高峰时在供应商层排队，不再打爆账户配额。
 
 ### Fallback 三参数（`~/.omo/omo.jsonc` → `runtime_fallback`）
 
@@ -31,7 +31,7 @@
 - `timeout_seconds: 60` — 单次请求超时 60 秒
 - `notify_on_fallback: true` — 触发 fallback 时弹 toast 提醒（**注意字段名是 `notify_on_fallback`，不是 `notify_on_footer`**）
 
-> GLM-5.3 宕机 → 智谱 GLM-5.2 → GLM-5.1（自动，同 provider 降级；火山引擎已停订，无跨厂商兜底）。
+> GLM-5.3 宕机 → 智谱 GLM-5.2 → GLM-5.2-highspeed（自动，同 provider 降级；链尾 1M ctx 防断崖；火山引擎已停订，无跨厂商兜底）。
 
 ---
 
@@ -227,7 +227,7 @@
 | 12 agents | `~/.omo/omo.jsonc` → `agents` | sisyphus/prometheus/plan/oracle/metis/momus/atlas/librarian/explore/multimodal-looker/sisyphus-junior/hephaestus |
 | 8 categories | `~/.omo/omo.jsonc` → `categories` | visual-engineering/ultrabrain/artistry/deep/quick/unspecified-low/unspecified-high/writing |
 | team_mode | `~/.omo/omo.jsonc` → `team_mode` | enabled=true（`max_parallel_members`/`max_members` 用 OMO 默认） |
-| background_task | `~/.omo/omo.jsonc` → `background_task` | modelConcurrency 显式压 3 的有 4 个模型（glm-5-turbo/glm-5.1/glm-4.6v/glm-5v-turbo）；glm-5.3/glm-5.2 未配 |
+| background_task | `~/.omo/omo.jsonc` → `background_task` | providerConcurrency zhipuai-coding-plan=3（供应商总闸）；modelConcurrency 显式压 3 的有 4 个模型（glm-5-turbo/glm-4.6v/glm-5v-turbo/glm-5.1 已退出路由） |
 | runtime_fallback | `~/.omo/omo.jsonc` → `runtime_fallback` | 4 retries / 30s cooldown / 60s timeout / notify_on_fallback=true |
 | experimental | `~/.omo/omo.jsonc` → `experimental` | task_system=true / preemptive_compaction=true / aggressive_truncation=true / dynamic_context_pruning.enabled=true |
 | sisyphus_agent | `~/.omo/omo.jsonc` → `sisyphus_agent` | tdd=true / planner_enabled=true / replace_plan=true |
