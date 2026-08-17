@@ -106,7 +106,7 @@
 | **comment_checker**（中文注释质量检查） | `~/.omo/omo.jsonc` → `comment_checker.custom_prompt` | ✅ 已启用（中文提示） |
 | **disabled_skills**（禁用 playwright/dev-browser/agent-browser） | `~/.omo/omo.jsonc` → `disabled_skills` | ✅ 已禁用不用的内置功能 |
 | **experimental.batch_tool + continue_loop_on_deny**（批量工具调用 + 拒绝后继续循环） | `opencode.json` → `experimental` | ✅ 已启用 |
-| **海外 provider 防误用**（deny openai/anthropic/google，防误用海外模型） | `~/.omo/omo.jsonc` → `disabled_providers` | ✅ 已启用（OMO 层过滤，替代原 experimental.policies） |
+| **海外 provider + zen 防误用**（deny openai/anthropic/google/opencode；opencode=zen 未认证，防 fallback 选入后 Model not found 4 连失败） | `~/.omo/omo.jsonc` → `disabled_providers` | ✅ 已启用（OMO 层过滤，替代原 experimental.policies） |
 | **experimental.mcp_timeout**（全局 MCP 超时 60s，宽松适配远程接口） | `opencode.json` → `experimental.mcp_timeout=60000` | ✅ 已启用 |
 | **compaction.prune + tail_turns**（自动修剪旧工具输出 + 保留近 6 轮） | `opencode.json` → `compaction` | ✅ prune=true, tail_turns=6 |
 | **formatter**（启用内置格式化器，需项目装 prettier/dprint） | `opencode.json` → `formatter=true` | ✅ 已启用（检测不到则 no-op） |

@@ -10,7 +10,8 @@
     "disabled_providers": [
       "openai",
       "anthropic",
-      "google"
+      "google",
+      "opencode"
     ],
     "team_mode": {
       "enabled": true
