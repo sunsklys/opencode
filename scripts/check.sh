@@ -282,7 +282,12 @@ count_complete_skills() {
 # 独立定义 builtin 根目录，避免跨项复用变量导致的调试 silent skip 假绿
 BUILTIN_ROOT_DIR_12="$HOME/.cache/opencode/packages/node_modules"
 CACHE_BUILTIN_SKILLS="$BUILTIN_ROOT_DIR_12/oh-my-opencode/dist/skills"
-CACHE_PLUGIN_SKILLS="$HOME/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/skills"
+# plugin 缓存路径从 opencode.json 动态解析（spec 即缓存目录名），升级版本不再需要改本脚本
+OMO_PLUGIN_SPEC=$(node -p "require('./opencode.json').plugin.find(p=>p.startsWith('oh-my-openagent@'))" 2>/dev/null || echo '')
+if [ -z "$OMO_PLUGIN_SPEC" ]; then
+  fail "opencode.json 未找到 oh-my-openagent@<version> plugin 条目 — 检查配置"
+fi
+CACHE_PLUGIN_SKILLS="$HOME/.cache/opencode/packages/$OMO_PLUGIN_SPEC/node_modules/oh-my-openagent/dist/skills"
 
 PROJECT_COUNT=$(count_complete_skills "$PROJECT_SKILLS_DIR")
 BUILTIN_COUNT=$(count_complete_skills "$CACHE_BUILTIN_SKILLS")

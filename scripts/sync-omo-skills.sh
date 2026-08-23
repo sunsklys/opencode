@@ -24,7 +24,9 @@ set -uo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 LOCKED_SOURCE="$PROJECT_DIR/node_modules/oh-my-openagent/dist/skills"
-CACHE_SOURCE="$HOME/.cache/opencode/packages/oh-my-openagent@latest/node_modules/oh-my-openagent/dist/skills"
+# 缓存源目录名 = plugin spec，从 opencode.json 动态解析（与 check.sh 第 10 项同源），升级版本不再需要改本脚本
+OMO_PLUGIN_SPEC=$(node -p "require('$PROJECT_DIR/opencode.json').plugin.find(p=>p.startsWith('oh-my-openagent@'))" 2>/dev/null || echo '')
+CACHE_SOURCE="$HOME/.cache/opencode/packages/$OMO_PLUGIN_SPEC/node_modules/oh-my-openagent/dist/skills"
 TARGET_DIR="$HOME/.agents/skills"
 
 # 选择源（优先锁定版本）
