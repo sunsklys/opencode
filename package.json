@@ -1,13 +1,9 @@
 {
   "dependencies": {
-    "@opencode-ai/plugin": "1.18.19",
+    "@opencode-ai/plugin": "1.18.21",
     "oh-my-openagent": "4.19.4"
   },
   "scripts": {
     "postinstall": "bash scripts/postinstall.sh"
-  },
-  "_overrides_note": "pin posthog-node@5.38.2 - 修 @posthog/core@^1.37.0 不存在的 npm 注册表冲突（8785f98）",
-  "overrides": {
-    "posthog-node": "5.38.2"
   }
 }
