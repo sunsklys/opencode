@@ -25,7 +25,7 @@ help: ## 显示帮助
 	@echo "  make feishu    仅装飞书 CLI + SKILL"
 	@echo "  make sync-skills  软链 oh-my-openagent 内置 skill 到 ~/.agents/skills/（让 ulw-plan 等在 TUI 可见）"
 	@echo "  make clean     清理 node_modules"
-	@echo "  make export    导出 tar.gz（含 git 外内容：dbx.md / 54 skills / 可选画像+auth）"
+	@echo "  make export    导出 tar.gz（含 git 外内容：dbx.md / 54 skills / 可选画像+auth；DEST=/路径 覆盖输出目录）"
 	@echo ""
 	@echo "维护命令（可选）："
 	@echo "  make audit        npm 安全审计（切官方源，绕过 npmmirror audit 404）"
@@ -137,7 +137,7 @@ clean: ## 清理 node_modules
 	@echo "✓ node_modules 已清理（运行 make deps 重建）"
 
 export: ## 导出配置到 tar.gz（默认输出到 ~/Desktop）
-	@bash opencode-export.sh "$${1:-$$HOME/Desktop}"
+	@bash opencode-export.sh "$${DEST:-$$HOME/Desktop}"
 
 audit: ## npm 安全审计（切官方源，绕过 npmmirror audit 404）
 	@echo "运行 npm audit（临时切官方源）..."

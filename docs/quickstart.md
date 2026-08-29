@@ -65,7 +65,7 @@ make check                                # 体检（13 项全绿即就绪）
 | `make feishu` | 仅装飞书 CLI + SKILL |
 | `make sync-skills` | 软链 oh-my-openagent 内置 skill 到 `~/.agents/skills/`（修 ulw-plan 等 TUI 不可见问题） |
 | `make clean` | 清理 node_modules |
-| `make export` | 导出配置到 tar.gz（默认 ~/Desktop，可选含 auth.json） |
+| `make export` | 导出配置到 tar.gz（默认 ~/Desktop，可选含 auth.json；`DEST=/路径` 覆盖输出目录） |
 | `make audit` | npm 安全审计（切官方源，绕过 npmmirror audit 404） |
 | `make skills-lock` | 生成全部 skills SHA256 锁定（lark + OMO，供应链加固） |
 | `make clean-state` | 清理 `.omo/` 和 tasks/ 运行时状态（修复状态机污染） |
