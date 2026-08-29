@@ -44,7 +44,7 @@ echo "=== 3/3 建立软链 + 验证 ==="
 # 先检查全局 opencode-mem 是否存在（ln -sf 目标不存在会创建悬空软链 → 误报成功）
 GLOBAL_MEM="$(npm root -g)/opencode-mem"
 if [ ! -d "$GLOBAL_MEM" ]; then
-  echo "❌ opencode-mem 全局安装失败（$GLOBAL_MEM 不存在）" >&amp;2
+  echo "❌ opencode-mem 全局安装失败（$GLOBAL_MEM 不存在）" >&2
   exit 1
 fi
 ln -sf "$GLOBAL_MEM" node_modules/opencode-mem

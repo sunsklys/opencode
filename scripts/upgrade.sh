@@ -75,7 +75,7 @@ fi
 # 不备份 node_modules（515M/18k 文件，cp 耗时 ~15s）：失败后恢复 package.json + lock，跑 make update 重建
 BACKUP_DIR=".upgrade-backup-$(date +%s)"
 mkdir -p "$BACKUP_DIR"
-cp package.json "$BACKUP_DIR/" || { echo "❌ 备份 package.json 失败" >&amp;2; exit 1; }
+cp package.json "$BACKUP_DIR/" || { echo "❌ 备份 package.json 失败" >&2; exit 1; }
 cp package-lock.json "$BACKUP_DIR/" 2>/dev/null || true  # lock 可能不存在（首次安装）
 
 _restore_upgrade() {
