@@ -30,7 +30,7 @@
 
 - 12 agent + 8 category 的模型路由（GLM-5.3 主 + GLM-5.2 降级，`models` 链单写，智谱单栈）
 - 7 MCP（智谱 web 工具 / mermaid / codegraph / dbx，全部启用）
-- 89 条 permission deny（bash 53 + read 17 + edit 19，三层纵深防御）
+- 92 条 permission deny（bash 56 + read 17 + edit 19，三层纵深防御；bash 含裸解释器 sh/bash/zsh 与 stdin 模式 deny）
 - OMO 4.19.4
 
 详细字段地图见 `docs/reference.md` 的「配置文件结构」段；新机器上手见 `docs/quickstart.md`；灾备恢复见 `docs/quickstart.md`「灾备 / 恢复」段。

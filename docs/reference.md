@@ -97,7 +97,8 @@
 | LSP 工具链（`lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename`） | `opencode.json` → `"lsp": true` | ✅ 已启用（自动检测内置 LSP） |
 | opencode-mem 本地持久记忆 | `opencode.json` plugin 字段 + `opencode-mem.jsonc` | ✅ 已启用（智谱 glm-5.3-flash auto-capture） |
 | 7 个 MCP（智谱 web 工具 / mermaid / codegraph / dbx，全部启用） | `opencode.json` mcp 字段 | ✅ 已启用（另有 4 个插件注入：websearch / context7 / grep_app / lsp） |
-| permission 加固（read + bash + edit 三层 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（纵深层防御） |
+| permission 加固（read + bash + edit 三层 deny，92 条，含裸解释器 sh/bash/zsh、stdin 模式、`eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（护栏非防线，见「shell 权限信任边界」） |
+| MCP 供应链钉版（npx 通道：`@z_ai/mcp-server@0.1.5` 精确 / `@dbx-app/mcp-server@0.4` minor；全局 bin：check 第 4 项版本比对） | `opencode.json` mcp 字段 + check.sh 常量 | ✅ 三通道分层（remote URL 豁免） |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
 | **monitor 后台监控**（agent 能 watch dev server / test runner / build log） | `~/.omo/omo.jsonc` → `monitor.enabled=true`（idle 模式） | ✅ 已启用 |
@@ -189,6 +190,16 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 - OMO 修复后可移除此 plugin
 
 **状态**：已知技术债，当前能工作，暂不处理。
+
+## shell 权限信任边界（护栏非防线）
+
+2026-08-29 Wave2 安全加固确立的定位声明，实测探针矩阵支撑（opencode run 真实引擎验证）：
+
+- **引擎匹配语义**：bash permission 按 tree-sitter AST 拆 command 节点后逐节点匹配 pattern；含管道符的 pattern（如曾经的 `curl * | *sh*`）不匹配任何节点——该类规则是死规则，已于本轮删除，改为拦截管道尾部的裸解释器节点（`sh` / `bash` / `zsh` deny）与 stdin 模式（`sh -s` / `bash -s`）。
+- **拦截面（实测 7 变体全拦）**：`curl X | sh` / `echo ... | bash` / `curl X | zsh` / `wget X | sh` 等管道注入；裸解释器交互也拦。
+- **明确不拦（设计边界非遗漏）**：`bash -c '...'` / `sh -c '...'`（日常正当用途过宽：make recipe、脚本子进程包装；此类属于「已具备任意命令能力」的等价路径，由具体命令 deny（rm/sudo/dd/git push -f 等）+ `sh <(curl ...)` 进程替换变体承担残余风险）；`npm run <script>` 间接执行；`git config core.hooksPath` + hook 文件写入的组合链。
+- **威胁模型定位**：deny 列表是**误操作护栏 + prompt injection 的第一通拦截**，不是对抗性防线——对手若已能诱导 agent 写文件，上述间接执行面无法靠 permission 黑名单封死。纵深依赖：文件 edit 层 deny（.ssh/.env/.aws）+ skills.lock 供应链校验 + MCP 钉版。
+- **MCP 供应链三通道**：npx 通道钉版本（zai 精确 0.1.5——持 API key 且低频发布；dbx 钉 minor 0.4——连生产库但 5 天 5 版高频修复节奏，全精确钉有「钉住坏版本」反效果）；全局 bin 通道（claude-mermaid/codegraph）由 check 第 4 项版本常量比对；remote URL 通道（智谱 web 工具 3 条）豁免——供应链风险在服务端，本地不可钉。
 
 ## 上游版本观察项（2026-08-28 体检）
 
