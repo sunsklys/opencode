@@ -156,6 +156,18 @@ for (const f of files) {
 if (touched === 0) console.log("  ✓ 文档无旧版本号需更新（可能已同步或未硬编码）");
 ' "$OMO_CURRENT" "$OMO_LATEST" "$PLG_CURRENT" "$PLG_LATEST"
 
+# 4c. plugin spec 同步（Wave3：闭合 @latest 旁路后，防「防跳闸变防升级」——
+# package.json 升级时 opencode.json/tui.json 的 oh-my-openagent spec 必须跟随，
+# 否则 opencode 实际加载旧 spec 版本而防跳闸只看 package.json，升级被静默吞掉）
+if [ "$OMO_CURRENT" != "$OMO_LATEST" ]; then
+  for f in opencode.json tui.json; do
+    if grep -q "oh-my-openagent@${OMO_CURRENT}" "$f" 2>/dev/null; then
+      sed -i '' "s|oh-my-openagent@${OMO_CURRENT}|oh-my-openagent@${OMO_LATEST}|g" "$f"
+      echo "  ✓ $f plugin spec 已同步: @${OMO_CURRENT} → @${OMO_LATEST}"
+    fi
+  done
+fi
+
 # 清理备份，解除 trap
 trap - ERR
 rm -rf "$BACKUP_DIR"
@@ -172,5 +184,5 @@ echo "  1. 体检："
 echo "     make check"
 echo ""
 echo "  2. 提交改动（skills.lock + 文档版本号已自动同步；OMO 配置在 ~/.omo/omo.jsonc，不在 git 内，无需提交）："
-echo "     git add package.json package-lock.json skills.lock README.md docs/reference.md .opencode/instructions.md"
+echo "     git add package.json package-lock.json skills.lock README.md docs/reference.md .opencode/instructions.md opencode.json tui.json"
 echo "     git commit -m \"upgrade: oh-my-openagent → $OMO_LATEST, plugin → $PLG_LATEST\""

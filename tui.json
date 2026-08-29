@@ -1,12 +1,14 @@
 {
   "$schema": "https://opencode.ai/tui.json",
   "plugin": [
-    "oh-my-openagent@latest",
+    "oh-my-openagent@4.19.4",
     "opencode-mem@latest",
     "superpowers@git+https://github.com/obra/superpowers.git#v6.3.0"
   ],
   "theme": "tokyonight",
   "scroll_speed": 8,
-  "scroll_acceleration": { "enabled": true },
+  "scroll_acceleration": {
+    "enabled": true
+  },
   "mouse": true
 }
