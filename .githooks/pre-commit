@@ -6,7 +6,7 @@
 echo "▶ Running CHECK_FAST=1 make check (critical tier) + make tui-sync..."
 
 # make check: critical 全绿才通过
-if ! make check; then
+if ! CHECK_FAST=1 make check; then
   echo "❌ make check failed (critical tier). Fix issues before committing."
   echo "   Hint: 运行 make update / make mem 修复"
   exit 1
