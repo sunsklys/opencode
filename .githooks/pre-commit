@@ -3,7 +3,7 @@
 # 阻止损坏配置进入 git 历史
 # 安装：bash scripts/install-hooks.sh
 
-echo "▶ Running make check (critical tier) + make tui-sync..."
+echo "▶ Running CHECK_FAST=1 make check (critical tier) + make tui-sync..."
 
 # make check: critical 全绿才通过
 if ! make check; then
