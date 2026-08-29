@@ -28,7 +28,7 @@ cd ~/.config/opencode
 make install                              # 一键：依赖 + 环境变量 + 记忆配置 + 飞书 CLI
 opencode auth login zhipuai-coding-plan   # 登录智谱凭证（同时初始化 opencode 进程）
 opencode                                  # 启动验证（首次会初始化 plugin 缓存）
-make check                                # 体检（13 项全绿即就绪）
+make check                                # 体检（16 项全绿即就绪）
 ```
 
 ### `make install` 依次执行
@@ -56,8 +56,8 @@ make check                                # 体检（13 项全绿即就绪）
 | 命令 | 作用 |
 |---|---|
 | `make install` | 完整安装（新机器首次） |
-| `make check` | 体检（13 项：环境 / 变量 / 依赖 / 记忆 / MCP / 飞书 / Web UI / 漂移检测 / skills.lock 校验 / skill 软链 / plugin 缓存健康 / OMO+opencode 字段验证 / superpowers 版本） |
-| `make update` | 重装依赖（按 package.json 精确版本） |
+| `make check` | 体检（16 项：环境 / 变量 / 依赖 / 记忆 / MCP / 飞书 / Web UI / @latest 漂移 / skills.lock 校验 / skill 软链 / plugin 缓存 / OMO+opencode 字段 / tui 同步 / superpowers 版本 / template↔生成物零漂移 / instructions 引用 / export 备份新鲜度） |
+| `make update` | 重装依赖（直接依赖按锁定版本，传递依赖刷新）+ 清 mem 缓存 |
 | `make upgrade` | 升级 OMO + plugin 到 npm 最新（含 $schema URL 同步） |
 | `make deps` | 仅装 npm 依赖 + opencode-mem 软链 |
 | `make config` | 仅配置环境变量（交互式） |
@@ -71,6 +71,13 @@ make check                                # 体检（13 项全绿即就绪）
 | `make clean-state` | 清理 `.omo/` 和 tasks/ 运行时状态（修复状态机污染） |
 | `make sbom` | 生成 SBOM（软件物料清单，CycloneDX 格式） |
 | `make tui-sync` | 验证 tui.json 与 opencode.json plugin 同步 |
+| `make bootstrap` | 新机一键初始化（install + auth 提示 + check 验收） |
+| `make omo-config` | 从模板生成 `~/.omo/omo.jsonc`（存在则跳过） |
+| `make upgrade-superpowers` | 升级并锁定 superpowers 到最新 git tag |
+| `make install-hooks` | 安装 pre-commit hook 到 `.git/hooks/`（新机克隆后必跑） |
+| `make db-check` | opencode-mem 数据库只读体检（向量库完整性 / Bun NAPI 预警） |
+| `make db-maintain` | 数据库维护（默认 vacuum/优化，`CLEAN=1` 深清理） |
+| `make check-upgrade` | 检查各上游组件可用新版本（信息查询，不升级） |
 
 ## Git Hooks（可选）
 

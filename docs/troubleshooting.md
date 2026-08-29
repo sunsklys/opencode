@@ -1,6 +1,6 @@
 # 故障排查
 
-> 常见报错和修复路径。如果这里没有，先跑 `make check` 看 13 项体检哪一项 fail。
+> 常见报错和修复路径。如果这里没有，先跑 `make check` 看 16 项体检哪一项 fail。
 
 ## `opencode` 启动报 "missing apiKey"
 
@@ -132,5 +132,6 @@ oh no: Bun has crashed. This indicates a bug in Bun, not your code.
 
 ## 还没解决？
 
-1. 跑 `make check` 看 13 项体检报告
+1. 跑 `make check` 看 16 项体检报告
+2. 检查 `~/.opencode-mem/opencode-mem.log` 有无 NAPI / 向量库报错
 3. 看 [reference.md](./reference.md) 里的「超时字段作用域对照」表，确认不是超时配置错位

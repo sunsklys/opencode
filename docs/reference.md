@@ -212,6 +212,23 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 - **glm-max.ts 与 reasoning 归一的关系**：plugin 在最终 chat.params 层无条件强制 `reasoningEffort=max`，与配置层 key 形式无关，两者独立生效、互不依赖。
 ## 如何升级 oh-my-openagent 主版本
 
+> **升级前必读**：major 跨越（如 4→5）时 `make upgrade` 自带防跳闸（默认拒绝，`FORCE=1` 或交互 y 放行）；spec 钉版后 4c 步骤自动同步双 json。
+
+### 升级核对四件套（5.0 发布日必查，对抗审查收敛版）
+
+1. **disabled_skills 条目**：`~/.omo/omo.jsonc` 的 `disabled_skills`（当前 playwright/dev-browser/agent-browser）——5.0 改裸名注册后条目名可能变化，逐条核对仍生效。
+2. **skill / command 引用名清扫**：5.0 已改名 `/start-work`→`/ulw-execute`、`omo` 命令→`omo-agent-toolkit`——grep 本仓库与日常用法中的旧名。
+3. **scripts/docs 中 omo 命令调用**：`grep -rn "omo " scripts/ docs/ Makefile` 核对调用面。
+4. **doctor models 误报静默核对**：上游仅 5.0 线修复了 `agents.*.models` Unknown key 误报（dev commit 989636bc5，validate.ts 原生解析 agent.models 链）；stable 4.19.4 实跑 13 条误报现行存在。升级后跑 `omo doctor` 确认误报消失，然后删除 `.opencode/instructions.md` 的误报甄别记录。
+
+断言时效声明：以上基于 2026-08-29 dev HEAD（c034b5313）；升级当天以当时 release notes 重验：`git -C ~/.local/share/opencode/repos/github.com/code-yeongyu/oh-my-openagent@dev log -S '<关键词>' --since=2026-08-25 --oneline`。
+
+```bash
+# 推荐：一键升级（自动检测 npm 最新 → 改 package.json + 双 json spec → 重装 → 同步 $schema URL）
+make upgrade
+make check              # 体检（含 pluginSpec 守卫）
+```
+
 ```bash
 # 推荐：一键升级（自动检测 npm 最新 → 改 package.json → 重装 → 同步 $schema URL）
 make upgrade
