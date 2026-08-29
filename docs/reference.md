@@ -146,13 +146,15 @@
 
 > **敏感项目建议**：临时关 `opencode-mem.jsonc` → `autoCaptureEnabled: false`，避免会话要点出网到智谱做元数据推理。
 
-## plugin `@latest` 漂移检测（`make check` 第 7 项）
+## plugin 加载机制与钉版策略（Wave3 闭合 @latest 旁路）
 
-`opencode.json` / `tui.json` 用 `@latest` 标签加载 plugin，opencode 会绕过项目 `package-lock.json`，从 `~/.cache/opencode/packages/<plugin>@latest/` 加载运行时版本。`make check` 第 7 项比较：
-- 项目软链 `node_modules/opencode-mem`（`npm i -g` 装的全局版本）
-- opencode 缓存 `~/.cache/opencode/packages/opencode-mem@latest/node_modules/opencode-mem/`（`@latest` 拉到的版本）
+**omo 已钉精确版本**（2026-08-29）：`opencode.json` / `tui.json` 的 plugin spec 为 `oh-my-openagent@4.19.4`（不再是 `@latest`）。
 
-两者不一致时警告：`@latest 已漂移，opencode 启动会加载缓存版本而非软链版本`。处理方式：`make update` 重装同步（**Makefile L110 已自动清 opencode-mem@latest 缓存，下次启动 opencode 重拉 npm latest，与全局软链同步**），或手动删缓存 `find ~/.cache/opencode/packages/opencode-mem@latest -delete`。
+为什么钉版是唯一闭合解：`@latest` 通道下防跳闸/major 检测/自愈三通道全缺——`upgrade.sh` 防跳闸只看 `package.json`，而 opencode 启动时按 spec 从 `~/.cache/opencode/packages/<spec>/` 解析缓存层，npm dist-tag `latest` 一旦切到 5.0，缓存会先于 node_modules 静默跳版。钉版后：缓存目录名即 spec（`oh-my-openagent@4.19.4/`），版本变化必须显式改 spec（`make upgrade` 的 4c 步骤自动同步双文件），配合 check-drift.mjs 的 pluginSpec 一致性守卫（package.json ↔ 双 json spec，失配 critical fail）。
+
+**opencode-mem 暂留 `@latest`**（全局安装模型：`npm i -g opencode-mem` 拉 latest + 软链，第 7 项漂移检测 + `make update` 自动清缓存自愈通道在管）；若未来要同样钉版，需同步改 check.sh 与 Makefile 中两处硬编码路径。
+
+`make check` 第 7 项比较：项目软链 `node_modules/opencode-mem`（全局版本）↔ opencode 缓存 `opencode-mem@latest/`（@latest 拉到的版本）；不一致警告后 `make update` 重装同步（Makefile 自动清 mem 缓存，下次启动重拉）。
 
 ## plugin git 源版本锁定（superpowers）
 
