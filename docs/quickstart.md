@@ -124,8 +124,23 @@ opencode auth login zhipuai-coding-plan
 # 4. 启动 opencode 验证
 opencode
 ```
-> ⚠️ `.opencode/dbx.md`（DBX 数据库连接字典）不在 git 内（含生产 host），需从备份恢复或手动重建。
+> ⚠️ `.opencode/dbx.md`（DBX 数据库连接字典）不在 git 内（含生产 host），**唯一备份通道是 `make export` 导出包**（2026-08-29 起已包含，见下）；平时改完 dbx.md 建议顺手跑一次 `make export`。
 > ⚠️ `~/.omo/omo.jsonc` 已由 `make install` 自动从模板生成（含 12 agent + 8 category 路由、goal 禁用等自定义配置）。
+
+### git 外文件的备份通道：`make export`（2026-08-29 增强）
+
+导出包（约 3.6MB tar.gz，默认输出 ~/Desktop）覆盖 git 拿不到的四类内容：
+
+| 包内路径 | 内容 | 对应 git 状态 |
+| --- | --- | --- |
+| `config/opencode/.opencode/` | dbx.md（生产 host）+ glm-max.ts + instructions/lang-zh | 前者不入 git，后三者在 git（双保险） |
+| `agents/skills/` | 54 个用户 skill 目录（29 个 SKILL.md，含 ast-grep/frontend/hooloo 等自定义 skill 唯一副本；排除 .git/.DS_Store） | 不在 git |
+| `opencode-mem/data/user-profiles.db*` | opencode-mem 用户画像（交互询问，默认含；向量库 1.5GB 不导） | 不在 git |
+| `data/opencode/auth.json` | 登录凭证（交互询问，默认不含） | 不在 git |
+
+仍需手动（不在这两条通道内）：环境变量值（`make config` 交互输入）、DBX 桌面 app 内重建 8 条连接（字典见 dbx.md）、`gh auth login`。
+
+新机恢复：解压包后按包内 `README.md` 执行（拷贝 `.opencode/` + `agents/skills/` + 可选画像 → `make install` → `make config` → `make check`）。
 
 > 手动分步（备选，等价于 `make bootstrap`）：
 >

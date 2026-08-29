@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # opencode-export.sh - 导出 opencode 配置（不含敏感凭证）
 # Usage: ./opencode-export.sh [输出目录，默认 ~/Desktop]
+#
+# 覆盖矩阵（2026-08-29 增强）：
+#   git 内文件          → 走 git clone 恢复，本包兜底（无 git 场景）
+#   .opencode/          → 含 dbx.md（生产 host，不入 git）+ glm-max.ts + instructions/lang-zh
+#   ~/.agents/skills/   → 54 个用户 skill 本体（skills.lock 哈希可校验）
+#   user-profiles.db    → 可选（交互询问），opencode-mem 用户画像
+#   auth.json           → 可选（交互询问）
+#   仍需手动：环境变量值（make config 交互输入）、opencode auth login、DBX app 连接、gh auth login
 
 set -euo pipefail
 
@@ -11,6 +19,8 @@ FULL_PATH="${OUT_DIR}/${ARCHIVE}"
 
 CONFIG_DIR="$HOME/.config/opencode"
 DATA_DIR="$HOME/.local/share/opencode"
+SKILLS_DIR="$HOME/.agents/skills"
+MEM_DATA_DIR="$HOME/.opencode-mem/data"
 
 if [[ ! -d "$CONFIG_DIR" ]]; then
   echo "❌ $CONFIG_DIR not found" >&2
@@ -21,20 +31,41 @@ fi
 TMP=$(mktemp -d)
 trap "rm -rf $TMP" EXIT
 
-# 拷贝配置文件（排除 node_modules / db / cache）
+# ============ 1. 配置仓库文件（git 内文件的无 git 兜底快照） ============
 mkdir -p "$TMP/config/opencode"
 cp "$CONFIG_DIR"/*.json "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR"/*.jsonc "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR"/*.sh "$TMP/config/opencode/" 2>/dev/null || true
-cp "$CONFIG_DIR/.gitignore" "$TMP/config/opencode/" 2>/dev/null || true
+cp "$CONFIG_DIR"/.gitignore "$TMP/config/opencode/" 2>/dev/null || true
 # package-lock.json 一起带上保证依赖一致
 [[ -f "$CONFIG_DIR/package-lock.json" ]] && cp "$CONFIG_DIR/package-lock.json" "$TMP/config/opencode/"
-# 完整目录结构（Makefile / scripts / 模板）一起带上，让 make install 可用
+# 完整目录结构（Makefile / scripts / 模板 / 文档）一起带上，让 make install 可用
 cp "$CONFIG_DIR/Makefile" "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR"/*.template "$TMP/config/opencode/" 2>/dev/null || true
 [[ -d "$CONFIG_DIR/scripts" ]] && cp -r "$CONFIG_DIR/scripts" "$TMP/config/opencode/" 2>/dev/null || true
+[[ -d "$CONFIG_DIR/docs" ]] && cp -r "$CONFIG_DIR/docs" "$TMP/config/opencode/" 2>/dev/null || true
 
-# 询问是否包含 auth.json
+# ============ 2. .opencode/ 目录（含不入 git 的 dbx.md + 自定义 plugin） ============
+# dbx.md（生产 host）、plugin/glm-max.ts、instructions.md、lang-zh.md
+# 排除 node_modules / package.json（本仓库 install 时生成）
+if [[ -d "$CONFIG_DIR/.opencode" ]]; then
+  rsync -a --exclude 'node_modules' --exclude 'package.json' --exclude 'package-lock.json' \
+    "$CONFIG_DIR/.opencode/" "$TMP/config/opencode/.opencode/" 2>/dev/null || \
+    cp -r "$CONFIG_DIR/.opencode" "$TMP/config/opencode/" 2>/dev/null || true
+fi
+
+# ============ 3. 用户 skills 本体（~/.agents/skills，54 个，含自定义 skill） ============
+# lark 系列可由 setup-feishu-cli.sh 重装，但 ast-grep/frontend/debugging/hooloo 等自定义
+# skill 唯一副本在此目录；skills.lock（已随 config 打包）可校验哈希完整性
+if [[ -d "$SKILLS_DIR" ]]; then
+  mkdir -p "$TMP/agents"
+  rsync -a --exclude='.git' --exclude='.DS_Store' --exclude='*.log' \
+    "$SKILLS_DIR/" "$TMP/agents/skills/" 2>/dev/null || \
+    cp -r "$SKILLS_DIR" "$TMP/agents/skills"
+  echo "ℹ️  已包含 ~/.agents/skills（$(find "$TMP/agents/skills" -name SKILL.md | wc -l | tr -d ' ') 个 SKILL.md）"
+fi
+
+# ============ 4. 可选项：auth.json ============
 echo ""
 read -p "是否包含 auth.json (含 API key，可在新机器免登录)? [y/N] " include_auth
 if [[ "$include_auth" =~ ^[yY]$ ]]; then
@@ -45,7 +76,22 @@ else
   echo "ℹ️  未包含 auth.json - 新机器需重新 'opencode auth login'"
 fi
 
-# 写入恢复说明
+# ============ 5. 可选项：opencode-mem 用户画像 ============
+# user-profiles.db 三件套约 6MB；向量库 1.5GB 过大不入包（记忆条目可重新积累）
+if [[ -f "$MEM_DATA_DIR/user-profiles.db" ]]; then
+  read -p "是否包含 opencode-mem 用户画像 user-profiles.db (~6MB，跳过则新机从零学习)? [Y/n] " include_profile
+  if [[ ! "$include_profile" =~ ^[nN]$ ]]; then
+    mkdir -p "$TMP/opencode-mem/data"
+    cp "$MEM_DATA_DIR"/user-profiles.db "$TMP/opencode-mem/data/" 2>/dev/null || true
+    [[ -f "$MEM_DATA_DIR/user-profiles.db-wal" ]] && cp "$MEM_DATA_DIR"/user-profiles.db-wal "$TMP/opencode-mem/data/" || true
+    [[ -f "$MEM_DATA_DIR/user-profiles.db-shm" ]] && cp "$MEM_DATA_DIR"/user-profiles.db-shm "$TMP/opencode-mem/data/" || true
+    echo "ℹ️  已包含用户画像（含 wal/shm）"
+  else
+    echo "ℹ️  未包含用户画像 - 新机 profile 从零积累"
+  fi
+fi
+
+# ============ 6. 恢复说明 ============
 cat > "$TMP/README.md" <<'EOF'
 # opencode 配置恢复指南
 
@@ -63,33 +109,58 @@ curl -fsSL https://opencode.ai/install | bash
 
 ## 恢复配置
 
+```bash
 # 1. 解压到正确位置
 tar -xzf opencode-config-*.tar.gz
-mkdir -p ~/.config/opencode ~/.local/share/opencode
+mkdir -p ~/.config/opencode ~/.local/share/opencode ~/.agents
 cp -r config/opencode/* ~/.config/opencode/
 [[ -d data/opencode ]] && cp -r data/opencode/* ~/.local/share/opencode/
 
-# 2. 一键安装（npm 依赖 + opencode-mem 软链 + 环境变量 + 飞书 CLI）
+# 2. 恢复用户 skills（54 个，含自定义 skill 唯一副本）
+[[ -d agents/skills ]] && cp -r agents/skills ~/.agents/
+
+# 3. 恢复 opencode-mem 用户画像（若包含）
+if [[ -d opencode-mem/data ]]; then
+  mkdir -p ~/.opencode-mem/data
+  cp opencode-mem/data/user-profiles.db* ~/.opencode-mem/data/
+fi
+
+# 4. 一键安装（npm 依赖 + opencode-mem 软链 + OMO skill 软链 + 记忆/OMO 配置生成）
 cd ~/.config/opencode
 make install
 
-# 3. 若未带 auth.json，需重新登录
+# 5. 交互式补环境变量（Z_AI_API_KEY / FEISHU_APP_SECRET 等，值需自行准备）
+make config
+
+# 6. 若未带 auth.json，重新登录
 opencode auth login zhipuai-coding-plan
 
-# 4. 体检
+# 7. 体检（应全绿）
 make check
+```
+
+## 仍需手动恢复（不在包内）
+
+| 项 | 操作 |
+| --- | --- |
+| 环境变量值 | `make config` 交互输入（key 值从密码管理器/旧机 shell 历史取） |
+| opencode 登录 | `opencode auth login zhipuai-coding-plan`（或用包内 auth.json 免登录） |
+| DBX 桌面 app 连接 | 在 DBX app 内重建 8 条连接（字典见 `~/.config/opencode/.opencode/dbx.md`） |
+| gh CLI | `gh auth login`（GitHub 自动化用） |
+| 记忆向量库 | 不迁移（1.5GB），新机自动重新积累；历史会话 opencode.db 不迁移 |
 
 ## 包含文件
 
 核心文件：
-- opencode.json / tui.json - 配置（OMO 统一配置在 ~/.omo/omo.jsonc，不入包）
-- Makefile + scripts/ - 一键安装/体检编排
+- opencode.json / tui.json / Makefile / scripts/ / docs/ - 配置与编排
 - package.json + package-lock.json - 依赖锁
-- opencode-mem.jsonc.template - 智谱直连记忆配置模板
-- omo.jsonc.template - OMO 统一配置模板（make omo-config 生成 ~/.omo/omo.jsonc）
+- *.template - mem / OMO 配置模板（make install 自动生成生成物）
+- .opencode/ - dbx.md（生产 host，勿外传）+ glm-max.ts + instructions/lang-zh
+- agents/skills/ - 54 个用户 skill（skills.lock 哈希校验）
+- opencode-mem/data/user-profiles.db* - 用户画像（可选）
 EOF
 
-# 打包
+# ============ 7. 打包 ============
 cd "$TMP"
 tar -czf "$FULL_PATH" .
 
@@ -97,6 +168,7 @@ echo ""
 echo "✅ 导出成功"
 echo "📦 $FULL_PATH"
 echo "📏 $(du -sh "$FULL_PATH" | cut -f1)"
+echo "⚠️  包内含 dbx.md（生产 host）— 勿上传公开位置"
 echo ""
 echo "📋 包含文件:"
 tar -tzf "$FULL_PATH" | sort
