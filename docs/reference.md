@@ -95,7 +95,7 @@
 | 功能 | 配置位置 | 状态 |
 |---|---|---|
 | LSP 工具链（`lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename`） | `opencode.json` → `"lsp": true` | ✅ 已启用（自动检测内置 LSP） |
-| opencode-mem 本地持久记忆 | `opencode.json` plugin 字段 + `opencode-mem.jsonc` | ✅ 已启用（智谱 glm-5-turbo auto-capture） |
+| opencode-mem 本地持久记忆 | `opencode.json` plugin 字段 + `opencode-mem.jsonc` | ✅ 已启用（智谱 glm-5.3-flash auto-capture） |
 | 7 个 MCP（智谱 web 工具 / mermaid / codegraph / dbx，全部启用） | `opencode.json` mcp 字段 | ✅ 已启用（另有 4 个插件注入：websearch / context7 / grep_app / lsp） |
 | permission 加固（read + bash + edit 三层 deny，含 `eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（纵深层防御） |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
@@ -189,6 +189,14 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 - OMO 修复后可移除此 plugin
 
 **状态**：已知技术债，当前能工作，暂不处理。
+
+## 上游版本观察项（2026-08-28 体检）
+
+- **opencode CLI ≥1.18.24：config schema V2 过渡开始**——V1 引擎已可读取部分 V2 config 字段（混合配置前向兼容）。当前 `opencode.json` 全部字段经 1.18.25 官方 schema 验证合法，无需动作；后续官方宣布 V1 字段废弃时再评估迁移。另：官方 repo 已从 sst/opencode 迁至 **anomalyco/opencode**。
+- **oh-my-openagent 5.0.0-beta 线（截至 2026-08-28 已至 beta.24）**：major 重构——omo-native 发行版、Senpi 引擎集成、**`/start-work` 改名 `/ulw-execute`**、**`omo` 命令改名 `omo-agent-toolkit`**、`shared/<name>` skill 改裸名注册。beta.20 出过杀 session 崩溃，beta 质量未稳——**等 5.0.0 正式版再升级**，届时除标准升级流程外还需同步清理：`disabled_skills` 条目、skill/command 引用名、脚本中的 `omo` 命令调用。
+- **omo 4.19.4 的 reasoning 规范**：`models` 链是 canonical 形式，`fallback_models` / `variant` / `reasoningEffort` 已 deprecated（back-compat 窗口内仍可读，运行时归一优先级 reasoning > reasoningEffort > variant）。2026-08-28 已全量清理为 `models` 链 + `reasoning` key，升级 5.0 时无需再动。
+- **`omo doctor` 的已知误报**：它会用旧版 schema 校验 `agents.*.models` 为 Unknown key（实际运行时与 `config migrate` 均支持），升级后如仍见此类告警可忽略 `Unknown config key: agents.*.models` 条目。
+- **glm-max.ts 与 reasoning 归一的关系**：plugin 在最终 chat.params 层无条件强制 `reasoningEffort=max`，与配置层 key 形式无关，两者独立生效、互不依赖。
 ## 如何升级 oh-my-openagent 主版本
 
 ```bash
@@ -216,7 +224,7 @@ make check
 
 **环境变量**（`make config` 底层）：交互式写入 `~/.zshrc`。用 `.zshrc` 而非 `.zshenv`（opencode 从终端启动加载 `.zshrc`；GUI 场景由 `launchctl setenv` 覆盖）。脚本幂等，重复运行替换旧块而非追加。
 
-**opencode-mem 记忆配置**（`make mem` 底层）：从 `opencode-mem.jsonc.template` 复制，已是智谱直连配置（`glm-5-turbo` + `bigmodel.cn` + `env://Z_AI_API_KEY`），无需手动改注释。
+**opencode-mem 记忆配置**（`make mem` 底层）：从 `opencode-mem.jsonc.template` 复制，已是智谱直连配置（`glm-5.3-flash` + `bigmodel.cn` + `env://Z_AI_API_KEY`），无需手动改注释。
 
 > **为什么用智谱直连而非 `opencodeProvider` 模式？**
 > `opencodeProvider` 要求 provider 支持 structured output 协议，智谱 GLM 不支持会报 `prompt response missing info`。

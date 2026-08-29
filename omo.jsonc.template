@@ -106,8 +106,7 @@
         },
         "ultrawork": {
           "model": "zhipuai-coding-plan/glm-5.3",
-          "variant": "max",
-          "reasoningEffort": "max"
+          "reasoning": "max"
         },
         "models": [
           {
@@ -115,10 +114,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "prometheus": {
@@ -132,10 +127,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "plan": {
@@ -149,10 +140,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "oracle": {
@@ -166,10 +153,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "metis": {
@@ -183,10 +166,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "momus": {
@@ -200,10 +179,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "atlas": {
@@ -217,10 +192,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "librarian": {
@@ -234,10 +205,6 @@
             "reasoning": "medium"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5-turbo"
         ]
       },
       "explore": {
@@ -251,10 +218,6 @@
             "reasoning": "medium"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5-turbo"
         ]
       },
       "multimodal-looker": {
@@ -262,10 +225,6 @@
         "models": [
           "zhipuai-coding-plan/glm-5v-turbo",
           "zhipuai-coding-plan/glm-4.6v"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-4.6v",
-          "zhipuai-coding-plan/glm-5v-turbo"
         ]
       },
       "sisyphus-junior": {
@@ -279,10 +238,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "hephaestus": {
@@ -296,10 +251,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       }
     },
@@ -309,10 +260,6 @@
         "models": [
           "zhipuai-coding-plan/glm-5v-turbo",
           "zhipuai-coding-plan/glm-4.6v"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-4.6v",
-          "zhipuai-coding-plan/glm-5v-turbo"
         ]
       },
       "ultrabrain": {
@@ -323,10 +270,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "artistry": {
@@ -338,10 +281,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "deep": {
@@ -352,10 +291,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "quick": {
@@ -366,10 +301,6 @@
             "reasoning": "low"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5-turbo"
         ]
       },
       "unspecified-low": {
@@ -380,10 +311,6 @@
             "reasoning": "low"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5-turbo"
         ]
       },
       "unspecified-high": {
@@ -394,10 +321,6 @@
             "reasoning": "max"
           },
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       },
       "writing": {
@@ -406,10 +329,6 @@
         "models": [
           "zhipuai-coding-plan/glm-5.3",
           "zhipuai-coding-plan/glm-5.2"
-        ],
-        "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2",
-          "zhipuai-coding-plan/glm-5.3"
         ]
       }
     },

@@ -48,12 +48,15 @@
   "autoCaptureEnabled": true,
 
   "memoryProvider": "openai-chat",
-  "memoryModel": "glm-4.5-air",
+  "memoryModel": "glm-5.3-flash",
   "memoryApiUrl": "https://open.bigmodel.cn/api/coding/paas/v4",
   "memoryApiKey": "env://Z_AI_API_KEY",
 
   "autoCaptureMaxIterations": 3,
   "autoCaptureIterationTimeout": 90000,
+
+  // Max bytes of session context fed to auto-capture analysis (default 131072 = 128KB, guards context overflow)
+  "autoCaptureMaxContextBytes": 131072,
   "aiSessionRetentionDays": 7,
   "memoryTemperature": 0.3,
 
@@ -66,7 +69,6 @@
 
   // ============================================
   // User Profile System
-  // ============================================
   "userProfileAnalysisInterval": 25,
   "userProfileMaxPreferences": 20,
   "userProfileMaxPatterns": 15,
