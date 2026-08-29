@@ -29,6 +29,8 @@ help: ## 显示帮助
 	@echo ""
 	@echo "维护命令（可选）："
 	@echo "  make audit        npm 安全审计（切官方源，绕过 npmmirror audit 404）"
+	@echo "  make install-export-job   装载周导出 launchd（HEADLESS，~/Backups/opencode/，保 5 份）"
+	@echo "  make install-dbcheck-job  装载月度 db-check launchd（只读体检）"
 	@echo "  make skills-lock  生成全部 skills SHA256 锁定（含 lark + OMO，供应链加固）"
 	@echo "  make clean-state  清理 .omo/ 和 tasks/ 运行时状态（修复状态机污染）"
 	@echo "  make sbom         生成 SBOM（软件物料清单，CycloneDX 格式）"
@@ -138,6 +140,16 @@ clean: ## 清理 node_modules
 
 export: ## 导出配置到 tar.gz（默认输出到 ~/Desktop）
 	@bash opencode-export.sh "$${DEST:-$$HOME/Desktop}"
+
+install-export-job: ## 安装周导出 launchd 任务（每周五 12:00 HEADLESS 导出到 ~/Backups/opencode/，保留 5 份）
+	@cp launchd/com.sunsklys.opencode-export.plist ~/Library/LaunchAgents/ && \
+		launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist && \
+		echo "✓ 周导出任务已装载（卸载：launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist）"
+
+install-dbcheck-job: ## 安装月度数据库体检 launchd 任务（每月 1 日 09:00 只读体检写日志）
+	@cp launchd/com.sunsklys.opencode.db-check.plist ~/Library/LaunchAgents/ && \
+		launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist && \
+		echo "✓ 月度体检任务已装载（卸载：launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist）"
 
 audit: ## npm 安全审计（切官方源，绕过 npmmirror audit 404）
 	@echo "运行 npm audit（临时切官方源）..."

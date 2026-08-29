@@ -149,6 +149,15 @@ opencode
 
 新机恢复：解压包后按包内 `README.md` 执行（拷贝 `.opencode/` + `agents/skills/` + 可选画像 → `make install` → `make config` → `make check`）。
 
+### 备份自动化（Wave5，2026-08-29）
+
+**双层策略：launchd 保新鲜 + 人肉出机保容灾。**
+
+- `make install-export-job`：装载周导出任务（每周五 12:00，`HEADLESS=1` 落 `~/Backups/opencode/`，**三硬约束**：auth.json 强制排除不可参数开启 / 非 iCloud 目录防 key 上云 / retention 保留 5 份按文件名时间戳排序）。卸载：`launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist`
+- `make install-dbcheck-job`：装载月度数据库只读体检（每月 1 日 09:00，日志 `~/Backups/opencode/db-check.log`）。
+- 交互模式 `make export`（DEST 支持）行为不变；check 第 16 项同时监视 Desktop 与 Backups 两个位置。
+- **容灾仍需人肉**：定时任务只保本机新鲜，机器整体故障场景仍需把最新 tar 拷贝到网盘/异机——建议每月顺手拷一次。
+
 > 手动分步（备选，等价于 `make bootstrap`）：
 >
 > ```bash

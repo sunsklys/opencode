@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.sunsklys.opencode-export</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>mkdir -p "$HOME/Backups/opencode" &amp;&amp; cd "$HOME/.config/opencode" &amp;&amp; HEADLESS=1 bash opencode-export.sh &gt;&gt; "$HOME/Backups/opencode/launchd.log" 2&gt;&amp;1</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>5</integer>
+        <key>Hour</key>
+        <integer>12</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/tmp/opencode-export-launchd.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/opencode-export-launchd.err</string>
+</dict>
+</plist>

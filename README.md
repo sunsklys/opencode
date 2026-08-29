@@ -15,7 +15,8 @@
 | `scripts/*.sh` | 安装 / 环境变量 / 体检脚本（被 Makefile 调用） |
 | `opencode-mem.jsonc.template` | 智谱直连模板（`make mem` 生成 `opencode-mem.jsonc`） |
 | `omo.jsonc.template` | OMO 统一配置模板（`make omo-config` 生成 `~/.omo/omo.jsonc`，含 12 agent + 8 category 路由） |
-| `opencode-export.sh` | 配置导出脚本（`make export` 调用，含 git 外四类内容：dbx.md / 54 用户 skills / 可选用户画像 / 可选 auth.json，约 3.6MB） |
+| `opencode-export.sh` | 配置导出脚本（`make export` 交互 / `HEADLESS=1` 无人值守三硬约束：强制排除 auth.json、落 ~/Backups/opencode/ 非 iCloud、retention 保 5；含 git 外四类内容） |
+| `launchd/` | 周导出 + 月度 db-check 两个 launchd 任务模板（`make install-export-job` / `install-dbcheck-job` 装载） |
 | `docs/` | 详细文档（见下） |
 
 **不包含**（已被 .gitignore 排除）：
