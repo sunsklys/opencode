@@ -474,6 +474,8 @@ for pair in omo mem; do
     info "$D_DETAIL"
   elif [ "$D_DRIFT" = "true" ]; then
     fail "$pair 配置漂移: template 与生成物不一致 — 两处同步修改（约束见 .opencode/instructions.md 第 5 条），或 rm 生成物后 make omo-config / make mem 重建"
+  elif [ "$D_DRIFT" != "false" ]; then
+    fail "$pair 漂移检测异常（drift:$D_DRIFT — 解析失败或脚本异常）— 手动跑 node scripts/check-drift.mjs 看原始输出"
   else
     ok "$D_DETAIL"
   fi
