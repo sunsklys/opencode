@@ -15,6 +15,10 @@ set -euo pipefail
 OUT_DIR="${1:-$HOME/Desktop}"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 ARCHIVE="opencode-config-${TIMESTAMP}.tar.gz"
+# 守卫：以 - 开头的目录名会被 tar 解析为选项（GNU tar 理论可注入），强制 ./ 前缀
+case "$OUT_DIR" in
+  -*) OUT_DIR="./$OUT_DIR" ;;
+esac
 FULL_PATH="${OUT_DIR}/${ARCHIVE}"
 
 CONFIG_DIR="$HOME/.config/opencode"
@@ -162,7 +166,7 @@ EOF
 
 # ============ 7. 打包 ============
 cd "$TMP"
-tar -czf "$FULL_PATH" .
+tar -cz -f "$FULL_PATH" .
 
 echo ""
 echo "✅ 导出成功"
