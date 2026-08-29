@@ -32,7 +32,7 @@ echo "╚═══════════════════════�
 echo ""
 
 # ---------- 1. [Critical] 基础环境 + 环境变量 ----------
-echo "【1/13·Critical】基础环境 + 环境变量"
+echo "【1/16·Critical】基础环境 + 环境变量"
 # --- Node.js 与 opencode 安装 ---
 NODE_VER=$(node --version 2>/dev/null || echo "")
 if [ -n "$NODE_VER" ]; then
@@ -57,7 +57,7 @@ fi
 echo ""
 
 # ---------- 2. [Critical] npm 依赖 ----------
-echo "【2/13·Critical】npm 依赖版本"
+echo "【2/16·Critical】npm 依赖版本"
  
 if npm ls --depth=0 2>&1 | grep -q "invalid"; then
   fail "node_modules 版本不一致（运行 make update 重装）"
@@ -70,7 +70,7 @@ fi
 echo ""
 
 # ---------- 3. [Warning] opencode-mem 记忆插件 ----------
-echo "【3/13·Warning】opencode-mem 记忆插件"
+echo "【3/16·Warning】opencode-mem 记忆插件"
  
 if [ -L "node_modules/opencode-mem" ] && [ -d "node_modules/opencode-mem" ]; then
   MEM_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 2>/dev/null || echo "?")
@@ -94,14 +94,14 @@ fi
 echo ""
 
 # ---------- 4. [Warning] 全局 MCP 依赖 ----------
-echo "【4/13·Warning】全局 MCP 依赖"
+echo "【4/16·Warning】全局 MCP 依赖"
  
 command -v claude-mermaid >/dev/null 2>&1 && ok "claude-mermaid $(claude-mermaid --version 2>/dev/null || echo '已安装')" || wfail "claude-mermaid 未安装（npm i -g claude-mermaid）"
 command -v codegraph >/dev/null 2>&1 && ok "codegraph 已安装" || wfail "codegraph 未安装（npm i -g @colbymchenry/codegraph）"
 echo ""
 
 # ---------- 5. [Warning] 飞书 CLI ----------
-echo "【5/13·Warning】飞书 CLI"
+echo "【5/16·Warning】飞书 CLI"
  
 if command -v lark-cli >/dev/null 2>&1; then
   ok "lark-cli 已安装"
@@ -116,7 +116,7 @@ fi
 echo ""
 
 # ---------- 6. [Warning] Web UI ----------
-echo "【6/13·Warning】opencode-mem Web UI"
+echo "【6/16·Warning】opencode-mem Web UI"
  
 # opencode-mem Web UI 只在 opencode 主进程启动时才拉起；check 脚本通常在 opencode 外部运行，
 # 直接 curl 端口会把"opencode 没开"误报为配置警告。先探测进程状态再决定怎么报。
@@ -134,7 +134,7 @@ else
 fi
 echo ""
 # ---------- 7. [Warning] plugin @latest 漂移检测（opencode 缓存 vs 项目软链） ----------
-echo "【7/13·Warning】plugin @latest 漂移检测（opencode 缓存 vs 项目软链）"
+echo "【7/16·Warning】plugin @latest 漂移检测（opencode 缓存 vs 项目软链）"
  
 # opencode-mem 走 @latest 缓存路径加载（~/.cache/opencode/packages/）
 # 项目软链 node_modules/opencode-mem -> 全局装版本
@@ -153,7 +153,7 @@ else
 fi
 echo ""
 # ---------- 8. [Warning] lark skills SHA256 校验 ----------
-echo "【8/13·Warning】skills SHA256 校验（供应链完整性，lark + OMO）"
+echo "【8/16·Warning】skills SHA256 校验（供应链完整性，lark + OMO）"
  
 if [ ! -f "skills.lock" ]; then
   warn "skills.lock 不存在（运行 make skills-lock 生成）"
@@ -189,7 +189,7 @@ else
 fi
 echo ""
 # ---------- 9. [Warning] oh-my-openagent 内置 skill 软链健康 ----------
-echo "【9/13·Warning】oh-my-openagent 内置 skill 软链健康（含自愈）"
+echo "【9/16·Warning】oh-my-openagent 内置 skill 软链健康（含自愈）"
  
 # 动态检测 OMO skill 软链是否齐全有效（数量随 OMO 版本变化），缺失/断链时自动重建
 # 软链作用：plugin 加载失败时作为 user-scope fallback（详见 plugin 缓存健康检查项）
@@ -257,7 +257,7 @@ else
 fi
 echo ""
 # ---------- 10. [Critical] opencode plugin 缓存健康（dist/skills 完整性，根因检查） ----------
-echo "【10/13·Critical】opencode plugin 缓存健康（dist/skills 完整性）"
+echo "【10/16·Critical】opencode plugin 缓存健康（dist/skills 完整性）"
  
 # 这是 ulw-plan/git-master 等 shared scope skill 的真实加载源
 # OMO plugin 启动时通过 discoverSharedSkills() 扫描自己的 dist/skills
@@ -315,7 +315,7 @@ else
 fi
 
 # ---------- 11. [Critical] OMO + opencode 关键字段验证 ----------
-echo "【11/13·Critical】OMO + opencode 关键字段配置验证"
+echo "【11/16·Critical】OMO + opencode 关键字段配置验证"
  
 # 用 node 提取字段避免 jq 依赖
 OMO_FIELDS=$(node scripts/read-omo-config.mjs 2>/dev/null || echo "{}")
@@ -401,7 +401,7 @@ fi
 echo ""
 
 # ---------- 12. [Warning] tui.json plugin 同步 ----------
-echo "【12/13·Warning】tui.json plugin 字段与 opencode.json 同步"
+echo "【12/16·Warning】tui.json plugin 字段与 opencode.json 同步"
 # tui.json 是 TUI 模式的独立配置，plugin 数组必须与 opencode.json 保持同步
 # 否则 TUI 模式加载的 plugin 与 CLI 模式不一致
 TU_SYNC=$(node -e "const a=require('./opencode.json').plugin||[];const b=require('./tui.json').plugin||[];process.stdout.write(JSON.stringify(a)===JSON.stringify(b)?'sync':'mismatch')" 2>/dev/null || echo "error")
@@ -414,7 +414,7 @@ else
 fi
 echo ""
 # ---------- 13. [Warning] superpowers 版本锁定检测 ----------
-echo "【13/13·Warning】superpowers 版本锁定检测"
+echo "【13/16·Warning】superpowers 版本锁定检测"
  
 # 解析 opencode.json 中 superpowers 的 #vX.Y.Z
 SP_LOCKED=$(grep -oE 'superpowers@git\+https://github\.com/obra/superpowers\.git#v[0-9]+\.[0-9]+\.[0-9]+' opencode.json | head -1 | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+')
@@ -427,12 +427,12 @@ else
   echo "  当前锁定：$SP_LOCKED"
   # 查远端最新 tag（macOS 无 timeout 时降级直跑）
   if command -v timeout >/dev/null 2>&1; then
-    SP_REMOTE=$(timeout 8 git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
+    SP_REMOTE=$(timeout 8 git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=10 ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
   elif command -v gtimeout >/dev/null 2>&1; then
-    SP_REMOTE=$(gtimeout 8 git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
+    SP_REMOTE=$(gtimeout 8 git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=10 ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
   else
-    # 无 timeout 可用时，git ls-remote 自身有 connect timeout 兜底
-    SP_REMOTE=$(git ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
+    # 无 timeout 可用时，用 git http.lowSpeed 兜底（传输 <1KB/s 持续 10s 即断，避免网络抖动时无限挂起）
+    SP_REMOTE=$(git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=10 ls-remote --tags https://github.com/obra/superpowers.git 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' | sed 's/^v//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 | sed 's/^/v/')
   fi
   if [ -z "$SP_REMOTE" ]; then
     warn "superpowers 远端检测跳过（无网络或仓库不可达）"
@@ -456,6 +456,69 @@ else
     fi
   fi
 fi
+echo ""
+
+# ---------- 14. [Critical] template ↔ 生成物零漂移 ----------
+echo "【14/16·Critical】template ↔ 生成物零漂移（omo / opencode-mem）"
+ 
+# instructions.md 工作约束 5 的自动化 enforcement：template 改了生成物没同步（或反之）= 配置不一致。
+# 规范化比较（剥注释/尾逗号、omo 排除运行时写入的 _migrations），漂移即 critical fail 阻断提交。
+DRIFT_JSON=$(node scripts/check-drift.mjs 2>/dev/null || echo '{}')
+for pair in omo mem; do
+  D_EXIST=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].exists" 2>/dev/null || echo "")
+  D_DRIFT=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].drift" 2>/dev/null || echo "")
+  D_DETAIL=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].detail" 2>/dev/null || echo "检测脚本异常")
+  # 注意：macOS bash 3.2 在双引号内「含多字节值的变量 + 多字节字面量」拼接时会损坏字节，
+  # 故 detail 变量独立传参，修复提示写纯字面量（pair 为 ASCII 可安全拼接）。
+  if [ "$D_EXIST" != "true" ]; then
+    info "$D_DETAIL"
+  elif [ "$D_DRIFT" = "true" ]; then
+    fail "$pair 配置漂移: template 与生成物不一致 — 两处同步修改（约束见 .opencode/instructions.md 第 5 条），或 rm 生成物后 make omo-config / make mem 重建"
+  else
+    ok "$D_DETAIL"
+  fi
+done
+echo ""
+# ---------- 15. [Critical] instructions 引用完整性 ----------
+echo "【15/16·Critical】instructions 引用完整性（{file:...} 目标存在）"
+ 
+# opencode.json instructions 数组引用的文件若丢失，系统提示注入会静默失效；检测引用目标存在性。
+INST_TOTAL=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions.total" 2>/dev/null || echo "0")
+INST_MISSING=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions.missing.length" 2>/dev/null || echo "0")
+if ! is_uint "$INST_TOTAL" || [ "$INST_TOTAL" -eq 0 ]; then
+  fail "instructions 引用总数为 0（check-drift.mjs 输出异常或 opencode.json 解析失败）"
+elif [ "$INST_MISSING" -eq 0 ]; then
+  ok "instructions $INST_TOTAL 条 {file:...} 引用全部存在"
+else
+  for f in $(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions.missing.join(' ')" 2>/dev/null); do
+    fail "instructions 引用缺失：$f"
+  done
+fi
+echo ""
+# ---------- 16. [Warning] export 备份新鲜度 ----------
+echo "【16/16·Warning】export 备份新鲜度（dbx.md / skills 唯一备份通道）"
+ 
+# dbx.md、54 个用户 skill 不在 git 内，唯一备份通道是 make export 导出包；
+# 包比关键源文件旧 = 单点丢失风险。纯本地 mtime 比较，无网络依赖。
+LATEST_EXPORT=$(ls -t "$HOME/Desktop"/opencode-config-*.tar.gz 2>/dev/null | head -1)
+if [ -z "$LATEST_EXPORT" ]; then
+  warn "未在 ~/Desktop 找到导出包（dbx.md / skills 唯一备份通道）— 运行 make export（若已导出到其他位置可忽略）"
+else
+  EXPORT_MTIME=$(stat -f %m "$LATEST_EXPORT")
+  STALE_FILES=""
+  for src in .opencode/dbx.md skills.lock; do
+    [ -f "$src" ] || continue
+    SRC_MTIME=$(stat -f %m "$src")
+    [ "$SRC_MTIME" -gt "$EXPORT_MTIME" ] && STALE_FILES="$STALE_FILES $src"
+  done
+  if [ -n "$STALE_FILES" ]; then
+    warn "导出包 $(basename "$LATEST_EXPORT") 比最近改动的 $STALE_FILES 旧 - 重跑 make export 保持备份新鲜"
+  else
+    ok "导出包新鲜（$(basename "$LATEST_EXPORT")）"
+  fi
+fi
+echo ""
+
 echo ""
 
 

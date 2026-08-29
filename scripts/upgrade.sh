@@ -48,6 +48,28 @@ if [ "$OMO_CURRENT" = "$OMO_LATEST" ] && [ "$PLG_CURRENT" = "$PLG_LATEST" ]; the
   echo "✓ 已是最新版本，无需升级"
   exit 0
 fi
+# ---------- 1b. major 版本防跳闸 ----------
+# OMO major 跨越（如 4→5）通常含 breaking（历史：5.0 有 /start-work 改名 ulw-execute、
+# omo 命令改名等，见 docs/reference.md「上游版本观察项」）；默认拒绝，需交互确认或 FORCE=1。
+OMO_MAJOR_CUR=$(echo "$OMO_CURRENT" | grep -oE '^[0-9]+')
+OMO_MAJOR_NEW=$(echo "$OMO_LATEST" | grep -oE '^[0-9]+')
+if [ -n "$OMO_MAJOR_CUR" ] && [ -n "$OMO_MAJOR_NEW" ] && [ "$OMO_MAJOR_CUR" != "$OMO_MAJOR_NEW" ]; then
+  echo ""
+  echo "⚠️⚠️⚠️  检测到 major 版本跨越：$OMO_CURRENT → $OMO_LATEST  ⚠️⚠️⚠️"
+  echo "  major 升级通常含 breaking change。升级前必读："
+  echo "    docs/reference.md「上游版本观察项」（skill/command 改名、配置迁移清单）"
+  echo ""
+  if [ "${FORCE:-0}" = "1" ]; then
+    echo "  FORCE=1 已设置，跳过确认继续升级。"
+  else
+    read -rp "  确认要跨 major 升级吗？[y/N] " yn </dev/tty
+    case "$yn" in
+      [Yy]*) echo "  已确认，继续（建议升级后逐项核对观察项清单）" ;;
+      *) echo "  已拒绝（默认）。确认后重跑：FORCE=1 make upgrade 或 make upgrade 后选 y"; exit 1 ;;
+    esac
+  fi
+fi
+
 
 # 备份关键状态（在 step 2 修改 package.json 之前），失败可回滚
 # 不备份 node_modules（515M/18k 文件，cp 耗时 ~15s）：失败后恢复 package.json + lock，跑 make update 重建

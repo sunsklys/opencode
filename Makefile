@@ -11,9 +11,9 @@ help: ## 显示帮助
 	@echo ""
 	@echo "常用命令："
 	@echo "  make install   完整安装（新机器首次，含依赖/环境变量/记忆/飞书）"
-	@echo "  make check     体检所有组件状态（13 项：critical 4 + warning 9）"
+	@echo "  make check     体检所有组件状态（16 项：critical 6 + warning 10）"
 	@echo "  make bootstrap 一键灾备恢复（install + prime-cache + check）"
-	@echo "  make update    重装依赖（按 package.json 精确版本）"
+	@echo "  make update    重装依赖（直接依赖按锁定版本，传递依赖刷新）+ 清 mem 缓存"
 	@echo "  make upgrade   一键升级 OMO + plugin + superpowers 到最新（npm 包 + git tag 源）"
 	@echo "  make upgrade-superpowers   升级 superpowers plugin 到远端最新 tag"
 	@echo ""
@@ -25,7 +25,7 @@ help: ## 显示帮助
 	@echo "  make feishu    仅装飞书 CLI + SKILL"
 	@echo "  make sync-skills  软链 oh-my-openagent 内置 skill 到 ~/.agents/skills/（让 ulw-plan 等在 TUI 可见）"
 	@echo "  make clean     清理 node_modules"
-	@echo "  make export    导出配置到 tar.gz（不含敏感凭证，可选含 auth.json）"
+	@echo "  make export    导出 tar.gz（含 git 外内容：dbx.md / 54 skills / 可选画像+auth）"
 	@echo ""
 	@echo "维护命令（可选）："
 	@echo "  make audit        npm 安全审计（切官方源，绕过 npmmirror audit 404）"
@@ -113,10 +113,10 @@ feishu: ## 安装飞书 CLI + 27 个 SKILL（需要 FEISHU_APP_SECRET）
 sync-skills: ## 软链 oh-my-openagent 内置 skill（ulw-plan/git-master/frontend 等）到 ~/.agents/skills/
 	@bash scripts/sync-omo-skills.sh
 
-check: ## 体检所有组件（13 项 = critical 4 + warning 9；critical 全绿则 exit 0，warning 失败也 exit 0）
+check: ## 体检所有组件（16 项 = critical 6 + warning 10；critical 全绿则 exit 0，warning 失败也 exit 0）
 	@bash scripts/check.sh
 
-update: ## 更新依赖到最新（清 node_modules + package-lock 重装 + sync skill 软链）
+update: ## 重装依赖（直接依赖按锁定版本，传递依赖刷新；清 node_modules + lock 重装 + 清 mem 缓存）
 	@echo "清理旧依赖（用 node 脚本，绕过 rm -rf 权限限制）..."
 	@node -e "require('fs').rmSync('node_modules',{recursive:true,force:true}); console.log('  node_modules 已清除')"
 	@rm -f package-lock.json
