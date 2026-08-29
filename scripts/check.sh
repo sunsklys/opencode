@@ -96,8 +96,29 @@ echo ""
 # ---------- 4. [Warning] 全局 MCP 依赖 ----------
 echo "【4/16·Warning】全局 MCP 依赖"
  
-command -v claude-mermaid >/dev/null 2>&1 && ok "claude-mermaid $(claude-mermaid --version 2>/dev/null || echo '已安装')" || wfail "claude-mermaid 未安装（npm i -g claude-mermaid）"
-command -v codegraph >/dev/null 2>&1 && ok "codegraph 已安装" || wfail "codegraph 未安装（npm i -g @colbymchenry/codegraph）"
+# 预期版本常量：全局 bin 通道（npm i -g）的版本锁定比对——升级全局包后同步此处（B2 通道 2）
+EXPECTED_MERMAID="1.6.5"
+EXPECTED_CODEGRAPH="1.6.0"
+if command -v claude-mermaid >/dev/null 2>&1; then
+  MERMAID_VER=$(claude-mermaid --version 2>/dev/null | head -1)
+  if [ "$MERMAID_VER" = "$EXPECTED_MERMAID" ]; then
+    ok "claude-mermaid $MERMAID_VER（= 锁定版本）"
+  else
+    wfail "claude-mermaid $MERMAID_VER ≠ 锁定 $EXPECTED_MERMAID（重装：npm i -g claude-mermaid@$EXPECTED_MERMAID，或升级后同步 check.sh 常量）"
+  fi
+else
+  wfail "claude-mermaid 未安装（npm i -g claude-mermaid@$EXPECTED_MERMAID）"
+fi
+if command -v codegraph >/dev/null 2>&1; then
+  CODEGRAPH_VER=$(codegraph --version 2>/dev/null | head -1)
+  if [ "$CODEGRAPH_VER" = "$EXPECTED_CODEGRAPH" ]; then
+    ok "codegraph $CODEGRAPH_VER（= 锁定版本）"
+  else
+    wfail "codegraph $CODEGRAPH_VER ≠ 锁定 $EXPECTED_CODEGRAPH（重装：npm i -g @colbymchenry/codegraph@$EXPECTED_CODEGRAPH，或升级后同步 check.sh 常量）"
+  fi
+else
+  wfail "codegraph 未安装（npm i -g @colbymchenry/codegraph@$EXPECTED_CODEGRAPH）"
+fi
 echo ""
 
 # ---------- 5. [Warning] 飞书 CLI ----------
