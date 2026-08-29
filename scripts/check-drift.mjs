@@ -102,9 +102,27 @@ function checkInstructions() {
   return { total, missing };
 }
 
+// --- package.json ↔ plugin spec 版本一致性（Wave3：钉版闭合 @latest 旁路的守卫）---
+// package.json 依赖的 oh-my-openagent 版本必须与 opencode.json/tui.json plugin spec 一致，
+// 失配 = 「防跳闸变防升级」分裂（package.json 升级而 spec 未跟随，或反之）→ drift:true → critical fail
+function checkPluginSpec() {
+  const expected = 'oh-my-openagent@' + JSON.parse(fs.readFileSync(path.join(ROOT, '..', 'package.json'), 'utf8')).dependencies['oh-my-openagent'];
+  const mismatches = [];
+  for (const f of ['opencode.json', 'tui.json']) {
+    try {
+      const plugins = JSON.parse(fs.readFileSync(path.join(ROOT, '..', f), 'utf8')).plugin || [];
+      if (!plugins.includes(expected)) mismatches.push(`${f} 缺少 ${expected}`);
+    } catch (e) {
+      mismatches.push(`${f} 解析失败: ${e.message}`);
+    }
+  }
+  return { exists: true, drift: mismatches.length !== 0, detail: mismatches.length === 0 ? `plugin spec 一致（${expected}）` : 'plugin spec 失配: ' + mismatches.join('; ') };
+}
+
 const result = {
   omo: checkPair(omoTemplate, omoGenerated, 'omo.jsonc', ['_migrations']),
   mem: checkPair(memTemplate, memGenerated, 'opencode-mem.jsonc'),
   instructions: checkInstructions(),
+  pluginSpec: checkPluginSpec(),
 };
 console.log(JSON.stringify(result));

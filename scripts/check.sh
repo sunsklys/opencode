@@ -485,7 +485,7 @@ echo "【14/16·Critical】template ↔ 生成物零漂移（omo / opencode-mem�
 # instructions.md 工作约束 5 的自动化 enforcement：template 改了生成物没同步（或反之）= 配置不一致。
 # 规范化比较（剥注释/尾逗号、omo 排除运行时写入的 _migrations），漂移即 critical fail 阻断提交。
 DRIFT_JSON=$(node scripts/check-drift.mjs 2>/dev/null || echo '{}')
-for pair in omo mem; do
+for pair in omo mem pluginSpec; do
   D_EXIST=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].exists" 2>/dev/null || echo "")
   D_DRIFT=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].drift" 2>/dev/null || echo "")
   D_DETAIL=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].detail" 2>/dev/null || echo "检测脚本异常")
@@ -494,7 +494,7 @@ for pair in omo mem; do
   if [ "$D_EXIST" != "true" ]; then
     info "$D_DETAIL"
   elif [ "$D_DRIFT" = "true" ]; then
-    fail "$pair 配置漂移: template 与生成物不一致 — 两处同步修改（约束见 .opencode/instructions.md 第 5 条），或 rm 生成物后 make omo-config / make mem 重建"
+    fail "$pair 配置漂移: $D_DETAIL — omo/mem 两处同步（约束 5）或 rm 生成物后重建；pluginSpec 跑 make upgrade 自动同步或手动对齐 spec"
   elif [ "$D_DRIFT" != "false" ]; then
     fail "$pair 漂移检测异常（drift:$D_DRIFT — 解析失败或脚本异常）— 手动跑 node scripts/check-drift.mjs 看原始输出"
   else
