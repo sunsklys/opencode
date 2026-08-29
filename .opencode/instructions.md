@@ -33,7 +33,7 @@
 - 89 条 permission deny（bash 53 + read 17 + edit 19，三层纵深防御）
 - OMO 4.19.4
 
-详细字段地图见 `README.md` 的「配置文件结构」段。
+详细字段地图见 `docs/reference.md` 的「配置文件结构」段；新机器上手见 `docs/quickstart.md`；灾备恢复见 `docs/quickstart.md`「灾备 / 恢复」段。
 
 ## 已知误报与升级纪律
 
