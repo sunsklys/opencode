@@ -12,13 +12,25 @@
 
 set -euo pipefail
 
-OUT_DIR="${1:-$HOME/Desktop}"
+# HEADLESS=1 无人值守模式（launchd 定时用）三硬约束：
+#   ① auth.json 强制排除（不可参数开启——无人值守目录泄 key 是此防线要防的最坏情形）
+#   ② 输出固定 ~/Backups/opencode/（非 iCloud 同步目录，防 API key/生产 host 上云；忽略位置参数）
+#   ③ retention：仅保留最近 5 份，旧包自动清理
+# 画像默认包含（非敏感小文件）；交互模式行为完全不变（含 DEST 支持）
+HEADLESS="${HEADLESS:-0}"
+if [ "$HEADLESS" = "1" ]; then
+  OUT_DIR="$HOME/Backups/opencode"
+else
+  OUT_DIR="${1:-$HOME/Desktop}"
+fi
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 ARCHIVE="opencode-config-${TIMESTAMP}.tar.gz"
 # 守卫：以 - 开头的目录名会被 tar 解析为选项（GNU tar 理论可注入），强制 ./ 前缀
 case "$OUT_DIR" in
   -*) OUT_DIR="./$OUT_DIR" ;;
 esac
+# 输出目录无条件兜底创建（tar -f 不建目录；HEADLESS 与交互 DEST=新路径 场景同护）
+mkdir -p "$OUT_DIR"
 FULL_PATH="${OUT_DIR}/${ARCHIVE}"
 
 CONFIG_DIR="$HOME/.config/opencode"
@@ -69,20 +81,27 @@ if [[ -d "$SKILLS_DIR" ]]; then
   echo "ℹ️  已包含 ~/.agents/skills（$(find "$TMP/agents/skills" -name SKILL.md | wc -l | tr -d ' ') 个 SKILL.md）"
 fi
 
-# ============ 4. 可选项：auth.json ============
-echo ""
-read -p "是否包含 auth.json (含 API key，可在新机器免登录)? [y/N] " include_auth
-if [[ "$include_auth" =~ ^[yY]$ ]]; then
-  mkdir -p "$TMP/data/opencode"
-  cp "$DATA_DIR/auth.json" "$TMP/data/opencode/" 2>/dev/null || true
-  echo "⚠️  已包含 auth.json - 注意保护此压缩包"
+# ============ 4. 可选项：auth.json（HEADLESS 强制排除——不可参数开启的红线） ============
+if [ "$HEADLESS" = "1" ]; then
+  echo "ℹ️  HEADLESS 模式：auth.json 强制排除（无人值守目录不落 API key）"
 else
-  echo "ℹ️  未包含 auth.json - 新机器需重新 'opencode auth login'"
+  echo ""
+  read -p "是否包含 auth.json (含 API key，可在新机器免登录)? [y/N] " include_auth
+  if [[ "$include_auth" =~ ^[yY]$ ]]; then
+    mkdir -p "$TMP/data/opencode"
+    cp "$DATA_DIR/auth.json" "$TMP/data/opencode/" 2>/dev/null || true
+    echo "⚠️  已包含 auth.json - 注意保护此压缩包"
+  else
+    echo "ℹ️  未包含 auth.json - 新机器需重新 'opencode auth login'"
+  fi
 fi
 
 # ============ 5. 可选项：opencode-mem 用户画像 ============
 # user-profiles.db 三件套约 6MB；向量库 1.5GB 过大不入包（记忆条目可重新积累）
 if [[ -f "$MEM_DATA_DIR/user-profiles.db" ]]; then
+  if [ "$HEADLESS" = "1" ]; then
+    include_profile=""
+  else
   read -p "是否包含 opencode-mem 用户画像 user-profiles.db (~6MB，跳过则新机从零学习)? [Y/n] " include_profile
   if [[ ! "$include_profile" =~ ^[nN]$ ]]; then
     mkdir -p "$TMP/opencode-mem/data"
@@ -92,6 +111,7 @@ if [[ -f "$MEM_DATA_DIR/user-profiles.db" ]]; then
     echo "ℹ️  已包含用户画像（含 wal/shm）"
   else
     echo "ℹ️  未包含用户画像 - 新机 profile 从零积累"
+  fi
   fi
 fi
 
@@ -172,6 +192,14 @@ echo ""
 echo "✅ 导出成功"
 echo "📦 $FULL_PATH"
 echo "📏 $(du -sh "$FULL_PATH" | cut -f1)"
+if [ "$HEADLESS" = "1" ]; then
+  # retention：仅保留最近 5 份（launchd 周跑防无限堆积）
+  # 按文件名排序（自带 %Y%m%d-%H%M%S 时间戳，字典序=时间序；mtime 会被 cp/touch 扰动不可靠）
+  ls "$OUT_DIR"/opencode-config-*.tar.gz 2>/dev/null | sort -r | tail -n +6 | while IFS= read -r old_pkg; do
+    rm -f "$old_pkg" && echo "🗑️  retention 清理: $(basename "$old_pkg")"
+  done
+  echo "ℹ️  HEADLESS 完成于 $OUT_DIR（保留最近 5 份）"
+fi
 echo "⚠️  包内含 dbx.md（生产 host）— 勿上传公开位置"
 echo ""
 echo "📋 包含文件:"

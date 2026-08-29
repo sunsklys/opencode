@@ -550,7 +550,8 @@ if [ -z "$CHECK_FAST" ]; then
  
   # dbx.md、54 个用户 skill 不在 git 内，唯一备份通道是 make export 导出包；
   # 包比关键源文件旧 = 单点丢失风险。纯本地 mtime 比较，无网络依赖。
-  LATEST_EXPORT=$(ls -t "$HOME/Desktop"/opencode-config-*.tar.gz 2>/dev/null | head -1)
+  # 双位置取最新（Wave5：HEADLESS 落 ~/Backups/opencode/，交互默认 ~/Desktop）
+    LATEST_EXPORT=$(ls -t "$HOME/Desktop"/opencode-config-*.tar.gz "$HOME/Backups/opencode"/opencode-config-*.tar.gz 2>/dev/null | head -1)
   if [ -z "$LATEST_EXPORT" ]; then
     warn "未在 ~/Desktop 找到导出包（dbx.md / skills 唯一备份通道）— 运行 make export（若已导出到其他位置可忽略）"
   else
