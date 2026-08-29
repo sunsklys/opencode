@@ -143,13 +143,13 @@ export: ## 导出配置到 tar.gz（默认输出到 ~/Desktop）
 
 install-export-job: ## 安装周导出 launchd 任务（每周五 12:00 HEADLESS 导出到 ~/Backups/opencode/，保留 5 份）
 	@cp launchd/com.sunsklys.opencode-export.plist ~/Library/LaunchAgents/ && \
-		launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist && \
-		echo "✓ 周导出任务已装载（卸载：launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist）"
+		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist && \
+		echo "✓ 周导出任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist）"
 
 install-dbcheck-job: ## 安装月度数据库体检 launchd 任务（每月 1 日 09:00 只读体检写日志）
 	@cp launchd/com.sunsklys.opencode.db-check.plist ~/Library/LaunchAgents/ && \
-		launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist && \
-		echo "✓ 月度体检任务已装载（卸载：launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist）"
+		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist && \
+		echo "✓ 月度体检任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist）"
 
 audit: ## npm 安全审计（切官方源，绕过 npmmirror audit 404）
 	@echo "运行 npm audit（临时切官方源）..."
