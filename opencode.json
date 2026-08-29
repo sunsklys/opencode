@@ -1,10 +1,18 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["oh-my-openagent@latest", "opencode-mem@latest", "superpowers@git+https://github.com/obra/superpowers.git#v6.3.0"],
+  "plugin": [
+    "oh-my-openagent@latest",
+    "opencode-mem@latest",
+    "superpowers@git+https://github.com/obra/superpowers.git#v6.3.0"
+  ],
   "mcp": {
     "zai-mcp-server": {
       "type": "local",
-      "command": ["npx", "-y", "@z_ai/mcp-server"],
+      "command": [
+        "npx",
+        "-y",
+        "@z_ai/mcp-server@0.1.5"
+      ],
       "environment": {
         "Z_AI_API_KEY": "{env:Z_AI_API_KEY}",
         "Z_AI_MODE": "ZHIPU"
@@ -33,15 +41,25 @@
     },
     "mermaid": {
       "type": "local",
-      "command": ["claude-mermaid"]
+      "command": [
+        "claude-mermaid"
+      ]
     },
     "codegraph": {
       "type": "local",
-      "command": ["codegraph", "serve", "--mcp"]
+      "command": [
+        "codegraph",
+        "serve",
+        "--mcp"
+      ]
     },
     "dbx": {
       "type": "local",
-      "command": ["npx", "-y", "@dbx-app/mcp-server"]
+      "command": [
+        "npx",
+        "-y",
+        "@dbx-app/mcp-server@0.4"
+      ]
     }
   },
   "lsp": true,
@@ -164,8 +182,6 @@
       "git push -f*": "deny",
       "git clean*": "deny",
       "npm publish*": "deny",
-      "curl * | *sh*": "deny",
-      "wget * | *sh*": "deny",
       "eval *": "deny",
       "eval(*": "deny",
       ": > **/.env*": "deny",
@@ -209,7 +225,12 @@
       "docker rm -f *": "deny",
       "docker rmi -f *": "deny",
       "docker volume rm *": "deny",
-      "docker network rm *": "deny"
+      "docker network rm *": "deny",
+      "sh": "deny",
+      "bash": "deny",
+      "zsh": "deny",
+      "sh -s": "deny",
+      "bash -s": "deny"
     },
     "edit": {
       "**/.env*": "deny",
