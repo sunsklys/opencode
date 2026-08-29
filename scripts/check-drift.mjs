@@ -119,10 +119,63 @@ function checkPluginSpec() {
   return { exists: true, drift: mismatches.length !== 0, detail: mismatches.length === 0 ? `plugin spec 一致（${expected}）` : 'plugin spec 失配: ' + mismatches.join('; ') };
 }
 
+// --- 文档引用防漂移护栏（Wave4：堵「手改不走 upgrade.sh」路径，42aea26 教训）---
+// 机器校验高漂移值：README 的 plugin 版本 ↔ package.json；docs 的「N 项体检」↔ check.sh 实际项数。
+// 计数类教法（54 skills 等）不进护栏（容忍手工，见 artisan R1-7 分层策略）。
+function checkDocRefs() {
+  const problems = [];
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, '..', 'package.json'), 'utf8'));
+    const expectedPlg = pkg.dependencies['@opencode-ai/plugin'];
+    const readme = fs.readFileSync(path.join(ROOT, '..', 'README.md'), 'utf8');
+    const m = readme.match(/@opencode-ai\/plugin (\d+\.\d+\.\d+)/);
+    if (!m) problems.push('README 未找到 @opencode-ai/plugin 三段版本号');
+    else if (m[1] !== expectedPlg) problems.push(`README plugin ${m[1]} ≠ package.json ${expectedPlg}`);
+  } catch (e) { problems.push('package.json/README 读取失败: ' + e.message); }
+  try {
+    const checkSh = fs.readFileSync(path.join(ROOT, '..', 'scripts', 'check.sh'), 'utf8');
+    const nums = [...checkSh.matchAll(/^\s*# -+ (\d+)\./gm)].map((x) => Number(x[1]));
+    const itemCount = Math.max(...nums, 0);
+    for (const f of ['docs/quickstart.md', 'docs/troubleshooting.md']) {
+      const doc = fs.readFileSync(path.join(ROOT, '..', f), 'utf8');
+      const m2 = doc.match(/(\d+) 项体检/);
+      if (m2 && Number(m2[1]) !== itemCount) problems.push(`${f} 声明 ${m2[1]} 项 ≠ check.sh 实际 ${itemCount} 项`);
+    }
+  } catch (e) { problems.push('check.sh/docs 读取失败: ' + e.message); }
+  return { exists: true, drift: problems.length !== 0, detail: problems.length ? '文档引用漂移: ' + problems.join('; ') : '文档引用一致（plugin 版本 + 体检项数）' };
+}
+
+
+// --- CI 独立模式（Wave4）：GitHub Actions 无生成物/无 dbx.md 场景的静态验证 ---
+// 用法：node scripts/check-drift.mjs --verify-templates | --verify-instructions
+const argv = process.argv.slice(2);
+if (argv.includes('--verify-templates')) {
+  // 仅验证两个 template 的 JSONC 语法（失败 exit 1；正常 drift 模式下解析失败被 checkPair catch 不退非零，CI 需硬失败）
+  let failed = false;
+  for (const f of [omoTemplate, memTemplate]) {
+    try {
+      JSON.parse(stripComments(fs.readFileSync(f, 'utf8')).replace(/,(\s*[}\]])/g, '$1'));
+      console.log('OK ' + path.basename(f) + ' JSONC syntax valid');
+    } catch (e) {
+      console.log('FAIL ' + path.basename(f) + ' parse error: ' + e.message);
+      failed = true;
+    }
+  }
+  process.exit(failed ? 1 : 0);
+} else if (argv.includes('--verify-instructions')) {
+  // 引用完整性 CI 版：豁免 dbx.md（gitignore 生产 host，不在 checkout 内）
+  const r = checkInstructions();
+  const missing = r.missing.filter((p) => !p.endsWith('dbx.md'));
+  if (missing.length) { console.log('FAIL missing refs: ' + missing.join(', ')); process.exit(1); }
+  console.log('OK instructions refs complete (dbx.md exempt: gitignored)');
+  process.exit(0);
+}
+
 const result = {
   omo: checkPair(omoTemplate, omoGenerated, 'omo.jsonc', ['_migrations']),
   mem: checkPair(memTemplate, memGenerated, 'opencode-mem.jsonc'),
   instructions: checkInstructions(),
   pluginSpec: checkPluginSpec(),
+  docRefs: checkDocRefs(),
 };
 console.log(JSON.stringify(result));

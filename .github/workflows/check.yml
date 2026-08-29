@@ -61,4 +61,21 @@ jobs:
           fi
           echo "✓ skills.lock 格式正确（$(wc -l < skills.lock) 条，每行 <hash>  <name>/SKILL.md）"
 
+
+      - name: Shell 脚本语法检查（bash -n）
+        run: |
+          FAIL=0
+          for f in scripts/*.sh .githooks/* opencode-export.sh setup-feishu-cli.sh; do
+            [ -f "$f" ] || continue
+            bash -n "$f" || { echo "❌ $f 语法错误"; FAIL=1; }
+          done
+          [ "$FAIL" -eq 0 ] && echo "✓ 全部 shell 脚本 bash -n 通过" || exit 1
+
+      - name: 模板 JSONC 语法验证
+        run: node scripts/check-drift.mjs --verify-templates
+
+      - name: instructions 引用完整性（dbx.md 豁免）
+        run: node scripts/check-drift.mjs --verify-instructions
+
       # 注：完整 make check 在 CI 环境会因缺 API key 而警告，所以只跑上面的子集
+
