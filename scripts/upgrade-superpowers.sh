@@ -23,7 +23,7 @@ echo "当前锁定版本：$CURRENT"
 
 # --- 2. 查远端最新 tag ---
 echo "查询远端最新 tag..."
-REMOTE_TAGS=$(git ls-remote --tags "$REMOTE_URL" 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' || true)
+REMOTE_TAGS=$(git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=10 ls-remote --tags "$REMOTE_URL" 2>/dev/null | grep -v '\^{}$' | awk '{print $2}' | sed 's|refs/tags/||' || true)
 
 if [ -z "$REMOTE_TAGS" ]; then
   echo "❌ 无法获取远端 tag（网络问题或仓库异常）"
