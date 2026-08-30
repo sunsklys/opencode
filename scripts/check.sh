@@ -221,6 +221,9 @@ if [ -z "$CHECK_FAST" ]; then
       if [ "$MISMATCH" -eq 0 ] && [ "$MISSING" -eq 0 ]; then
         ok "skills.lock $TOTAL 条全部匹配"
       fi
+      if [ "$MISSING" -gt 0 ]; then
+        wfail "skills.lock $MISSING 条实机缺失（供应链防消失）— 对账 make skills-lock 或自备份恢复"
+      fi
     fi
   fi
   echo ""
