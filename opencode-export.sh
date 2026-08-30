@@ -23,6 +23,17 @@ if [ "$HEADLESS" = "1" ]; then
 else
   OUT_DIR="${1:-$HOME/Desktop}"
 fi
+# DEST 绝对化：打包前 cd "$TMP" 后，相对路径 FULL_PATH 会解析到 TMP 下不存在目录（tar 必败）
+case "$OUT_DIR" in
+  /*) ;;  # 已绝对路径（HEADLESS 默认与显式绝对 DEST）
+  *)
+    if [ -d "$OUT_DIR" ]; then
+      OUT_DIR="$(cd "$OUT_DIR" && pwd)"
+    else
+      OUT_DIR="$PWD/$OUT_DIR"
+    fi
+    ;;
+esac
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 ARCHIVE="opencode-config-${TIMESTAMP}.tar.gz"
 # 守卫：以 - 开头的目录名会被 tar 解析为选项（GNU tar 理论可注入），强制 ./ 前缀
