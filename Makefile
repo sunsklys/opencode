@@ -134,6 +134,9 @@ upgrade: ## 一键升级 OMO + plugin + superpowers 到最新版（npm 包 + git
 
 upgrade-superpowers: ## 升级 superpowers plugin 到远端最新 tag（查远端 → 改 opencode.json → 清缓存）
 	@bash scripts/upgrade-superpowers.sh
+restore-drill: ## 恢复演练：取最新备份包解临时目录断言可恢复性（未演练的备份 ≈ 没有备份）
+	@bash scripts/restore-drill.sh
+
 clean: ## 清理 node_modules
 	@node -e "require('fs').rmSync('node_modules',{recursive:true,force:true})"
 	@echo "✓ node_modules 已清理（运行 make deps 重建）"
