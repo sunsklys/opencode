@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install bootstrap deps config mem omo-config feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks db-check db-maintain check-upgrade
+.PHONY: help install bootstrap deps config mem omo-config feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks db-check db-maintain check-upgrade install-export-job install-dbcheck-job
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -104,7 +104,7 @@ omo-config: ## 生成 ~/.omo/omo.jsonc（OMO 统一配置，从模板复制，�
 	fi
 
 feishu: ## 安装飞书 CLI + 27 个 SKILL（需要 FEISHU_APP_SECRET）
-	@FEISHU_APP_SECRET="$${FEISHU_APP_SECRET:-$$(grep -h '^export FEISHU_APP_SECRET=' ~/.zshrc ~/.zshenv ~/.zprofile ~/.profile 2>/dev/null | head -1 | node -e "const s=require('fs').readFileSync(0,'utf8').trim();const m=s.match(/export\s+FEISHU_APP_SECRET=(.*)/);if(m){let v=m[1].replace(/^'|'$$/g,'');process.stdout.write(v)}" 2>/dev/null)"}; \
+	@FEISHU_APP_SECRET="$${FEISHU_APP_SECRET:-$$(grep -h '^export FEISHU_APP_SECRET=' ~/.zshrc ~/.zshenv ~/.zprofile ~/.profile 2>/dev/null | head -1 | node -e "const s=require('fs').readFileSync(0,'utf8').trim();const m=s.match(/export\s+FEISHU_APP_SECRET=(.*)/);if(m){let v=m[1].replace(/^['\"]|['\"]$$/g,'');process.stdout.write(v)}" 2>/dev/null)"}; \
 	if [ -z "$$FEISHU_APP_SECRET" ]; then \
 		echo "❌ FEISHU_APP_SECRET 未设置，先运行：make config"; \
 		exit 1; \
@@ -145,12 +145,14 @@ export: ## 导出配置到 tar.gz（默认输出到 ~/Desktop）
 	@bash opencode-export.sh "$${DEST:-$$HOME/Desktop}"
 
 install-export-job: ## 安装周导出 launchd 任务（每周五 12:00 HEADLESS 导出到 ~/Backups/opencode/，保留 5 份）
-	@cp launchd/com.sunsklys.opencode-export.plist ~/Library/LaunchAgents/ && \
+	@launchctl bootout gui/$$(id -u) "$$HOME/Library/LaunchAgents/com.sunsklys.opencode-export.plist" 2>/dev/null || true; \
+	cp launchd/com.sunsklys.opencode-export.plist ~/Library/LaunchAgents/ && \
 		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist && \
 		echo "✓ 周导出任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist）"
 
 install-dbcheck-job: ## 安装月度数据库体检 launchd 任务（每月 1 日 09:00 只读体检写日志）
-	@cp launchd/com.sunsklys.opencode.db-check.plist ~/Library/LaunchAgents/ && \
+	@launchctl bootout gui/$$(id -u) "$$HOME/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist" 2>/dev/null || true; \
+	cp launchd/com.sunsklys.opencode.db-check.plist ~/Library/LaunchAgents/ && \
 		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist && \
 		echo "✓ 月度体检任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist）"
 
