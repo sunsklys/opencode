@@ -58,6 +58,7 @@ cp "$CONFIG_DIR"/.gitignore "$TMP/config/opencode/" 2>/dev/null || true
 # 完整目录结构（Makefile / scripts / 模板 / 文档）一起带上，让 make install 可用
 cp "$CONFIG_DIR/Makefile" "$TMP/config/opencode/" 2>/dev/null || true
 cp "$CONFIG_DIR"/*.template "$TMP/config/opencode/" 2>/dev/null || true
+[[ -f "$CONFIG_DIR/skills.lock" ]] && cp "$CONFIG_DIR/skills.lock" "$TMP/config/opencode/"
 [[ -d "$CONFIG_DIR/scripts" ]] && cp -r "$CONFIG_DIR/scripts" "$TMP/config/opencode/" 2>/dev/null || true
 [[ -d "$CONFIG_DIR/docs" ]] && cp -r "$CONFIG_DIR/docs" "$TMP/config/opencode/" 2>/dev/null || true
 
@@ -188,11 +189,27 @@ EOF
 cd "$TMP"
 tar -cz -f "$FULL_PATH" .
 
+# 体积骤降告警：新包比前一份骤降超 40% 几乎必然意味着打包内容悄悄缺失（skills 没打进/内容丢失）
+PREV_PKG=$(ls "$OUT_DIR"/opencode-config-*.tar.gz 2>/dev/null | sort | grep -v "$(basename "$FULL_PATH")" | tail -1)
+if [ -n "$PREV_PKG" ]; then
+  NEW_BYTES=$(stat -f%z "$FULL_PATH" 2>/dev/null || echo 0)
+  PREV_BYTES=$(stat -f%z "$PREV_PKG" 2>/dev/null || echo 0)
+  if [ "$PREV_BYTES" -gt 0 ] && [ "$NEW_BYTES" -lt $((PREV_BYTES * 60 / 100)) ]; then
+    echo "⚠️  包体积骤降 $(( (PREV_BYTES - NEW_BYTES) * 100 / PREV_BYTES ))%（前 $((PREV_BYTES/1024/1024))MB → 现 $((NEW_BYTES/1024/1024))MB）— 检查打包内容是否缺失"
+  fi
+fi
+
 echo ""
 echo "✅ 导出成功"
 echo "📦 $FULL_PATH"
 echo "📏 $(du -sh "$FULL_PATH" | cut -f1)"
 if [ "$HEADLESS" = "1" ]; then
+  # [硬断言] HEADLESS 包内 auth.json 必须零存在（三硬约束的机器自验证；违者删包退出）
+  if tar -tzf "$FULL_PATH" | grep -q 'auth\.json'; then
+    echo "❌ auth.json 泄入包内（三硬约束被破坏）— 已删除本包" >&2
+    rm -f "$FULL_PATH"
+    exit 1
+  fi
   # retention：仅保留最近 5 份（launchd 周跑防无限堆积）
   # 按文件名排序（自带 %Y%m%d-%H%M%S 时间戳，字典序=时间序；mtime 会被 cp/touch 扰动不可靠）
   ls "$OUT_DIR"/opencode-config-*.tar.gz 2>/dev/null | sort -r | tail -n +6 | while IFS= read -r old_pkg; do
