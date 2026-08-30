@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install bootstrap deps config mem omo-config feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks db-check db-maintain check-upgrade install-export-job install-dbcheck-job
+.PHONY: help install bootstrap deps config mem omo-config feishu check update upgrade upgrade-superpowers clean export audit skills-lock clean-state sbom tui-sync sync-skills install-hooks db-check db-maintain check-upgrade install-export-job install-dbcheck-job restore-drill
 
 help: ## 显示帮助
 	@echo "opencode 配置管理"
@@ -31,6 +31,7 @@ help: ## 显示帮助
 	@echo "  make audit        npm 安全审计（切官方源，绕过 npmmirror audit 404）"
 	@echo "  make install-export-job   装载周导出 launchd（HEADLESS，~/Backups/opencode/，保 5 份）"
 	@echo "  make install-dbcheck-job  装载月度 db-check launchd（只读体检）"
+	@echo "  make restore-drill 恢复演练：验证最新备份包可恢复（未演练的备份 ≈ 没有备份）"
 	@echo "  make skills-lock  生成全部 skills SHA256 锁定（含 lark + OMO，供应链加固）"
 	@echo "  make clean-state  清理 .omo/ 和 tasks/ 运行时状态（修复状态机污染）"
 	@echo "  make sbom         生成 SBOM（软件物料清单，CycloneDX 格式）"

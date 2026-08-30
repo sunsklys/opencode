@@ -28,7 +28,7 @@ case "$OUT_DIR" in
   /*) ;;  # 已绝对路径（HEADLESS 默认与显式绝对 DEST）
   *)
     if [ -d "$OUT_DIR" ]; then
-      OUT_DIR="$(cd "$OUT_DIR" && pwd)"
+      OUT_DIR="$(cd -- "$OUT_DIR" && pwd)"
     else
       OUT_DIR="$PWD/$OUT_DIR"
     fi
@@ -201,7 +201,7 @@ cd "$TMP"
 tar -cz -f "$FULL_PATH" .
 
 # 体积骤降告警：新包比前一份骤降超 40% 几乎必然意味着打包内容悄悄缺失（skills 没打进/内容丢失）
-PREV_PKG=$(ls "$OUT_DIR"/opencode-config-*.tar.gz 2>/dev/null | sort | grep -v "$(basename "$FULL_PATH")" | tail -1)
+PREV_PKG=$(ls "$OUT_DIR"/opencode-config-*.tar.gz 2>/dev/null | sort | grep -v "$(basename "$FULL_PATH")" | tail -1 || true)   # || true：目录仅有新包时 grep -v 空输出 exit 1，pipefail 下会杀脚本（首次导出/新目录必经）
 if [ -n "$PREV_PKG" ]; then
   NEW_BYTES=$(stat -f%z "$FULL_PATH" 2>/dev/null || echo 0)
   PREV_BYTES=$(stat -f%z "$PREV_PKG" 2>/dev/null || echo 0)
