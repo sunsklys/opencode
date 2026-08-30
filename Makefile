@@ -158,9 +158,9 @@ audit: ## npm 安全审计（切官方源，绕过 npmmirror audit 404）
 	@echo "运行 npm audit（临时切官方源）..."
 	@npm audit --audit-level=moderate --registry=https://registry.npmjs.org || echo '⚠️  发现漏洞，详见上方报告'
 
-skills-lock: ## 生成全部 skills SHA256 锁定文件（含 lark + OMO，供应链加固，跨平台用 node 算 hash）
+skills-lock: ## 生成全部 skills 全文件树 SHA256 锁定文件（SKILL.md + references 等，含 lark + OMO，供应链加固，跨平台用 node 算 hash）
 	@echo "生成 skills.lock（SHA256）..."
-	@node -e "const fs=require('fs'),crypto=require('crypto'),path=require('path');const os=require('os');const skillsDir=path.join(os.homedir(),'.agents','skills');const lock={};if(!fs.existsSync(skillsDir)){console.error('⚠️  ~/.agents/skills 不存在，先运行 make feishu');process.exit(1)}for(const name of fs.readdirSync(skillsDir)){const skillPath=path.join(skillsDir,name,'SKILL.md');if(!fs.existsSync(skillPath))continue;const content=fs.readFileSync(skillPath);const hash=crypto.createHash('sha256').update(content).digest('hex');const relPath=path.relative(skillsDir, skillPath);lock[relPath]=hash}const lines=Object.keys(lock).sort().map(p=>lock[p]+'  '+p);fs.writeFileSync('skills.lock',lines.join('\n')+'\n');console.log('✓ 已生成 skills.lock（'+lines.length+' 条记录，lark + OMO）');console.log('  下次 make feishu / make upgrade 后建议重跑本命令以检测 SKILL 是否被篡改')"
+	@node -e "const fs=require('fs'),crypto=require('crypto'),path=require('path'),os=require('os');const skillsDir=path.join(os.homedir(),'.agents','skills');const lock={};if(!fs.existsSync(skillsDir)){console.error('⚠️  ~/.agents/skills 不存在，先运行 make feishu');process.exit(1)}const walk=(dir,prefix)=>{for(const name of fs.readdirSync(dir)){if(name==='.DS_Store'||name==='.git')continue;const full=path.join(dir,name),rel=prefix+'/'+name;if(fs.statSync(full).isDirectory())walk(full,rel);else lock[rel]=crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex')}};for(const name of fs.readdirSync(skillsDir)){if(!fs.existsSync(path.join(skillsDir,name,'SKILL.md')))continue;walk(path.join(skillsDir,name),name)}const lines=Object.keys(lock).sort().map(p=>lock[p]+'  '+p);fs.writeFileSync('skills.lock',lines.join('\n')+'\n');console.log('✓ 已生成 skills.lock（'+lines.length+' 条记录，全文件树，lark + OMO）');console.log('  下次 make feishu / make upgrade 后建议重跑本命令以检测 skill 文件是否被篡改')"
 
 clean-state: ## 清理运行时状态文件（保留 plans/boulder.json/start-work）
 	@echo "清理运行时状态文件..."

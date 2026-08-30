@@ -52,14 +52,14 @@ jobs:
 
       - name: skills.lock 格式校验
         run: |
-          # 每行必须匹配：<64-hex>  <name>/SKILL.md
-          BAD=$(awk '!/^[a-f0-9]{64}  [a-z0-9_-]+\/SKILL\.md$/ {print NR": "$0}' skills.lock)
+          # 每行必须匹配：<64-hex>  <name>/<相对路径>（全文件树，含 references/ 等子目录；路径字符类含大写——SKILL.md 本身是大写）
+          BAD=$(awk '!/^[a-f0-9]{64}  [a-zA-Z0-9_.\/-]+$/ {print NR": "$0}' skills.lock)
           if [ -n "$BAD" ]; then
-            echo "❌ skills.lock 格式错误（应：<64hex>  <name>/SKILL.md）："
+            echo "❌ skills.lock 格式错误（应：<64hex>  <name>/<相对路径>）："
             echo "$BAD"
             exit 1
           fi
-          echo "✓ skills.lock 格式正确（$(wc -l < skills.lock) 条，每行 <hash>  <name>/SKILL.md）"
+          echo "✓ skills.lock 格式正确（$(wc -l < skills.lock) 条，每行 <hash>  <name>/<相对路径>）"
 
 
       - name: Shell 脚本语法检查（bash -n）
