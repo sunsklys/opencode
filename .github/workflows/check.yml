@@ -77,5 +77,8 @@ jobs:
       - name: instructions 引用完整性（dbx.md 豁免）
         run: node scripts/check-drift.mjs --verify-instructions
 
+      - name: 文档引用一致性（README 版本 ↔ package.json）
+        run: node scripts/check-drift.mjs --verify-docrefs
+
       # 注：完整 make check 在 CI 环境会因缺 API key 而警告，所以只跑上面的子集
 
