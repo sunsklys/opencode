@@ -173,7 +173,7 @@ if [ -z "$CHECK_FAST" ]; then
   # 两者不一致时，opencode 启动会加载缓存版本（@latest 拉到的），而非软链版本
   LINKED_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 2>/dev/null || echo "?")
   # mem spec 从 opencode.json 动态解析（Wave4：消除 @latest 硬编码；mem 走全局安装+@latest 模型，钉版需另行决策）
-  MEM_SPEC=$(node -pe "JSON.parse(require('fs').readFileSync('opencode.json','utf8')).plugin.find(p=>p.startsWith('opencode-mem'))" 2>/dev/null || echo "opencode-mem@latest")
+  MEM_SPEC=$(node -pe "JSON.parse(require('fs').readFileSync('opencode.json','utf8')).plugin.find(p=>p.startsWith('opencode-mem')) ?? ''" 2>/dev/null || echo "opencode-mem@latest")
   CACHE_DIR="$HOME/.cache/opencode/packages/$MEM_SPEC"
   if [ -d "$CACHE_DIR" ]; then
     CACHED_VER=$(node -p "require('$CACHE_DIR/node_modules/opencode-mem/package.json').version" 2>/dev/null || echo "?")
@@ -323,7 +323,7 @@ if [ -z "$CHECK_FAST" ]; then
   BUILTIN_ROOT_DIR_12="$HOME/.cache/opencode/packages/node_modules"
   CACHE_BUILTIN_SKILLS="$BUILTIN_ROOT_DIR_12/oh-my-opencode/dist/skills"
   # plugin 缓存路径从 opencode.json 动态解析（spec 即缓存目录名），升级版本不再需要改本脚本
-  OMO_PLUGIN_SPEC=$(node -p "require('./opencode.json').plugin.find(p=>p.startsWith('oh-my-openagent@'))" 2>/dev/null || echo '')
+  OMO_PLUGIN_SPEC=$(node -p "require('./opencode.json').plugin.find(p=>p.startsWith('oh-my-openagent@')) ?? ''" 2>/dev/null || echo '')
   if [ -z "$OMO_PLUGIN_SPEC" ]; then
     fail "opencode.json 未找到 oh-my-openagent@<version> plugin 条目 — 检查配置"
   fi
