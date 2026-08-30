@@ -48,7 +48,7 @@ if [[ "$LOCAL_VER" != "$LATEST_VER" && "$LATEST_VER" != "查询失败" ]]; then
   echo "  ℹ️  有新版: ${LATEST_VER}（当前 ${LOCAL_VER}）"
   echo ""
   echo "  升级步骤："
-  echo "    1. make upgrade"
+  echo "    1. npm i -g opencode-ai@latest   # 本检测针对 opencode CLI 本体；make upgrade 只升仓库内 OMO/plugin 依赖，升不了本体"
   echo "    2. 重跑 make check-upgrade 验证 Bun 版本"
 else
   echo "  ✅ 已是最新 stable（${LOCAL_VER}）"
