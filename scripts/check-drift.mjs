@@ -169,6 +169,12 @@ if (argv.includes('--verify-templates')) {
   if (missing.length) { console.log('FAIL missing refs: ' + missing.join(', ')); process.exit(1); }
   console.log('OK instructions refs complete (dbx.md exempt: gitignored)');
   process.exit(0);
+} else if (argv.includes('--verify-docrefs')) {
+  // 文档引用一致性 CI 版：README plugin 版本 ↔ package.json、docs 体检项数 ↔ check.sh（堵 hook 旁路时的文档漂移）
+  const r = checkDocRefs();
+  if (r.drift) { console.log('FAIL ' + r.detail); process.exit(1); }
+  console.log('OK ' + r.detail);
+  process.exit(0);
 }
 
 const result = {

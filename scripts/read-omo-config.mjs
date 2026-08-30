@@ -58,7 +58,6 @@ try {
   cfg = JSON.parse(out);
 } catch (e) {
   console.error(`omo.jsonc 解析失败: ${e.message}`);
-  console.log('{}');
   process.exit(1);
 }
 
