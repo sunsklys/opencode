@@ -42,7 +42,7 @@
         "zhipuai-coding-plan": 3
       },
       "modelConcurrency": {
-        "zhipuai-coding-plan/glm-5-turbo": 3,
+        "zhipuai-coding-plan/glm-5.3-flash": 3,
         "zhipuai-coding-plan/glm-4.6v": 3,
         "zhipuai-coding-plan/glm-5v-turbo": 3
       }
@@ -102,95 +102,81 @@
       "sisyphus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "ultrawork": {
           "model": "zhipuai-coding-plan/glm-5.3",
           "reasoning": "max"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "prometheus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "plan": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "oracle": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "metis": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "momus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "atlas": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
@@ -199,11 +185,9 @@
         "permission": {
           "edit": "deny"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5-turbo",
-            "reasoning": "medium"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3-flash",
+        "reasoning": "low",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
@@ -212,44 +196,40 @@
         "permission": {
           "edit": "deny"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5-turbo",
-            "reasoning": "medium"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3-flash",
+        "reasoning": "low",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "multimodal-looker": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
-        "models": [
+        "model": "zhipuai-coding-plan/glm-5.3-flash",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5v-turbo",
           "zhipuai-coding-plan/glm-4.6v"
-        ]
+        ],
+        "reasoning": "low"
       },
       "sisyphus-junior": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       },
       "hephaestus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5-turbo"
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
-        "models": [
-          {
-            "model": "zhipuai-coding-plan/glm-5.3",
-            "reasoning": "max"
-          },
+        "model": "zhipuai-coding-plan/glm-5.3",
+        "reasoning": "max",
+        "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
       }
@@ -258,6 +238,10 @@
       "visual-engineering": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
+          {
+            "model": "zhipuai-coding-plan/glm-5.3-flash",
+            "reasoning": "low"
+          },
           "zhipuai-coding-plan/glm-5v-turbo",
           "zhipuai-coding-plan/glm-4.6v"
         ]
@@ -297,7 +281,7 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5-turbo",
+            "model": "zhipuai-coding-plan/glm-5.3-flash",
             "reasoning": "low"
           },
           "zhipuai-coding-plan/glm-5.2"
@@ -307,7 +291,7 @@
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5-turbo",
+            "model": "zhipuai-coding-plan/glm-5.3-flash",
             "reasoning": "low"
           },
           "zhipuai-coding-plan/glm-5.2"
@@ -337,9 +321,6 @@
       "include_co_authored_by": true,
       "git_env_prefix": "GIT_MASTER=1"
     },
-    "disabled_hooks": [
-      "auto-update-checker"
-    ],
     "keyword_detector": {
       "enabled_expansions": [
         "ultrawork",
