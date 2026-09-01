@@ -255,10 +255,11 @@
     "categories": {
       "visual-engineering": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
+        "variant": "high",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.3-flash",
-            "reasoning": "low"
+            "model": "zhipuai-coding-plan/glm-5.3",
+            "reasoning": "high"
           },
           "zhipuai-coding-plan/glm-5v-turbo",
           "zhipuai-coding-plan/glm-4.6v"
