@@ -2,6 +2,7 @@
 
 > 适用：oh-my-openagent 4.19.4 → 5.0 升级窗口。执行前提：OMO 5.0 正式发布。
 > 背景评审：2026-09-01 对抗评审（3 轮 16 靶），fallback_models 废弃键经 4.19.4 运行时归一（dist:99021-99032）零功能损失，故迁移延迟至本窗口。
+> 勘误（2026-09-01 终验）：评审项 F3「thinking 全文回传致上下文膨胀」经双证据复核不成立（glm 系 capabilities.interleaved=null 不走回传分支 + db 25,866 条 assistant 消息 reasoning parts 零存储），issue 草稿已撤（revert 5ef41e2）。L-F2（chat 单轮 fallback 丢档）复核属实，维持知悉不改。
 
 ## 0. 例外条款（先读）
 
@@ -93,4 +94,6 @@ cp /Users/edy/.config/opencode/omo.jsonc.template ~/.omo/omo.jsonc
 ## 7. 观察项（迁移后一周）
 
 - ultrabrain/deep/artistry 委派路径 token 量**上升属预期**（variant 修复=档位恢复而非回归）
-- exp: 实验（16cd63b 三执行器 high、cce46d2 评审温度 0.3）到期评审 keep/revert
+- ~~exp: 实验到期评审~~ 已全部撤销：评审温度 0.3（revert 0f7308f，证据弱）、三执行器 high 回 max（b3794bd，用户拍板）——重型 agent 档位终态统一 max
+- 并发对齐后（7d1a2fb：provider/flash 3→10，实测上限≈12）留意 5 小时积分消耗速率（Max 档 28,000/5h），thinking max 生成密度高（oracle 实测 2.14:1）属预期，非故障
+- compaction prune 生效验证：任一 agent 触发压缩后，会话历史应裁剪为摘要+最近 ~6 轮（soft gate）
