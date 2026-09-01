@@ -113,7 +113,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "prometheus": {
@@ -126,7 +126,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "plan": {
@@ -139,7 +139,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "oracle": {
@@ -152,7 +152,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "metis": {
@@ -165,7 +165,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "momus": {
@@ -178,7 +178,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "atlas": {
@@ -191,7 +191,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "librarian": {
@@ -202,7 +202,7 @@
         "model": "zhipuai-coding-plan/glm-5.3-flash",
         "reasoning": "low",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:high"
         ]
       },
       "explore": {
@@ -213,7 +213,7 @@
         "model": "zhipuai-coding-plan/glm-5.3-flash",
         "reasoning": "low",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:high"
         ]
       },
       "multimodal-looker": {
@@ -235,7 +235,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       },
       "hephaestus": {
@@ -248,7 +248,7 @@
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
         "fallback_models": [
-          "zhipuai-coding-plan/glm-5.2"
+          "zhipuai-coding-plan/glm-5.2:max"
         ]
       }
     },
