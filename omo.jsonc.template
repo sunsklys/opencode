@@ -314,7 +314,7 @@
         "variant": "low",
         "models": [
           {
-            "model": "zhipuai-coding-plan/glm-5.3-flash",
+            "model": "zhipuai-coding-plan/glm-5.3",
             "reasoning": "low"
           },
           "zhipuai-coding-plan/glm-5.2"
