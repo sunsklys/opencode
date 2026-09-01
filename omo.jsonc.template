@@ -266,6 +266,7 @@
       },
       "ultrabrain": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
+        "variant": "max",
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
@@ -277,6 +278,7 @@
       "artistry": {
         "temperature": 0.7,
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
+        "variant": "max",
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
@@ -287,6 +289,7 @@
       },
       "deep": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
+        "variant": "max",
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
@@ -307,6 +310,7 @@
       },
       "unspecified-low": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
+        "variant": "low",
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3-flash",
@@ -317,6 +321,7 @@
       },
       "unspecified-high": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
+        "variant": "max",
         "models": [
           {
             "model": "zhipuai-coding-plan/glm-5.3",
@@ -328,6 +333,7 @@
       "writing": {
         "temperature": 0.7,
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
+        "variant": "low",
         "models": [
           "zhipuai-coding-plan/glm-5.3",
           "zhipuai-coding-plan/glm-5.2"
