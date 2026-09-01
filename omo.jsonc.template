@@ -39,10 +39,10 @@
     },
     "background_task": {
       "providerConcurrency": {
-        "zhipuai-coding-plan": 3
+        "zhipuai-coding-plan": 10
       },
       "modelConcurrency": {
-        "zhipuai-coding-plan/glm-5.3-flash": 3,
+        "zhipuai-coding-plan/glm-5.3-flash": 10,
         "zhipuai-coding-plan/glm-4.6v": 3,
         "zhipuai-coding-plan/glm-5v-turbo": 3
       }
