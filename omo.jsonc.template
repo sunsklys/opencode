@@ -189,7 +189,7 @@
           "tail_turns": 6
         },
         "model": "zhipuai-coding-plan/glm-5.3",
-        "reasoning": "max",
+        "reasoning": "high",
         "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
@@ -233,7 +233,7 @@
           "tail_turns": 6
         },
         "model": "zhipuai-coding-plan/glm-5.3",
-        "reasoning": "max",
+        "reasoning": "high",
         "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
@@ -246,7 +246,7 @@
           "tail_turns": 6
         },
         "model": "zhipuai-coding-plan/glm-5.3",
-        "reasoning": "max",
+        "reasoning": "high",
         "fallback_models": [
           "zhipuai-coding-plan/glm-5.2"
         ]
