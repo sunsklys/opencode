@@ -76,10 +76,16 @@ echo ""
 echo "── 风险评估 ──"
 RISK="ok"
 
-# DB 大小
+# DB 大小（孤儿感知：维护后无孤儿时大库=在保水位，降级 warn 防狼来了）
+ORPHAN_SEQ=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM event_sequence WHERE aggregate_id NOT IN (SELECT id FROM session);" 2>/dev/null || echo "?")
 if [[ "$DB_MB" -ge 1024 ]]; then
-  bad "DB ≥ 1GB：高风险（已达到实际崩溃 case 的临界值）"
-  RISK="high"
+  if [[ "$ORPHAN_SEQ" != "?" && "$ORPHAN_SEQ" -eq 0 ]]; then
+    warn "DB ≥ 1GB：在保水位（孤儿 sequence=0，全为 KEEP_DAYS 窗口内活跃数据；维护无收益，随窗口滚动递减）"
+    [[ "$RISK" == "ok" ]] && RISK="warn"
+  else
+    bad "DB ≥ 1GB：高风险（含可回收数据，已达到实际崩溃 case 的临界值）"
+    RISK="high"
+  fi
 elif [[ "$DB_MB" -ge 500 ]]; then
   warn "DB ≥ 500MB：建议尽快维护"
   [[ "$RISK" == "ok" ]] && RISK="warn"
@@ -87,10 +93,15 @@ else
   ok "DB 大小正常（< 500MB）"
 fi
 
-# event 表行数
+# event 表行数（孤儿感知分流）
 if [[ "$EVENT_CNT" != "?" && "$EVENT_CNT" -ge 150000 ]]; then
-  bad "event 表 ≥ 15 万行：高风险（崩溃 case 实测 16 万行）"
-  RISK="high"
+  if [[ "$ORPHAN_SEQ" != "?" && "$ORPHAN_SEQ" -eq 0 ]]; then
+    warn "event 表 ≥ 15 万行：在保水位（孤儿 sequence=0，全挂活跃 session；维护无收益，随 KEEP_DAYS 窗口滚动递减）"
+    [[ "$RISK" == "ok" ]] && RISK="warn"
+  else
+    bad "event 表 ≥ 15 万行：高风险（孤儿 sequence 可 CASCADE 回收 — 跑维护释放；崩溃 case 实测 16 万行）"
+    RISK="high"
+  fi
 elif [[ "$EVENT_CNT" != "?" && "$EVENT_CNT" -ge 80000 ]]; then
   warn "event 表 ≥ 8 万行：建议维护"
   [[ "$RISK" == "ok" ]] && RISK="warn"
