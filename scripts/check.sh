@@ -92,6 +92,18 @@ if [ -z "$CHECK_FAST" ]; then
       1) wfail "$MEM_SPEC 缺 tags 兑底 patch（node scripts/patch-mem-tags.mjs 重打；重启拉取后也需重打）" ;;
       2) wfail "pin 缓存目录不存在: $MEM_SPEC（重启 opencode 拉取，拉取后需 node scripts/patch-mem-tags.mjs 重打 patch）" ;;
     esac
+    # 上游版本检测（timeout 5s，网络失败降级提示不阻断；≠pin 时提醒查 changelog 判断摘 patch）
+    MEM_UPSTREAM=$(node -e "const{execFileSync}=require('child_process');try{process.stdout.write(execFileSync('npm',['view','opencode-mem','version'],{timeout:5000}).toString().trim())}catch{}" 2>/dev/null || true)
+    if [ -n "$MEM_UPSTREAM" ]; then
+      MEM_PIN_VER="${MEM_SPEC#opencode-mem@}"
+      if [ "$MEM_UPSTREAM" = "$MEM_PIN_VER" ]; then
+        ok "上游 opencode-mem@${MEM_UPSTREAM} = pin 版（无新版）"
+      else
+        warn "上游 opencode-mem 已有新版 ${MEM_UPSTREAM}（当前 pin ${MEM_PIN_VER}）——查 changelog 判断 tags 缺陷是否已修复，已修复可摘 patch 回 @latest，见 docs/reference.md 升级 runbook"
+      fi
+    else
+      echo "    ℹ️ 无法检查上游版本（网络/超时），跳过"
+    fi
   fi
 
   # 检查 opencode-mem 配置文件就绪状态（provider-agnostic，不强制特定厂商）
