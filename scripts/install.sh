@@ -34,9 +34,18 @@ _npm install
 
 echo ""
 echo "=== 2/3 全局依赖安装（opencode-mem）==="
-# npm i -g 本身幂等：已安装最新版时自动跳过，无需手动判断版本
+# npm i -g 本身幂等：已安装目标版本时自动跳过，无需手动判断版本
 # - opencode-mem: 绕过 linux platform binary bug 需全局装 + 软链
-_npm i -g opencode-mem
+# - 版本与 opencode.json plugin spec 保持一致（单一事实源）：spec pin 时全局也装 pin 版，
+#   避免「全局升 latest 而 opencode 实际加载 pin 版」的版本认知分裂
+MEM_SPEC=$(node -p "require('./opencode.json').plugin.find(p=>String(p).startsWith('opencode-mem@')) ?? ''" 2>/dev/null || echo '')
+MEM_PIN=$(echo "$MEM_SPEC" | sed 's/^opencode-mem@//')
+if [ -n "$MEM_PIN" ] && [ "$MEM_PIN" != "latest" ]; then
+  echo "  pin 检测: $MEM_SPEC（全局安装跟随 pin 版本）"
+  _npm i -g "opencode-mem@${MEM_PIN}"
+else
+  _npm i -g opencode-mem
+fi
 
 echo ""
 echo "=== 3/3 建立软链 + 验证 ==="
@@ -53,8 +62,16 @@ ln -sf "$GLOBAL_MEM" node_modules/opencode-mem
 MEM_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 2>/dev/null) || MEM_VER="未知"
 echo "✓ opencode-mem@${MEM_VER}（软链 → $(readlink node_modules/opencode-mem)）"
 
-# 清 opencode-mem @latest 缓存（下次启动 opencode 重拉，与全局版本同步）
+# 清 opencode-mem @latest 缓存（下次启动 opencode 重拉；pin 场景下 opencode 加载 pin 目录，不受影响）
+# pin 场景提醒：tags 兑底 patch 位于 pin 缓存目录，若手动更换 pin 版本需重跑 scripts/patch-mem-tags.mjs
 rm -rf "$HOME/.cache/opencode/packages/opencode-mem@latest" 2>/dev/null || true
+if [ -n "$MEM_PIN" ] && [ "$MEM_PIN" != "latest" ]; then
+  if grep -q "PATCH(tags-fallback)" "$HOME/.cache/opencode/packages/$MEM_SPEC/node_modules/opencode-mem/dist/services/client.js" 2>/dev/null; then
+    echo "  ✓ tags 兑底 patch 存活于 $MEM_SPEC"
+  else
+    echo "  ⚠️  pin 目录 $MEM_SPEC 缺 tags 兑底 patch，重打: node scripts/patch-mem-tags.mjs $MEM_SPEC"
+  fi
+fi
 
 echo ""
 echo "✅ 依赖安装完成"

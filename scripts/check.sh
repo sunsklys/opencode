@@ -82,6 +82,21 @@ if [ -z "$CHECK_FAST" ]; then
     wfail "opencode-mem 软链未建立（make deps）"
   fi
 
+  # pin 缓存目录 + tags 兑底 patch 存活检查（opencode.json spec 为事实源；patch 详见 scripts/patch-mem-tags.mjs）
+  MEM_SPEC=$(node -p "require('./opencode.json').plugin.find(p=>String(p).startsWith('opencode-mem@')) ?? ''" 2>/dev/null || echo '')
+  if [ -n "$MEM_SPEC" ] && [ "$MEM_SPEC" != "opencode-mem@latest" ]; then
+    MEM_CACHE_DIR="$HOME/.cache/opencode/packages/$MEM_SPEC/node_modules/opencode-mem"
+    if [ -d "$MEM_CACHE_DIR" ]; then
+      if grep -q "PATCH(tags-fallback)" "$MEM_CACHE_DIR/dist/services/client.js" 2>/dev/null; then
+        ok "$MEM_SPEC pin 缓存就绪，tags 兑底 patch 存活"
+      else
+        wfail "$MEM_SPEC 缺 tags 兑底 patch（node scripts/patch-mem-tags.mjs 重打）"
+      fi
+    else
+      wfail "pin 缓存目录不存在: $MEM_SPEC（重启 opencode 拉取）"
+    fi
+  fi
+
   # 检查 opencode-mem 配置文件就绪状态（provider-agnostic，不强制特定厂商）
   # 该文件必需（插件加载需要），但用哪个 provider 是用户选择，不应当伪体检项。
   if [ ! -f "opencode-mem.jsonc" ]; then
