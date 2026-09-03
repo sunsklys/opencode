@@ -125,7 +125,7 @@ update: ## 重装依赖（直接依赖按锁定版本，传递依赖刷新；清
 	@rm -f package-lock.json
 	@bash scripts/install.sh
 	@bash scripts/sync-omo-skills.sh
-	@node -e "const spec=JSON.parse(require('fs').readFileSync('opencode.json','utf8')).plugin.find(p=>p.startsWith('opencode-mem')) ?? ''; require('fs').rmSync(process.env.HOME+'/.cache/opencode/packages/opencode-mem@latest',{recursive:true,force:true}); if(!spec){console.log('  ⚠️ opencode.json 未找到 opencode-mem plugin 条目，跳过 spec 目录清理（仅清 @latest 历史目录）')}else{require('fs').rmSync(process.env.HOME+'/.cache/opencode/packages/'+spec,{recursive:true,force:true});console.log('  mem 缓存已清（'+spec+'，含 @latest 历史目录；下次启动重拉，与全局软链同步）')}"
+	@node -e "const fs=require('fs');const spec=JSON.parse(fs.readFileSync('opencode.json','utf8')).plugin.find(p=>p.startsWith('opencode-mem')) ?? ''; const base=process.env.HOME+'/.cache/opencode/packages/'; fs.rmSync(base+'opencode-mem@latest',{recursive:true,force:true}); if(!spec){console.log('  ⚠️  opencode.json 未找到 opencode-mem plugin 条目，跳过 spec 目录清理（仅清 @latest 历史目录）')}else{const dir=base+spec; const ver=spec.split('@')[1]; let keep=false; try{ keep=ver && ver!=='latest' && fs.existsSync(dir+'/node_modules/opencode-mem/package.json') && JSON.parse(fs.readFileSync(dir+'/node_modules/opencode-mem/package.json','utf8')).version===ver }catch(e){} if(keep){console.log('  pin 目录保留（'+spec+'，含 tags patch——精确版本重拉字节等价，勿清）')}else{fs.rmSync(dir,{recursive:true,force:true});console.log('  mem 缓存已清（'+spec+'；含 patch，重启重拉后需重跑 node scripts/patch-mem-tags.mjs）')}}}"
 	@echo ""
 	@echo "✓ 依赖已更新（含 skill 软链同步），运行 make check 验证"
 
