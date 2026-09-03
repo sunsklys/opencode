@@ -82,6 +82,9 @@
   ],
   "model": "zhipuai-coding-plan/glm-5.3",
   "small_model": "zhipuai-coding-plan/glm-5.3-flash",
+  "enabled_providers": [
+    "zhipuai-coding-plan"
+  ],
   "subagent_depth": 2,
   "shell": "zsh",
   "references": {

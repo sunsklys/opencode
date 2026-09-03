@@ -5,6 +5,9 @@
     "opencode-mem@2.25.0",
     "superpowers@git+https://github.com/obra/superpowers.git#v6.3.0"
   ],
+  "attention": {
+    "enabled": true
+  },
   "theme": "tokyonight",
   "scroll_speed": 8,
   "scroll_acceleration": {

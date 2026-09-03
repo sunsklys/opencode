@@ -11,7 +11,7 @@
 | 类别 | 关键字段 | 说明 |
 |---|---|---|
 | **插件/扩展** | `plugin` / `mcp` / `lsp` | 3 plugin + 7 MCP + LSP（true = 自动检测内置） |
-| **模型路由** | `model` / `small_model` | 智谱单栈：glm-5.3 主 + glm-5-turbo 作 small（火山引擎已停订，provider 块已删） |
+| **模型路由** | `model` / `small_model` / `enabled_providers` | 智谱单栈：glm-5.3 主 + glm-5.3-flash 作 small；`enabled_providers` 白名单仅 zhipuai-coding-plan（本体层硬过滤，与 OMO 层 disabled_providers 双保险；火山引擎已停订，provider 块已删） |
 | **行为开关** | `default_agent` / `share` / `autoupdate` / `compaction` | build / manual / true(patch 自动,minor/major 仅通知) / auto |
 | **I/O 限制** | `tool_output` / `attachment` | 2000 行/512KB / 图像 1600x1600 |
 | **安全** | `permission.read` / `permission.bash` / `watcher.ignore` | deny 列表 + 文件监听忽略 |
