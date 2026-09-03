@@ -9,7 +9,7 @@
 | `opencode.json` | 7 MCP 条目（全部启用）+ 3 plugin（superpowers 锁 #v6.3.0）+ LSP + permission（模型全部走智谱 coding plan，auth login 凭证） |
 | `tui.json` | 主题配置 |
 | `setup-feishu-cli.sh` | 飞书 CLI + SKILL 一键安装脚本 |
-| `package.json` | oh-my-openagent 4.19.4（精确锁定）+ @opencode-ai/plugin 1.18.25（精确锁定）+ postinstall 全局依赖 |
+| `package.json` | oh-my-openagent 4.19.4（精确锁定）+ @opencode-ai/plugin 1.18.27（精确锁定）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
 | `scripts/` | 安装 / 环境变量 / 体检脚本（.sh，被 Makefile 调用）+ mem 维护（.mjs：`patch-mem-tags` 可重放 tags 兜底补丁，`fix-mem-untagged` 存量清理） |

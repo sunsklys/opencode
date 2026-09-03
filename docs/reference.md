@@ -207,7 +207,7 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 
 ## 上游版本观察项（2026-08-28 体检）
 
-- **opencode CLI ≥1.18.24：config schema V2 过渡开始**——V1 引擎已可读取部分 V2 config 字段（混合配置前向兼容）。当前 `opencode.json` 全部字段经 1.18.25 官方 schema 验证合法，无需动作；后续官方宣布 V1 字段废弃时再评估迁移。另：官方 repo 已从 sst/opencode 迁至 **anomalyco/opencode**。
+- **opencode CLI ≥1.18.24：config schema V2 过渡开始**——V1 引擎已可读取部分 V2 config 字段（混合配置前向兼容）。当前 `opencode.json` 全部字段经 1.18.27 官方 schema 验证合法，无需动作；后续官方宣布 V1 字段废弃时再评估迁移。另：官方 repo 已从 sst/opencode 迁至 **anomalyco/opencode**。
 - **oh-my-openagent 5.0.0-beta 线（截至 2026-08-28 已至 beta.24）**：major 重构——omo-native 发行版、Senpi 引擎集成、**`/start-work` 改名 `/ulw-execute`**、**`omo` 命令改名 `omo-agent-toolkit`**、`shared/<name>` skill 改裸名注册。beta.20 出过杀 session 崩溃，beta 质量未稳——**等 5.0.0 正式版再升级**，届时除标准升级流程外还需同步清理：`disabled_skills` 条目、skill/command 引用名、脚本中的 `omo` 命令调用。
 - **omo 4.19.4 的 reasoning 规范**：`models` 链是 canonical 形式，`fallback_models` / `variant` / `reasoningEffort` 已 deprecated（back-compat 窗口内仍可读，运行时归一优先级 reasoning > reasoningEffort > variant）。2026-08-28 已全量清理为 `models` 链 + `reasoning` key，升级 5.0 时无需再动。
 - **`omo doctor` 的已知误报**：它会用旧版 schema 校验 `agents.*.models` 为 Unknown key（实际运行时与 `config migrate` 均支持），升级后如仍见此类告警可忽略 `Unknown config key: agents.*.models` 条目。
