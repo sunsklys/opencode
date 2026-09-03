@@ -136,6 +136,23 @@ SQL
     AFTER=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM session;")
     ok "已删除 $((TOTAL - AFTER)) 个旧 session，剩余 ${AFTER}（CASCADE 联动 message/part/event）"
   fi
+
+  # 孤儿 event_sequence 清理（无条件执行：session 清理跳过时残留的 sequence 仍挂着全量 event，
+  # 是第一轮维护后 event 表不降反增的级联断点）
+  ORPHAN_SEQ=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM event_sequence WHERE aggregate_id NOT IN (SELECT id FROM session);")
+  if [[ "$ORPHAN_SEQ" -eq 0 ]]; then
+    ok "无孤儿 event_sequence"
+  elif $DRY_RUN; then
+    warn "DRY-RUN：将删除 $ORPHAN_SEQ 个孤儿 event_sequence（CASCADE 联动 event）"
+  else
+    sqlite3 "$DB_PATH" <<'SQL'
+PRAGMA foreign_keys = ON;
+BEGIN;
+DELETE FROM event_sequence WHERE aggregate_id NOT IN (SELECT id FROM session);
+COMMIT;
+SQL
+    ok "已删除 $ORPHAN_SEQ 个孤儿 event_sequence（CASCADE 联动 event 行）"
+  fi
 else
   info "未启用清理（用 --clean 或 make db-maintain CLEAN=1 清理旧 session）"
 fi
