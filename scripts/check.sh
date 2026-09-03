@@ -225,6 +225,7 @@ if [ -z "$CHECK_FAST" ]; then
       MISMATCH=0
       MISSING=0
       TOTAL=0
+      UNLOCKED=0
       while IFS= read -r line; do
         [ -z "$line" ] && continue
         TOTAL=$((TOTAL+1))
@@ -242,11 +243,31 @@ if [ -z "$CHECK_FAST" ]; then
           fi
         fi
       done < skills.lock
-      if [ "$MISMATCH" -eq 0 ] && [ "$MISSING" -eq 0 ]; then
-        ok "skills.lock $TOTAL 条全部匹配"
+      # 反向对账：实机有而 lock 未收录（单向 lock→实机校验的盲区；口径对齐 make skills-lock：有 SKILL.md 的顶层目录、跳 .DS_Store/.git、follow 软链）
+      _lock_paths=$(mktemp); _disk_paths=$(mktemp)
+      awk '{print $2}' skills.lock | LC_ALL=C sort > "$_lock_paths"
+      for _skill_dir in "$SKILLS_DIR"/*/; do
+        [ -f "${_skill_dir}SKILL.md" ] || continue
+        _skill_name=$(basename "$_skill_dir")
+        while IFS= read -r -d '' _f; do
+          case "$_f" in */.git/*|*/.DS_Store) continue ;; esac
+          printf '%s\n' "$_skill_name/${_f#$_skill_dir}"
+        done < <(find -L "$_skill_dir" -type f -print0 2>/dev/null)
+      done | LC_ALL=C sort > "$_disk_paths"
+      _new_count=$(LC_ALL=C comm -13 "$_lock_paths" "$_disk_paths" | wc -l | tr -d ' ')
+      if [ "$_new_count" -gt 0 ]; then
+        UNLOCKED=$_new_count
+        _unlocked_sample=$(LC_ALL=C comm -13 "$_lock_paths" "$_disk_paths" | head -3 | tr '\n' ' ')
+      fi
+      rm -f "$_lock_paths" "$_disk_paths"
+      if [ "$MISMATCH" -eq 0 ] && [ "$MISSING" -eq 0 ] && [ "$UNLOCKED" -eq 0 ]; then
+        ok "skills.lock $TOTAL 条全部匹配（双向对账 lock↔实机 零漂移）"
       fi
       if [ "$MISSING" -gt 0 ]; then
         wfail "skills.lock $MISSING 条实机缺失（供应链防消失）— 对账 make skills-lock 或自备份恢复"
+      fi
+      if [ "$UNLOCKED" -gt 0 ]; then
+        wfail "实机 $UNLOCKED 个文件未入 skills.lock（供应链防漂移盲区，如 ${_unlocked_sample}）— 跑 make skills-lock 重新生成"
       fi
     fi
   fi

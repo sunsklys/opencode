@@ -226,7 +226,7 @@ if [ "$HEADLESS" = "1" ]; then
   ls "$OUT_DIR"/opencode-config-*.tar.gz 2>/dev/null | sort -r | tail -n +6 | while IFS= read -r old_pkg; do
     rm -f "$old_pkg" && echo "🗑️  retention 清理: $(basename "$old_pkg")"
   done
-  echo "ℹ️  HEADLESS 完成于 $OUT_DIR（保留最近 5 份）"
+  echo "ℹ️  HEADLESS 完成于 ${OUT_DIR}（保留最近 5 份）"
 fi
 echo "⚠️  包内含 dbx.md（生产 host）— 勿上传公开位置"
 echo ""
