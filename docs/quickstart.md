@@ -182,7 +182,7 @@ opencode
 
 | 数据 | 位置 | 恢复方式 |
 |---|---|---|
-| opencode 插件缓存 | `~/.cache/opencode/packages/` | opencode 启动时自动重建 |
+| opencode 插件缓存 | `~/.cache/opencode/packages/` | opencode 启动时自动重建；**opencode-mem@2.25.0 重建后需重打 tags patch：`node scripts/patch-mem-tags.mjs`** |
 | opencode-mem 数据 | `~/.opencode-mem/` | 重新交互积累（向量库 + SQLite + Web UI 缓存） |
 | 全局 npm 包 | `claude-mermaid` / `codegraph` / `opencode-mem` / `lark-cli` | `make install` 重装 |
 

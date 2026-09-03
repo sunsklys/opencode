@@ -152,9 +152,11 @@
 
 为什么钉版是唯一闭合解：`@latest` 通道下防跳闸/major 检测/自愈三通道全缺——`upgrade.sh` 防跳闸只看 `package.json`，而 opencode 启动时按 spec 从 `~/.cache/opencode/packages/<spec>/` 解析缓存层，npm dist-tag `latest` 一旦切到 5.0，缓存会先于 node_modules 静默跳版。钉版后：缓存目录名即 spec（`oh-my-openagent@4.19.4/`），版本变化必须显式改 spec（`make upgrade` 的 4c 步骤自动同步双文件），配合 check-drift.mjs 的 pluginSpec 一致性守卫（package.json ↔ 双 json spec，失配 critical fail）。
 
-**opencode-mem 暂留 `@latest`**（全局安装模型：`npm i -g opencode-mem` 拉 latest + 软链，第 7 项漂移检测 + `make update` 自动清缓存自愈通道在管）；若未来要同样钉版，需同步改 check.sh 与 Makefile 中两处硬编码路径。
+**opencode-mem 已钉 `2.25.0` + 本地 tags 兑底 patch**（2026-09-02）：双 json 的 plugin spec 均为 `opencode-mem@2.25.0`，缓存目录 `~/.cache/opencode/packages/opencode-mem@2.25.0/` 的 `client.js` 带 `PATCH(tags-fallback)` 三层兑底（正文内嵌 `Tags:` 行提取 → type 映射 → 保底），防上游「LLM tags 偶发缺失无兑底入库 → detect 零容忍弹窗」缺陷链。相关资产：`scripts/patch-mem-tags.mjs`（可重放 patch，幂等/锚点校验/语法校验/失败回滚）、`scripts/fix-mem-untagged.mjs`（存量清理，双通道同源强正则）、check §3 pin 缓存+patch 存活检查、install.sh pin-aware 全局装（跟随 spec）。
 
-`make check` 第 7 项比较：项目软链 `node_modules/opencode-mem`（全局版本）↔ opencode 缓存 `opencode-mem@latest/`（@latest 拉到的版本）；不一致警告后 `make update` 重装同步（Makefile 自动清 mem 缓存，下次启动重拉）。
+**升级 runbook（上游发新版时六步）**：① `npm view opencode-mem version` + 读 changelog → ② 判断 tags 缺陷是否已修复（已修复 → 摘 patch 回 `@latest`，流程止于此）→ ③ 未修复则改双 spec（`opencode.json` + `tui.json` 同步，防 TUI 域旁路）→ ④ 清 pin 缓存目录并重启 opencode 重拉 → ⑤ 重放 patch（**前置门槛：diff 新旧 `client.js` 的 `addMemory` 函数体确认上游未在该区间插入新逻辑**，防锚点命中但语义漂移的静默错配）→ ⑥ `make check` 验证（§3 应报 patch 存活）。
+
+`make check` 第 7 项比较：项目软链 `node_modules/opencode-mem`（全局版本，install.sh 按 spec 安装）↔ opencode 缓存目录版本；不一致警告后 `make update` 重装同步。
 
 ## plugin git 源版本锁定（superpowers）
 
