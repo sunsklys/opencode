@@ -68,6 +68,8 @@ const REPLACEMENT = `            await this.initialize();
                     refactor: ["refactor"],
                     configuration: ["configuration"],
                     feature: ["feature"],
+                    discussion: ["discussion"],
+                    other: ["memory"],
                 };
                 tags = typeFallback[String(metadata?.type || "").toLowerCase()] || ["memory"];
             }
@@ -100,8 +102,10 @@ renameSync(tmpPath, target); // 原子替换：中途崩溃不留半写文件
 try {
   execFileSync(process.execPath, ["--check", target], { stdio: "pipe" });
 } catch (e) {
-  // 回滚，绝不留破损文件
+  // 回滚，绝不留破损文件（含 .orig 清理，防残留）
   writeFileSync(target, readFileSync(target + ".orig", "utf-8"));
+  try { unlinkSync(target + ".orig"); } catch {}
+  try { unlinkSync(target + ".patching.tmp"); } catch {}
   console.error("语法校验失败，已回滚:", String(e.stderr || e));
   process.exit(1);
 }

@@ -31,7 +31,7 @@
 - `timeout_seconds: 60` — 单次请求超时 60 秒
 - `notify_on_fallback: true` — 触发 fallback 时弹 toast 提醒（**注意字段名是 `notify_on_fallback`，不是 `notify_on_footer`**）
 
-> GLM-5.3 宕机 → 智谱 GLM-5.2 → GLM-5.3 重试（models 轮转，同 provider 闭环；火山引擎已停订，无跨厂商兑底）。
+> GLM-5.3 宕机 → 智谱 GLM-5.2 → GLM-5.3 重试（models 轮转，同 provider 闭环；火山引擎已停订，无跨厂商兜底）。
 
 ---
 

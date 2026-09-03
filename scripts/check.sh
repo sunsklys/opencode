@@ -83,13 +83,13 @@ if [ -z "$CHECK_FAST" ]; then
     wfail "opencode-mem 软链未建立（make deps）"
   fi
 
-  # pin 缓存目录 + tags 兑底 patch 存活检查（opencode.json spec 为事实源；三态共享逻辑见 _lib.sh check_mem_patch）
+  # pin 缓存目录 + tags 兜底 patch 存活检查（opencode.json spec 为事实源；三态共享逻辑见 _lib.sh check_mem_patch）
   MEM_SPEC=$(node -p "require('./opencode.json').plugin.find(p=>String(p).startsWith('opencode-mem@')) ?? ''" 2>/dev/null || echo '')
   if [ -n "$MEM_SPEC" ] && [ "$MEM_SPEC" != "opencode-mem@latest" ]; then
     check_mem_patch "$MEM_SPEC" >/dev/null
     case $? in
-      0) ok "$MEM_SPEC pin 缓存就绪，tags 兑底 patch 存活" ;;
-      1) wfail "$MEM_SPEC 缺 tags 兑底 patch（node scripts/patch-mem-tags.mjs 重打；重启拉取后也需重打）" ;;
+      0) ok "$MEM_SPEC pin 缓存就绪，tags 兜底 patch 存活" ;;
+      1) wfail "$MEM_SPEC 缺 tags 兜底 patch（node scripts/patch-mem-tags.mjs 重打；重启拉取后也需重打）" ;;
       2) wfail "pin 缓存目录不存在: $MEM_SPEC（重启 opencode 拉取，拉取后需 node scripts/patch-mem-tags.mjs 重打 patch）" ;;
     esac
     # 上游版本检测（timeout 5s，网络失败降级提示不阻断；≠pin 时提醒查 changelog 判断摘 patch）
@@ -190,24 +190,24 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 7. [Warning] plugin @latest 漂移检测（opencode 缓存 vs 项目软链） ----------
-  echo "【7/16·Warning】plugin @latest 漂移检测（opencode 缓存 vs 项目软链）"
+  echo "【7/16·Warning】opencode-mem 版本对齐（软链 ↔ pin 缓存目录）"
  
-  # opencode-mem 走 @latest 缓存路径加载（~/.cache/opencode/packages/）
-  # 项目软链 node_modules/opencode-mem -> 全局装版本
-  # 两者不一致时，opencode 启动会加载缓存版本（@latest 拉到的），而非软链版本
+  # 项目软链 node_modules/opencode-mem -> 全局装版本（install.sh 按 spec 安装）
+  # 缓存目录 = opencode 实际加载源（spec 目录名即版本）
+  # 两者不一致时，opencode 启动会加载缓存版本而非软链版本
   LINKED_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 2>/dev/null || echo "?")
-  # mem spec 从 opencode.json 动态解析（Wave4：消除 @latest 硬编码；mem 走全局安装+@latest 模型，钉版需另行决策）
+  # mem spec 从 opencode.json 动态解析（单一事实源；pin+patch 机制见 docs/reference.md）
   MEM_SPEC=$(node -pe "JSON.parse(require('fs').readFileSync('opencode.json','utf8')).plugin.find(p=>p.startsWith('opencode-mem')) ?? ''" 2>/dev/null || echo "opencode-mem@latest")
   CACHE_DIR="$HOME/.cache/opencode/packages/$MEM_SPEC"
   if [ -d "$CACHE_DIR" ]; then
     CACHED_VER=$(node -p "require('$CACHE_DIR/node_modules/opencode-mem/package.json').version" 2>/dev/null || echo "?")
     if [ "$LINKED_VER" = "$CACHED_VER" ]; then
-      ok "opencode-mem 软链 ${LINKED_VER} = opencode 缓存 ${CACHED_VER}（@latest 一致）"
+      ok "opencode-mem 软链 ${LINKED_VER} = 缓存目录 ${CACHED_VER}（版本对齐）"
     else
-      warn "opencode-mem 软链 ${LINKED_VER} ≠ opencode 缓存 ${CACHED_VER}（@latest 已漂移，opencode 启动会加载缓存版本而非软链版本——运行 make update 后会自动清缓存重拉）"
+      warn "opencode-mem 软链 ${LINKED_VER} ≠ 缓存目录 ${CACHED_VER}（opencode 启动加载缓存版本——跑 make deps 重装软链对齐；缓存目录含 patch，勿手删）"
     fi
   else
-    warn "opencode-mem 未在 opencode 缓存中（首次启动 opencode 后才会缓存）"
+    warn "opencode-mem 缓存目录不存在（首次启动 opencode 后拉取；pin 场景拉取后需 node scripts/patch-mem-tags.mjs 重打 patch）"
   fi
   echo ""
 fi

@@ -68,8 +68,8 @@ rm -rf "$HOME/.cache/opencode/packages/opencode-mem@latest" 2>/dev/null || true
 if [ -n "$MEM_PIN" ] && [ "$MEM_PIN" != "latest" ]; then
   check_mem_patch "$MEM_SPEC"
   case $? in
-    0) echo "  ✓ tags 兑底 patch 存活于 $MEM_SPEC" ;;
-    1) echo "  ⚠️  pin 目录 $MEM_SPEC 缺 tags 兑底 patch，重打: node scripts/patch-mem-tags.mjs $MEM_SPEC" ;;
+    0) echo "  ✓ tags 兜底 patch 存活于 $MEM_SPEC" ;;
+    1) echo "  ⚠️  pin 目录 $MEM_SPEC 缺 tags 兜底 patch，重打: node scripts/patch-mem-tags.mjs $MEM_SPEC" ;;
     2) echo "  ⚠️  pin 目录 $MEM_SPEC 不存在（重启 opencode 拉取后需重打 patch）" ;;
   esac
 fi

@@ -12,7 +12,7 @@
 | `package.json` | oh-my-openagent 4.19.4（精确锁定）+ @opencode-ai/plugin 1.18.25（精确锁定）+ postinstall 全局依赖 |
 | `package-lock.json` | npm 精确依赖版本 |
 | `Makefile` | 一键安装 / 体检 / 更新编排（`make install` / `make check` / `make update`） |
-| `scripts/` | 安装 / 环境变量 / 体检脚本（.sh，被 Makefile 调用）+ mem 维护（.mjs：`patch-mem-tags` 可重放 tags 兑底补丁，`fix-mem-untagged` 存量清理） |
+| `scripts/` | 安装 / 环境变量 / 体检脚本（.sh，被 Makefile 调用）+ mem 维护（.mjs：`patch-mem-tags` 可重放 tags 兜底补丁，`fix-mem-untagged` 存量清理） |
 | `opencode-mem.jsonc.template` | 智谱直连模板（`make mem` 生成 `opencode-mem.jsonc`） |
 | `omo.jsonc.template` | OMO 统一配置模板（`make omo-config` 生成 `~/.omo/omo.jsonc`，含 12 agent + 8 category 路由） |
 | `opencode-export.sh` | 配置导出脚本（`make export` 交互 / `HEADLESS=1` 无人值守三硬约束：强制排除 auth.json、落 ~/Backups/opencode/ 非 iCloud、retention 保 5；含 git 外四类内容） |
@@ -44,7 +44,7 @@
 
 ## opencode-mem pin+patch 机制（2026-09-02）
 
-- **动机**：上游 2.25.0 四缺陷（tags 入库无兑底 / detect 零容忍 / run-batch 内存态 bug / turso 迁移重跑），本地防护而非根治
+- **动机**：上游 2.25.0 四缺陷（tags 入库无兜底 / detect 零容忍 / run-batch 内存态 bug / turso 迁移重跑），本地防护而非根治
 - **资产**：双 json spec `opencode-mem@2.25.0`；缓存目录 client.js 带 `PATCH(tags-fallback)`；`scripts/patch-mem-tags.mjs`（重放）；`scripts/fix-mem-untagged.mjs`（存量清理）
 - **摘除判据**：上游 changelog 确认 tags 缺陷修复 → 双 spec 改回 `@latest` → 删 patch 脚本
 - **重打命令**：`node scripts/patch-mem-tags.mjs`（幂等；升级 runbook 六步见 docs/reference.md）

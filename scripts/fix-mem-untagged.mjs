@@ -35,6 +35,8 @@ const TYPE_TAGS = {
   "refactor": "refactor",
   "configuration": "configuration",
   "feature": "feature",
+  "discussion": "discussion",
+  "other": "memory",
 };
 
 function extractInlineTags(content) {
