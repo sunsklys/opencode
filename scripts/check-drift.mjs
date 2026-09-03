@@ -119,6 +119,24 @@ function checkPluginSpec() {
   return { exists: true, drift: mismatches.length !== 0, detail: mismatches.length === 0 ? `plugin spec 一致（${expected}）` : 'plugin spec 失配: ' + mismatches.join('; ') };
 }
 
+// --- opencode-mem spec 双文件一致性（mem pin+patch 守卫：tui.json ↔ opencode.json 直接比对，不引入第二事实源）---
+// 失配 = TUI/CLI 双域加载不同版本实例（tui 域旁路 patch 的已发生事故形态）→ drift:true → critical fail
+function checkMemSpecSync() {
+  const specs = {};
+  for (const f of ['opencode.json', 'tui.json']) {
+    try {
+      const plugins = JSON.parse(fs.readFileSync(path.join(ROOT, '..', f), 'utf8')).plugin || [];
+      specs[f] = plugins.find((p) => String(p).startsWith('opencode-mem@')) || null;
+    } catch (e) {
+      return { exists: true, drift: true, detail: `${f} 解析失败: ${e.message}` };
+    }
+  }
+  const a = specs['opencode.json'], b = specs['tui.json'];
+  if (!a || !b) return { exists: true, drift: true, detail: `opencode-mem spec 缺失: opencode.json=${a ?? '无'} / tui.json=${b ?? '无'}` };
+  if (a !== b) return { exists: true, drift: true, detail: `opencode-mem spec 分裂: opencode.json=${a} ≠ tui.json=${b}（TUI 域将旁路 patch，改双文件同步）` };
+  return { exists: true, drift: false, detail: `opencode-mem spec 一致（${a}）` };
+}
+
 // --- 文档引用防漂移护栏（Wave4：堵「手改不走 upgrade.sh」路径，42aea26 教训）---
 // 机器校验高漂移值：README 的 plugin 版本 ↔ package.json；docs 的「N 项体检」↔ check.sh 实际项数。
 // 计数类教法（54 skills 等）不进护栏（容忍手工，见 artisan R1-7 分层策略）。
@@ -182,6 +200,7 @@ const result = {
   mem: checkPair(memTemplate, memGenerated, 'opencode-mem.jsonc'),
   instructions: checkInstructions(),
   pluginSpec: checkPluginSpec(),
+  memSpecSync: checkMemSpecSync(),
   docRefs: checkDocRefs(),
 };
 console.log(JSON.stringify(result));

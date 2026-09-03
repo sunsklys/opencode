@@ -538,7 +538,7 @@ echo "【14/16·Critical】template ↔ 生成物零漂移（omo / opencode-mem�
 # instructions.md 工作约束 5 的自动化 enforcement：template 改了生成物没同步（或反之）= 配置不一致。
 # 规范化比较（剥注释/尾逗号、omo 排除运行时写入的 _migrations），漂移即 critical fail 阻断提交。
 DRIFT_JSON=$(node scripts/check-drift.mjs 2>/dev/null || echo '{}')
-for pair in omo mem pluginSpec docRefs; do
+for pair in omo mem pluginSpec memSpecSync docRefs; do
   D_EXIST=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].exists" 2>/dev/null || echo "")
   D_DRIFT=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].drift" 2>/dev/null || echo "")
   D_DETAIL=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0))['$pair'].detail" 2>/dev/null || echo "检测脚本异常")
