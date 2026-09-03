@@ -13,12 +13,27 @@
 //
 // 幂等：已打过补丁（存在 PATCH 标记）则跳过；锚点匹配不到则报错退出（上游代码已变，需人工审查）。
 // 上游修复此问题后可停用本脚本并摘除补丁。
-import { readFileSync, writeFileSync, existsSync, unlinkSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, unlinkSync, renameSync } from "node:fs";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 import os from "node:os";
 
-const dirName = process.argv[2] || "opencode-mem@2.25.0";
+// 三级推导：argv 显式 > opencode.json 推导 > 报错拒绝；@latest 拒绝（打上去下次重拉即丢=假成功）
+const argDir = process.argv[2];
+let dirName;
+if (argDir) {
+  dirName = argDir;
+} else {
+  try {
+    const spec = JSON.parse(readFileSync(join(os.homedir(), ".config/opencode/opencode.json"), "utf-8"))
+      .plugin?.find((p) => String(p).startsWith("opencode-mem@"));
+    if (spec && !spec.endsWith("@latest")) dirName = spec;
+  } catch {}
+}
+if (!dirName) {
+  console.error("无法推导 pin 目录（argv 未传 / opencode.json 无 pin spec / spec=@latest）；显式传参: node patch-mem-tags.mjs opencode-mem@<version>");
+  process.exit(1);
+}
 const target = join(os.homedir(), `.cache/opencode/packages/${dirName}/node_modules/opencode-mem/dist/services/client.js`);
 
 if (!existsSync(target)) {
@@ -77,7 +92,9 @@ if (src.indexOf(ANCHOR, idx + 1) !== -1) {
 
 writeFileSync(target + ".orig", src, "utf-8"); // src 仍为原始内容（替换前）
 src = src.slice(0, idx) + REPLACEMENT + src.slice(idx + ANCHOR.length);
-writeFileSync(target, src, "utf-8");
+const tmpPath = target + ".patching.tmp"; // 同目录 tmp（防跨卷 EXDEV 降级非原子 copy）
+writeFileSync(tmpPath, src, "utf-8");
+renameSync(tmpPath, target); // 原子替换：中途崩溃不留半写文件
 
 // 语法校验
 try {
