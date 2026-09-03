@@ -10,6 +10,7 @@ export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
 cd "$(dirname "$0")/.."
+source scripts/_lib.sh
 
 # 分层计数器：Critical 项 fail → FAIL（阻断 exit code）；Warning 项 fail → WFAIL（不阻断，仅提示）
 PASS=0
@@ -82,19 +83,15 @@ if [ -z "$CHECK_FAST" ]; then
     wfail "opencode-mem 软链未建立（make deps）"
   fi
 
-  # pin 缓存目录 + tags 兑底 patch 存活检查（opencode.json spec 为事实源；patch 详见 scripts/patch-mem-tags.mjs）
+  # pin 缓存目录 + tags 兑底 patch 存活检查（opencode.json spec 为事实源；三态共享逻辑见 _lib.sh check_mem_patch）
   MEM_SPEC=$(node -p "require('./opencode.json').plugin.find(p=>String(p).startsWith('opencode-mem@')) ?? ''" 2>/dev/null || echo '')
   if [ -n "$MEM_SPEC" ] && [ "$MEM_SPEC" != "opencode-mem@latest" ]; then
-    MEM_CACHE_DIR="$HOME/.cache/opencode/packages/$MEM_SPEC/node_modules/opencode-mem"
-    if [ -d "$MEM_CACHE_DIR" ]; then
-      if grep -q "PATCH(tags-fallback)" "$MEM_CACHE_DIR/dist/services/client.js" 2>/dev/null; then
-        ok "$MEM_SPEC pin 缓存就绪，tags 兑底 patch 存活"
-      else
-        wfail "$MEM_SPEC 缺 tags 兑底 patch（node scripts/patch-mem-tags.mjs 重打）"
-      fi
-    else
-      wfail "pin 缓存目录不存在: $MEM_SPEC（重启 opencode 拉取）"
-    fi
+    check_mem_patch "$MEM_SPEC" >/dev/null
+    case $? in
+      0) ok "$MEM_SPEC pin 缓存就绪，tags 兑底 patch 存活" ;;
+      1) wfail "$MEM_SPEC 缺 tags 兑底 patch（node scripts/patch-mem-tags.mjs 重打；重启拉取后也需重打）" ;;
+      2) wfail "pin 缓存目录不存在: $MEM_SPEC（重启 opencode 拉取，拉取后需 node scripts/patch-mem-tags.mjs 重打 patch）" ;;
+    esac
   fi
 
   # 检查 opencode-mem 配置文件就绪状态（provider-agnostic，不强制特定厂商）

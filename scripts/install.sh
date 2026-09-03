@@ -63,14 +63,15 @@ MEM_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 
 echo "✓ opencode-mem@${MEM_VER}（软链 → $(readlink node_modules/opencode-mem)）"
 
 # 清 opencode-mem @latest 缓存（下次启动 opencode 重拉；pin 场景下 opencode 加载 pin 目录，不受影响）
-# pin 场景提醒：tags 兑底 patch 位于 pin 缓存目录，若手动更换 pin 版本需重跑 scripts/patch-mem-tags.mjs
+# pin 场景 patch 自检（三态共享逻辑见 _lib.sh check_mem_patch，与 check.sh §3 同源）
 rm -rf "$HOME/.cache/opencode/packages/opencode-mem@latest" 2>/dev/null || true
 if [ -n "$MEM_PIN" ] && [ "$MEM_PIN" != "latest" ]; then
-  if grep -q "PATCH(tags-fallback)" "$HOME/.cache/opencode/packages/$MEM_SPEC/node_modules/opencode-mem/dist/services/client.js" 2>/dev/null; then
-    echo "  ✓ tags 兑底 patch 存活于 $MEM_SPEC"
-  else
-    echo "  ⚠️  pin 目录 $MEM_SPEC 缺 tags 兑底 patch，重打: node scripts/patch-mem-tags.mjs $MEM_SPEC"
-  fi
+  check_mem_patch "$MEM_SPEC"
+  case $? in
+    0) echo "  ✓ tags 兑底 patch 存活于 $MEM_SPEC" ;;
+    1) echo "  ⚠️  pin 目录 $MEM_SPEC 缺 tags 兑底 patch，重打: node scripts/patch-mem-tags.mjs $MEM_SPEC" ;;
+    2) echo "  ⚠️  pin 目录 $MEM_SPEC 不存在（重启 opencode 拉取后需重打 patch）" ;;
+  esac
 fi
 
 echo ""
