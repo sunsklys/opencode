@@ -66,7 +66,15 @@ fi
 
 # --- 6. 重装依赖（让 opencode 下次启动时拉新版本）---
 echo "重装依赖..."
-bash scripts/install.sh > /dev/null 2>&1 || echo "  ⚠ scripts/install.sh 失败（可手动 npm install）"
+_install_log=$(mktemp)  # mktemp 防并发互踩；失败展示尾部，成功透传 patch 警告，不再吞输出
+if bash scripts/install.sh > "$_install_log" 2>&1; then
+  grep -F "⚠️" "$_install_log" || true  # 成功路径也保留 patch 存活等警告可见性
+else
+  echo "  ⚠ scripts/install.sh 失败，输出尾部："
+  tail -5 "$_install_log" | sed 's/^/    /'
+  echo "  ↪ 修复建议：重跑 bash scripts/install.sh（会重建软链，勿只手动 npm install）"
+fi
+rm -f "$_install_log"
 
 echo ""
 echo "✓ superpowers 升级完成：$CURRENT → $LATEST"
