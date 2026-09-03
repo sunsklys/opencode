@@ -52,7 +52,7 @@ for (const dir of shardDirs) {
   if (!existsSync(d)) continue;
   for (const f of readdirSync(d)) {
     if (!/_shard_\d+\.db$/.test(f)) continue;
-    const db = createClient({ url: "file:" + join(d, f) });
+    const db = createClient({ url: "file:" + join(d, f), timeout: 5000 });
     const rs = await db.execute(
       "SELECT id, type, content FROM memories WHERE tags IS NULL OR tags = ''",
     );
@@ -82,7 +82,7 @@ for (const t of targets) {
   const input = `Topics: ${t.tags.join(", ")}`;
   const out = await pipe(input, { pooling: "mean", normalize: true });
   const vecJson = JSON.stringify(Array.from(new Float32Array(out.data)));
-  const db = createClient({ url: "file:" + t.file });
+  const db = createClient({ url: "file:" + t.file, timeout: 5000 });
   const rs = await db.execute({
     sql: "UPDATE memories SET tags = ?, tags_vector = vector32(?) WHERE id = ? AND (tags IS NULL OR tags = '')",
     args: [t.tags.join(","), vecJson, t.id],
@@ -102,7 +102,7 @@ for (const dir of shardDirs) {
   if (!existsSync(d)) continue;
   for (const f of readdirSync(d)) {
     if (!/_shard_\d+\.db$/.test(f)) continue;
-    const db = createClient({ url: "file:" + join(d, f) });
+    const db = createClient({ url: "file:" + join(d, f), timeout: 5000 });
     const rs = await db.execute("SELECT COUNT(*) c FROM memories WHERE tags IS NULL OR tags = ''");
     remain += Number(rs.rows[0].c);
   }
