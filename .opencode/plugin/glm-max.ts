@@ -24,6 +24,16 @@ function readString(record: Record<string, unknown>, key: string): string | unde
   const value = record[key]
   return typeof value === "string" ? value : undefined
 }
+// segment 匹配：取 provider 前缀后的最后一段、variant 冒号前的部分做前缀判定；
+// flash 系（glm-5.3-flash 等）是独立小模型，不做 max reasoning，显式排除
+const GLM5_ALIASES = ["glm-5.2", "glm-5-2", "glm-5p2", "glm-5.3", "glm-5-3", "glm-5p3"]
+
+export function isGlm5Max(modelID: string): boolean {
+  const id = modelID.toLowerCase()
+  const segment = id.split("/").pop() ?? id
+  const name = segment.split(":")[0]
+  return GLM5_ALIASES.some((alias) => name.startsWith(alias)) && !name.includes("flash")
+}
 
 const plugin: { id: string; server: Plugin } = {
   id: "glm-max",
@@ -33,13 +43,11 @@ const plugin: { id: string; server: Plugin } = {
       if (!isRecord(model)) return
       const modelID = readString(model, "modelID") ?? readString(model, "id")
       if (!modelID) return
-      const id = modelID.toLowerCase()
 
       // GLM 5.2/5.3: 强制 reasoningEffort=max
       //    OMO heuristic glm family 不含 reasoningEfforts，会丢弃 reasoningEffort
       //    GLM 的 max reasoning 通过此 option 直接传递（variant 机制见顶部注释）
-      const isGlm5Max = ["glm-5.2", "glm-5-2", "glm-5p2", "glm-5.3", "glm-5-3", "glm-5p3"].some((name) => id.includes(name))
-      if (isGlm5Max) {
+      if (isGlm5Max(modelID)) {
         output.options.reasoningEffort = "max"
       }
     },
