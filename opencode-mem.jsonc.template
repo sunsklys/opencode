@@ -70,9 +70,6 @@
   // ============================================
   // User Profile System
   "userProfileAnalysisInterval": 25,
-  "userProfileMaxPreferences": 20,
-  "userProfileMaxPatterns": 15,
-  "userProfileMaxWorkflows": 10,
   "userProfileConfidenceDecayDays": 30,
   "userProfileChangelogRetentionCount": 5,
 

@@ -30,7 +30,7 @@
 
 | 字段 | 说明 |
 |---|---|
-| `plugin` | TUI 模式加载的 plugin（与 `opencode.json` 保持同步） |
+| `plugin` | TUI 模式加载的 plugin（与 `opencode.json` 保持同步；升级 plugin 时双 json spec 必须同批核对，防 TUI 域旁路旧版——check §14 的 pluginSpec/memSpecSync 双守卫拦截） |
 | `theme` / `scroll_speed` / `mouse` | tokyonight / 8 / true |
 
 ### `opencode-mem.jsonc`（本地持久记忆配置，**不入 git**）

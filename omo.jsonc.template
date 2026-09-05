@@ -101,9 +101,7 @@
       "sisyphus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "ultrawork": {
           "model": "zhipuai-coding-plan/glm-5.3",
@@ -118,9 +116,7 @@
       "prometheus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
@@ -131,9 +127,7 @@
       "plan": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
@@ -144,9 +138,7 @@
       "oracle": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
@@ -157,9 +149,7 @@
       "metis": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
@@ -170,9 +160,7 @@
       "momus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
@@ -183,9 +171,7 @@
       "atlas": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
@@ -227,9 +213,7 @@
       "sisyphus-junior": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",
@@ -240,9 +224,7 @@
       "hephaestus": {
         "prompt_append": "file://~/.config/opencode/.opencode/lang-zh.md",
         "compaction": {
-          "model": "zhipuai-coding-plan/glm-5.3-flash",
-          "prune": true,
-          "tail_turns": 6
+          "model": "zhipuai-coding-plan/glm-5.3-flash"
         },
         "model": "zhipuai-coding-plan/glm-5.3",
         "reasoning": "max",

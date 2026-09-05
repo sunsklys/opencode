@@ -575,6 +575,16 @@ for pair in omo mem pluginSpec memSpecSync docRefs; do
     ok "$D_DETAIL"
   fi
 done
+
+# compaction 死键守卫（DT-A1）：OMO 4.19.4 schema 仅收 model/reasoning/variant，
+# prune/tail_turns 会被 zod 静默剥除（消费端 resolveCompactionModel 只读 model）；
+# 模板出现即配置分叉前兆 → critical 阻断。
+DEADKEYS=$(grep -cE '"(prune|tail_turns)"' omo.jsonc.template 2>/dev/null) || DEADKEYS=0
+if [ "${DEADKEYS:-0}" -gt 0 ]; then
+  fail "omo.jsonc.template 含 compaction 死键 prune/tail_turns（${DEADKEYS} 处）— OMO zod 剥除不生效，删两键只留 compaction.model"
+else
+  ok "omo.jsonc.template 无 compaction 死键（prune/tail_turns 零残留）"
+fi
 echo ""
 # ---------- 15. [Critical] instructions 引用完整性 ----------
 echo "【15/17·Critical】instructions 引用完整性（{file:...} 目标存在）"
