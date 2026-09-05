@@ -162,6 +162,11 @@ const CASES = [
   { gap: 'anchor', tool: 'bash', input: 'sh', expected: 'deny' },
   { gap: 'anchor', tool: 'bash', input: 'git status', expected: 'allow' },
   { gap: 'anchor', tool: 'edit', input: '../../.zshrc', expected: 'deny' },
+  { gap: 'a', tool: 'read', input: '.ssh/config', expected: 'deny' },
+  { gap: 'a', tool: 'read', input: 'id_ed25519', expected: 'deny' },
+  { gap: 'a', tool: 'edit', input: '.env', expected: 'deny' },
+  { gap: 'a', tool: 'edit', input: '.ssh/config', expected: 'deny' },
+  { gap: 'a', tool: 'edit', input: 'foo.pem', expected: 'deny' },
   { gap: 'anchor', tool: 'edit', input: 'src/foo.ts', expected: 'allow' },
 ];
 
