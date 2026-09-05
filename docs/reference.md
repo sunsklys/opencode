@@ -146,6 +146,31 @@
 
 > **敏感项目建议**：临时关 `opencode-mem.jsonc` → `autoCaptureEnabled: false`，避免会话要点出网到智谱做元数据推理。
 
+> **dbx.md 双重暴露面**（2026-09-05 T4 实证）：`.opencode/dbx.md`（58 行：6 生产连接、库表拓扑、安全护栏）经 `opencode.json` instructions 数组的 `{file:~/.config/opencode/.opencode/dbx.md}` **全文注入所有会话的系统提示**；其中 5 个阿里云 host 为半脱敏（留 ~20 字符前缀），EMQX MQTT host 完全明文。opencode-mem 2.25.0 分析窗口（128KB 上限）由 User Request 全文 + AI Response 文本 + Tools Used（name + input 截 100 字符）+ Previous Memory 构成，**系统提示本身不进该窗口**——但 dbx.md 的拓扑要素（连接名 / host / 库名）会随助手回复与工具调用摘要进入每轮外发请求（open.bigmodel.cn）；且 mem 2.25.0 **无任何内容排除/包含配置项**（CONFIG_TEMPLATE 全字段表实证），无法按内容定向豁免。
+
+### 内置匿名 remote MCP（OMO 4.19.4 自带，opencode.json 不可见）
+
+oh-my-openagent `createBuiltinMcps()` 默认注册三条 remote MCP，不经过 `opencode.json` 的 `mcp` 段——配置文件里看不到，属隐性外部出站依赖（dist/index.js 实证）：
+
+| MCP | 端点 | 鉴权 | 行为细节 |
+|---|---|---|---|
+| `websearch` | `https://mcp.exa.ai/mcp?tools=web_search_exa` | 匿名；`EXA_API_KEY` 在值时升级 Bearer | 默认 exa 后端。omo 配置 `websearch.provider: "tavily"` **且** `TAVILY_API_KEY` 在值时才切换 `https://mcp.tavily.com/mcp/`（仅设 key 不切换；provider 配了 tavily 但 key 缺失时该 MCP 直接不注册） |
+| `context7` | `https://mcp.context7.com/mcp` | 匿名；`CONTEXT7_API_KEY` 在值时升级 Bearer | 库文档查询，查询词出网 |
+| `grep_app` | `https://mcp.grep.app` | 匿名（无 key 通道） | 代码模式搜索，搜索串出网 |
+
+当前环境三条全部匿名直连（live omo.jsonc 无 websearch 覆盖，三个 key 均未设）——出站内容对端可见、无账号归因、审计链路里没有凭证记录。禁用通道：omo.jsonc 的 `disabled_mcps` 列表（合法值 `websearch` / `context7` / `grep_app` / `lsp` / `codegraph`）。
+
+### 凭证路径分离（auth.json OAuth vs Z_AI_API_KEY env）
+
+- **主模型链路**：`~/.local/share/opencode/auth.json`（权限 600，仅含 `zhipuai-coding-plan` 一键）——opencode 引擎持有的 OAuth 凭证，所有会话模型请求走它。与本仓库 .gitignore 的 `auth.json` 同名不同物（仓库根不存在该文件）。
+- **侧链 API key**（`~/.zshrc` 注入 env）：`Z_AI_API_KEY` 有三个消费方——① `zai-mcp-server`（opencode.json environment 段，`Z_AI_MODE=ZHIPU`）② 智谱 web 工具三条 remote 的 `Authorization: Bearer {env:Z_AI_API_KEY}`（web-search-prime / web-reader / zread）③ opencode-mem 直连分析（`env://Z_AI_API_KEY` → open.bigmodel.cn）。
+- 另两密钥单一用途：`FEISHU_APP_SECRET`（lark-cli 系 skill）、`KINGSOFT_DOCS_TOKEN`（kdocs skill）。
+- **分离含义**：轮换/撤销 env key 不影响主模型登录（auth.json 独立）；审计出站面时两条凭证链路（OAuth + API key）各自都要过一遍，缺一侧即漏账。
+
+### GUI key 时窗行为（launchctl setenv 的隐式条件）
+
+`~/.zshrc` 末尾的 `launchctl setenv` 仅在 shell 启动时执行——依赖「**开过终端**」这个隐式前提。macOS 重启后到首次打开终端之间的窗口期内，GUI/Dock 启动的 opencode 进程 env 里没有 `Z_AI_API_KEY` / `FEISHU_APP_SECRET`（侧链三消费方 + lark-cli 全部静默降级或报鉴权失败；主模型链路不受影响——auth.json 不经此通道）。`KINGSOFT_DOCS_TOKEN` 无 setenv 行，GUI 域恒不可用（仅终端会话可用）。当前缓解为操作约定：重启后先开一次终端再启 opencode；是否引入 LaunchAgent 登录时自动注入（消除时窗），决策待定。
+
 ## plugin 加载机制与钉版策略（Wave3 闭合 @latest 旁路）
 
 **omo 已钉精确版本**（2026-08-29）：`opencode.json` / `tui.json` 的 plugin spec 为 `oh-my-openagent@4.19.4`（不再是 `@latest`）。
