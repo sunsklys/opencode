@@ -30,7 +30,8 @@
       "url": "https://open.bigmodel.cn/api/mcp/web_reader/mcp",
       "headers": {
         "Authorization": "Bearer {env:Z_AI_API_KEY}"
-      }
+      },
+      "enabled": false
     },
     "zread": {
       "type": "remote",
