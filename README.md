@@ -64,7 +64,7 @@ opencode auth login zhipuai-coding-plan && opencode
 
 ## 数据库维护
 
-`opencode.db` 长期使用会膨胀（实测 1GB / event 表 16 万行会触发内嵌 Bun v1.3.14 的 NAPI panic 崩溃）。每月体检一次：
+`opencode.db` 长期使用会膨胀。崩溃真机制是三元组叠加——event 表 ≥16 万行 AND data 列 ≥500MB AND 长时间运行（实测 18h），三者齐备才触发内嵌 Bun v1.3.14 的 NAPI panic；行数只是 data 列膨胀的代理指标，单看任何一项都不充分（完整分析见 [docs/troubleshooting.md](./docs/troubleshooting.md)「opencode 进程崩溃」段）。每月体检一次（自动追加趋势快照，event.data 列增幅 >60% 提前预警）：
 
 ```bash
 make db-check                          # 体检（只读，运行时安全）

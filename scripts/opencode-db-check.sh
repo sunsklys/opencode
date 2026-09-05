@@ -10,6 +10,10 @@
 #   - DB > 500MB / event > 8 万行 → ⚠️ 建议尽快维护
 #   - DB < 300MB / event < 3 万行 → ✅ 健康
 #
+# 趋势快照：每次运行追加到 ~/.local/state/opencode-db-trend.json
+# （event 行数 / event.data 列 MB / 全库 MB），
+# event.data 列较上次快照增幅 >60% 时预警（崩溃三元组齐点的提前量）。
+#
 # 用法：make db-check 或 ./scripts/opencode-db-check.sh
 # ============================================================
 
@@ -113,6 +117,55 @@ fi
 if [[ "$WAL_MB" -ge 100 ]]; then
   warn "WAL ≥ 100MB：堆积过多，下次退出 opencode 后建议维护"
   [[ "$RISK" == "ok" ]] && RISK="warn"
+fi
+
+# ---------- 趋势快照（三元组监控：event 行数 × data 列 × 全库） ----------
+TREND_FILE="${OPENCODE_DB_TREND_FILE:-$HOME/.local/state/opencode-db-trend.json}"
+GROWTH_WARN_PCT=60
+if [[ "$EVENT_CNT" == "?" || "$EVENT_DATA_MB" == "?" ]]; then
+  echo ""
+  echo "── 趋势快照 ──"
+  warn "无法采集 event 指标，跳过趋势快照"
+else
+  BODY=""
+  [[ -s "$TREND_FILE" ]] && BODY=$(tr -d '[:space:]' < "$TREND_FILE")
+  PREV_TS=""
+  PREV_DATA_MB=""
+  if [[ "$BODY" == \[*\] ]]; then
+    PREV_TS=$(grep -o '"ts":"[^"]*"' "$TREND_FILE" | tail -1 | cut -d'"' -f4)
+    PREV_DATA_MB=$(grep -o '"event_data_mb":[0-9]*' "$TREND_FILE" | tail -1 | cut -d: -f2)
+  fi
+
+  # sqlite SUM(...)/1024/1024 为整数，空表时 SUM=NULL 输出空串 → 规范化为 0
+  CUR_DATA_MB="${EVENT_DATA_MB:-0}"
+  [[ "$CUR_DATA_MB" == *"."* ]] && CUR_DATA_MB="${CUR_DATA_MB%.*}"
+
+  echo ""
+  echo "── 趋势快照 ──"
+  if [[ -n "$PREV_DATA_MB" && "$PREV_DATA_MB" -gt 0 ]]; then
+    GROWTH=$(( (CUR_DATA_MB - PREV_DATA_MB) * 100 / PREV_DATA_MB ))
+    if [[ "$GROWTH" -gt "$GROWTH_WARN_PCT" ]]; then
+      warn "event.data 列较上次快照（${PREV_TS}）增长 ${GROWTH}%（${PREV_DATA_MB}MB → ${CUR_DATA_MB}MB）：>${GROWTH_WARN_PCT}% 逼近崩溃三元组齐点，建议尽快维护"
+      [[ "$RISK" == "ok" ]] && RISK="warn"
+    else
+      ok "event.data 列较上次快照（${PREV_TS}）增长 ${GROWTH}%（${PREV_DATA_MB}MB → ${CUR_DATA_MB}MB）"
+    fi
+  elif [[ -n "$PREV_DATA_MB" ]]; then
+    info "上次快照 data 列为 ${PREV_DATA_MB}MB，无法计算增幅"
+  else
+    info "首次快照，下次运行起计算增幅（告警阈值：data 列增幅 >${GROWTH_WARN_PCT}%）"
+  fi
+
+  NOW_ISO=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  SNAPSHOT="{\"ts\":\"$NOW_ISO\",\"event_rows\":$EVENT_CNT,\"event_data_mb\":$CUR_DATA_MB,\"db_mb\":$DB_MB}"
+  mkdir -p "$(dirname "$TREND_FILE")"
+  if [[ "$BODY" == \[* ]]; then
+    printf '%s,%s]\n' "${BODY%\]}" "$SNAPSHOT" > "$TREND_FILE"
+  else
+    printf '[%s]\n' "$SNAPSHOT" > "$TREND_FILE"
+  fi
+  SNAP_N=$(grep -o '"ts":' "$TREND_FILE" | wc -l | tr -d ' ')
+  info "快照已记录（第 ${SNAP_N} 条）→ $TREND_FILE"
 fi
 
 echo ""

@@ -90,7 +90,7 @@ panic: NAPI FATAL ERROR: Error::New napi_create_error
 oh no: Bun has crashed. This indicates a bug in Bun, not your code.
 ```
 
-**根因**：opencode 内嵌 Bun v1.3.14 的 NAPI 实现存在 panic bug。在 `opencode.db` 膨胀（event 表 16 万行 / data 列 500MB+）+ 长时间运行（实测 18 小时）的压力下，`bun:sqlite` 的错误处理路径触发 `napi_create_error` 致命错误，进程整体崩溃。崩溃发生在原生层（C/Zig），无法被 try/catch 捕获。
+**根因**：opencode 内嵌 Bun v1.3.14 的 NAPI 实现存在 panic bug。崩溃触发条件是三元组叠加（缺一不可）：`opencode.db` 膨胀（event 表 ≥16 万行 AND data 列 ≥500MB）+ 长时间运行（实测 18 小时）。三者共同把 `bun:sqlite` 的错误处理路径压到 `napi_create_error` 致命错误，进程整体崩溃——表行数只是 data 列膨胀的代理指标，单看行数不充分。崩溃发生在原生层（C/Zig），无法被 try/catch 捕获。
 
 这是 Bun 运行时的 bug，不是你的配置或代码问题。`opencode --version` 查当前版本——其内嵌的 Bun ≤ 1.3.14 时仍存在同一 panic bug，短期无法通过升级消除根因。
 
@@ -120,7 +120,7 @@ oh no: Bun has crashed. This indicates a bug in Bun, not your code.
 
 **预防**：
 - 避免单个 session 连续运行超 8 小时（长 session 是 NAPI 崩溃的触发条件之一）
-- 每月跑一次 `make db-check`，DB 超 500MB 或 event 超 8 万行时维护
+- 每月跑一次 `make db-check`，DB 超 500MB 或 event 超 8 万行时维护；脚本自动在 `~/.local/state/opencode-db-trend.json` 追加快照（event 行数 / data 列 / 全库 MB），event.data 列较上次增幅 >60% 时预警（三元组齐点的提前量）
 - 跑 `make check-upgrade` 监控 opencode 新版，当内嵌 Bun > 1.3.14 时升级可根治
 
 **验证修复**：
