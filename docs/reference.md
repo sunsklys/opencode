@@ -152,7 +152,7 @@
 
 > **敏感项目建议**：临时关 `opencode-mem.jsonc` → `autoCaptureEnabled: false`，避免会话要点出网到智谱做元数据推理。
 
-> **dbx.md 双重暴露面**（2026-09-05 T4 实证）：`.opencode/dbx.md`（58 行：6 生产连接、库表拓扑、安全护栏）经 `opencode.json` instructions 数组的 `{file:~/.config/opencode/.opencode/dbx.md}` **全文注入所有会话的系统提示**；其中 5 个阿里云 host 为半脱敏（留 ~20 字符前缀），EMQX MQTT host 完全明文。opencode-mem 2.25.0 分析窗口（128KB 上限）由 User Request 全文 + AI Response 文本 + Tools Used（name + input 截 100 字符）+ Previous Memory 构成，**系统提示本身不进该窗口**——但 dbx.md 的拓扑要素（连接名 / host / 库名）会随助手回复与工具调用摘要进入每轮外发请求（open.bigmodel.cn）；且 mem 2.25.0 **无任何内容排除/包含配置项**（CONFIG_TEMPLATE 全字段表实证），无法按内容定向豁免。
+> **dbx.md 暴露面**（2026-09-05 T4 实证，07af51d 已拆分收敛）：`.opencode/dbx.md` 现为 **36 行 stub**（连接名 + 安全护栏 + 查询路由，无 host 无表级拓扑），生产 host 与库表索引已外移至 `.opencode/dbx-topology.md`（按需 read，不入 git，受 .gitignore 保护）。instructions 数组的 `{file:...dbx.md}` **仅注入主会话系统提示**（T11 实证：instructions 数组不进 subagent）；剩余暴露面：stub 的连接名/库名随助手回复与工具调用摘要进入 opencode-mem 2.25.0 分析窗口（128KB 上限，系统提示本身不进窗口）外发 open.bigmodel.cn，且 mem 无内容排除配置项。拆分前田dbx.md 58 行 6 生产 host 全量注入的历史风险已随拆分消除。
 
 ### 内置匿名 remote MCP（OMO 4.19.4 自带，opencode.json 不可见）
 

@@ -140,12 +140,12 @@ opencode
 
 | 包内路径 | 内容 | 对应 git 状态 |
 | --- | --- | --- |
-| `config/opencode/.opencode/` | dbx.md（生产 host）+ glm-max.ts + instructions/lang-zh | 前者不入 git，后三者在 git（双保险） |
+| `config/opencode/.opencode/` | dbx.md（36 行 stub）+ dbx-topology.md（生产 host 拓扑，按需读取）+ glm-max.ts + instructions/lang-zh | 前两者不入 git（.gitignore 双保护），后三者在 git（双保险） |
 | `agents/skills/` | 54 个用户 skill 目录（29 个 SKILL.md，含 ast-grep/frontend/hooloo 等自定义 skill 唯一副本；排除 .git/.DS_Store） | 不在 git |
 | `opencode-mem/data/user-profiles.db*` | opencode-mem 用户画像（交互询问，默认含；向量库 1.5GB 不导） | 不在 git |
 | `data/opencode/auth.json` | 登录凭证（交互询问，默认不含） | 不在 git |
 
-仍需手动（不在这两条通道内）：环境变量值（`make config` 交互输入）、DBX 桌面 app 内重建 8 条连接（字典见 dbx.md）、`gh auth login`。
+仍需手动（不在这两条通道内）：`.env.secrets` 三密钥文件（600 权限，**不在导出包内**——新机手动重建：`printf 'export Z_AI_API_KEY=…\nexport FEISHU_APP_SECRET=…\n' > ~/.config/opencode/.env.secrets && chmod 600 …`，**勿用 `make config`**——setup-env.sh 仍写 ~/.zshrc 明文，会回退 Wave2 迁移）、DBX 桌面 app 内重建 8 条连接（字典见 dbx.md / 拓扑见 dbx-topology.md）、`gh auth login`。
 
 新机恢复：解压包后按包内 `README.md` 执行（拷贝 `.opencode/` + `agents/skills/` + 可选画像 → `make install` → `make config` → `make check`）。
 
@@ -156,6 +156,7 @@ opencode
 - `make install-export-job`：装载周导出任务（每周五 12:00，`HEADLESS=1` 落 `~/Backups/opencode/`，**三硬约束**：auth.json 强制排除不可参数开启 / 非 iCloud 目录防 key 上云 / retention 保留 5 份按文件名时间戳排序）。卸载：`launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-export.plist`
 - `make install-dbcheck-job`：装载月度数据库只读体检（每月 1 日 09:00，日志 `~/Backups/opencode/db-check.log`）。
 - `make install-logrotate-job`：装载月度日志轮转（每月 1 日 09:30，`opencode.log` >20MB 时 copytruncate 轮转，保留 3 份 gz，日志 `~/Backups/opencode/log-rotate.log`）。手动预览：`bash scripts/opencode-log-rotate.sh --dry-run`
+- `make install-guikeys-job`：装载登录时 GUI key 注入（RunAtLoad 读 `.env.secrets`（600）后 `launchctl setenv` 两 key，消除重启后至首次开终端的窗口期；日志 `~/Backups/opencode/gui-keys.log`）。密钥值不落 plist（644 可读）
 - 交互模式 `make export`（DEST 支持）行为不变；check 第 16 项同时监视 Desktop 与 Backups 两个位置。
 - **容灾仍需人肉**：定时任务只保本机新鲜，机器整体故障场景仍需把最新 tar 拷贝到网盘/异机——建议每月顺手拷一次。
 

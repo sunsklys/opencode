@@ -618,6 +618,13 @@ elif [ "$PERM_FAILED" -eq 0 ]; then
 else
   fail "permission 规则回归 ${PERM_FAILED}/${PERM_TOTAL} 失败 — node scripts/check-permissions.mjs --report 看缺口，修复 opencode.json 规则段"
 fi
+
+# glm-max flash 排除回归（T2）：node --test 驱动真实插件文件，12 案例锚定 segment 前缀 + flash 排除语义
+if node --test scripts/glm-max.test.mjs >/dev/null 2>&1; then
+  ok "glm-max flash 排除回归通过（node --test，前缀/variant/flash 三形态）"
+else
+  fail "glm-max flash 排除回归失败 — 手动跑 node --test scripts/glm-max.test.mjs 看断言"
+fi
 echo ""
 
 if [ -z "$CHECK_FAST" ]; then
