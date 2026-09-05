@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.sunsklys.opencode-gui-keys</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>set -a; [ -f "$HOME/.config/opencode/.env.secrets" ] &amp;&amp; source "$HOME/.config/opencode/.env.secrets"; set +a; launchctl setenv Z_AI_API_KEY "$Z_AI_API_KEY"; launchctl setenv FEISHU_APP_SECRET "$FEISHU_APP_SECRET"; echo "$(date '+%F %T') gui-keys injected (Z=${Z_AI_API_KEY:+ok}/F=${FEISHU_APP_SECRET:+ok})" &gt;&gt; "$HOME/Backups/opencode/gui-keys.log"</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardErrorPath</key>
+    <string>/tmp/opencode-gui-keys.err</string>
+</dict>
+</plist>

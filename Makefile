@@ -163,6 +163,12 @@ install-logrotate-job: ## 安装月度日志轮转 launchd 任务（每月 1 日
 		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-log-rotate.plist && \
 		echo "✓ 月度日志轮转任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-log-rotate.plist）"
 
+install-guikeys-job: ## 安装登录时 GUI key 注入 launchd（读 .env.secrets 600 文件 → launchctl setenv，消除重启后窗口期）
+	@launchctl bootout gui/$$(id -u) "$$HOME/Library/LaunchAgents/com.sunsklys.opencode-gui-keys.plist" 2>/dev/null || true; \
+	cp launchd/com.sunsklys.opencode-gui-keys.plist ~/Library/LaunchAgents/ && \
+		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-gui-keys.plist && \
+		echo "✓ 登录 key 注入任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-gui-keys.plist）"
+
 audit: ## npm 安全审计（切官方源，绕过 npmmirror audit 404）
 	@echo "运行 npm audit（临时切官方源）..."
 	@npm audit --audit-level=moderate --registry=https://registry.npmjs.org || echo '⚠️  发现漏洞，详见上方报告'
