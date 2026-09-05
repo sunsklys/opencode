@@ -157,6 +157,12 @@ install-dbcheck-job: ## 安装月度数据库体检 launchd 任务（每月 1 �
 		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist && \
 		echo "✓ 月度体检任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode.db-check.plist）"
 
+install-logrotate-job: ## 安装月度日志轮转 launchd 任务（每月 1 日 09:30 copytruncate 轮转 opencode.log，>20MB 触发，保留 3 份 gz）
+	@launchctl bootout gui/$$(id -u) "$$HOME/Library/LaunchAgents/com.sunsklys.opencode-log-rotate.plist" 2>/dev/null || true; \
+	cp launchd/com.sunsklys.opencode-log-rotate.plist ~/Library/LaunchAgents/ && \
+		launchctl bootstrap gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-log-rotate.plist && \
+		echo "✓ 月度日志轮转任务已装载（卸载：launchctl bootout gui/$$(id -u) ~/Library/LaunchAgents/com.sunsklys.opencode-log-rotate.plist）"
+
 audit: ## npm 安全审计（切官方源，绕过 npmmirror audit 404）
 	@echo "运行 npm audit（临时切官方源）..."
 	@npm audit --audit-level=moderate --registry=https://registry.npmjs.org || echo '⚠️  发现漏洞，详见上方报告'
