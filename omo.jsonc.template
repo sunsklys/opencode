@@ -19,7 +19,6 @@
     "runtime_fallback": {
       "enabled": true,
       "retry_on_errors": [
-        429,
         500,
         502,
         503,
