@@ -201,9 +201,24 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 
 - **引擎匹配语义**：bash permission 按 tree-sitter AST 拆 command 节点后逐节点匹配 pattern；含管道符的 pattern（如曾经的 `curl * | *sh*`）不匹配任何节点——该类规则是死规则，已于本轮删除，改为拦截管道尾部的裸解释器节点（`sh` / `bash` / `zsh` deny）与 stdin 模式（`sh -s` / `bash -s`）。
 - **拦截面（实测 7 变体全拦）**：`curl X | sh` / `echo ... | bash` / `curl X | zsh` / `wget X | sh` 等管道注入；裸解释器交互也拦。
-- **明确不拦（设计边界非遗漏）**：`bash -c '...'` / `sh -c '...'`（日常正当用途过宽：make recipe、脚本子进程包装；此类属于「已具备任意命令能力」的等价路径，由具体命令 deny（rm/sudo/dd/git push -f 等）+ `sh <(curl ...)` 进程替换变体承担残余风险）；`npm run <script>` 间接执行；`git config core.hooksPath` + hook 文件写入的组合链。
+- **明确不拦（设计边界非遗漏）**：`sh <(curl ...)` 进程替换变体、`npm run <script>` 间接执行、`git config core.hooksPath` + hook 文件写入的组合链。~~`bash -c '...'` / `sh -c '...'`~~ 已于 2026-09-05 T1 转为 deny（解释器 -c/-e 内联代码 10 条：sh/bash/zsh -c*、node -e*/--eval*、python/python3 -c*、ruby -e*、perl -e*，见下节「权限残留风险」）——原「正当用途过宽」判断经四人对审推翻：正当路径可逐条 allow 豁免，不应以放弃拦截换便利。
 - **威胁模型定位**：deny 列表是**误操作护栏 + prompt injection 的第一通拦截**，不是对抗性防线——对手若已能诱导 agent 写文件，上述间接执行面无法靠 permission 黑名单封死。纵深依赖：文件 edit 层 deny（.ssh/.env/.aws）+ skills.lock 供应链校验 + MCP 钉版。
 - **MCP 供应链三通道**：npx 通道钉版本（zai 精确 0.1.5——持 API key 且低频发布；dbx 钉 minor 0.4——连生产库但 5 天 5 版高频修复节奏，全精确钉有「钉住坏版本」反效果）；全局 bin 通道（claude-mermaid/codegraph）由 check 第 4 项版本常量比对；remote URL 通道（智谱 web 工具 3 条）豁免——供应链风险在服务端，本地不可钉。
+
+## 权限残留风险（2026-09-05 T1 加固后）
+
+T1（fix/security-permissions 分支）闭合缺口 a/c/d/e/f 后，经 opencode v1.18.29 源码逐行验证仍存的残留面（每条附复现路径与上游证据行号；升级 opencode 时按此表复核是否已被上游修复）：
+
+| # | 残留 | 根因（v1.18.29 源码） | 复现路径 | 缓解 |
+|---|---|---|---|---|
+| 1 | bash 横向读敏感文件 | `cd` 在 CWD 表被跳过权限评估（shell.ts L28、L407），`cat` 段文本只匹配 bash 规则不匹配 read 规则 | `cd ~/.ssh && cat id_rsa` → cd 段跳过、cat 段命中 `*`:allow，仅触发一次 external_directory 询问（习惯性批准即绕过 read 层 deny） | 直接 read 被 `**/id_rsa*` 拦；交互警觉 |
+| 2 | symlink 逃逸 external_directory | containsPath / resolvePath 均为字符串路径判断不解析 realpath（instance-context.ts L18-24、shell.ts L366） | worktree 内 `ln -s ~/.ssh lnk` 后 `cat lnk/id_rsa` → 字符串路径在 worktree 内跳过 external_directory，cat 段 allow，OS 层 follow symlink 读到目标 | read 层按文件名仍拦（`lnk/id_rsa` 含 `/id_rsa`）；bash 侧不拦 |
+| 3 | FILES 表覆盖面 | external_directory 路径提取仅对 FILES 表命令（shell.ts L29-50：rm/cp/mv/mkdir/touch/chmod/chown/cat + PowerShell 系），python/awk/sed/tee 不在表内 | `python -c` 已 deny；但 `python wr.py`（脚本内 open 写任意路径）不提取路径、不询问 external_directory | 解释器 -c/-e deny 已缩小面；脚本写入属纵深依赖 |
+| 4 | 会话内 always 覆盖配置 deny | ask() 求值 approved 在 ruleset 之后 + findLast 后者优先（permission/index.ts L73、L32-L33）；read/edit 的 always pattern 为 `*`（read.ts L258、edit.ts L105）、bash 为前缀通配（shell.ts L409） | 对任意一次 read 选「always」→ approved 加 `read:*:allow` → 同会话后续 read `id_rsa` / `.env` 全部 allow（覆盖配置 deny）；bash 一次 `git push` always → `git push *` allow 覆盖 `git push --force*` deny | 会话内交互慎选 always；上游修复后副此表 |
+| 5 | patterns 为空整体放行 | for-of 空 patterns 不执行 + `!needsAsk` 提前 return（permission/index.ts L72、L84）；bash 侧 `scan.patterns.size === 0` 直接 return（shell.ts L282） | 纯 `cd ~/.ssh` 命令（CWD-only）不产生任何 permission 事件 | 单独 cd 无危害；配合 #1 横向才成链 |
+| 6 | ask/run 不对称 | 混合 patterns 一旦含 ask 整体升级交互（L75-L84，allow 不豁免）；disabled() 单条件匹配与 evaluate 双条件不对称（L210 vs L32） | 多段命令一段无规则 → 整条询问（含已 allow 段） | 方向安全（多问不少问），仅体验成本 |
+
+键序规范（缺口 g 落地）：opencode.json 为纯 JSON 不支持注释，键序敏感声明落在本节——**permission 规则对象内后声明优先（findLast），通配更宽的规则必须放窄规则之后，allow 豁免（如 `*.env.example`）必须放对应 deny（`*.env.*`）之后**；harness 键序探针（scripts/check-permissions.mjs probeKeyOrder）持续锁定该语义，上游改求值语义即红。
 
 ## 上游版本观察项（2026-08-28 体检）
 

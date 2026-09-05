@@ -34,7 +34,7 @@ echo ""
 
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 1. [Critical] 基础环境 + 环境变量 ----------
-  echo "【1/16·Critical】基础环境 + 环境变量"
+  echo "【1/17·Critical】基础环境 + 环境变量"
   # --- Node.js 与 opencode 安装 ---
   NODE_VER=$(node --version 2>/dev/null || echo "")
   if [ -n "$NODE_VER" ]; then
@@ -60,7 +60,7 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 
 # ---------- 2. [Critical] npm 依赖 ----------
-echo "【2/16·Critical】npm 依赖版本"
+echo "【2/17·Critical】npm 依赖版本"
  
 if npm ls --depth=0 2>&1 | grep -q "invalid"; then
   fail "node_modules 版本不一致（运行 make update 重装）"
@@ -74,7 +74,7 @@ echo ""
 
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 3. [Warning] opencode-mem 记忆插件 ----------
-  echo "【3/16·Warning】opencode-mem 记忆插件"
+  echo "【3/17·Warning】opencode-mem 记忆插件"
  
   if [ -L "node_modules/opencode-mem" ] && [ -d "node_modules/opencode-mem" ]; then
     MEM_VER=$(node -p "require('./node_modules/opencode-mem/package.json').version" 2>/dev/null || echo "?")
@@ -123,7 +123,7 @@ fi
 
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 4. [Warning] 全局 MCP 依赖 ----------
-  echo "【4/16·Warning】全局 MCP 依赖"
+  echo "【4/17·Warning】全局 MCP 依赖"
  
   # 预期版本常量：全局 bin 通道（npm i -g）的版本锁定比对——升级全局包后同步此处（B2 通道 2）
   EXPECTED_MERMAID="1.6.5"
@@ -153,7 +153,7 @@ fi
 
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 5. [Warning] 飞书 CLI ----------
-  echo "【5/16·Warning】飞书 CLI"
+  echo "【5/17·Warning】飞书 CLI"
  
   if command -v lark-cli >/dev/null 2>&1; then
     ok "lark-cli 已安装"
@@ -170,7 +170,7 @@ fi
 
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 6. [Warning] Web UI ----------
-  echo "【6/16·Warning】opencode-mem Web UI"
+  echo "【6/17·Warning】opencode-mem Web UI"
  
   # opencode-mem Web UI 只在 opencode 主进程启动时才拉起；check 脚本通常在 opencode 外部运行，
   # 直接 curl 端口会把"opencode 没开"误报为配置警告。先探测进程状态再决定怎么报。
@@ -190,7 +190,7 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 7. [Warning] plugin @latest 漂移检测（opencode 缓存 vs 项目软链） ----------
-  echo "【7/16·Warning】opencode-mem 版本对齐（软链 ↔ pin 缓存目录）"
+  echo "【7/17·Warning】opencode-mem 版本对齐（软链 ↔ pin 缓存目录）"
  
   # 项目软链 node_modules/opencode-mem -> 全局装版本（install.sh 按 spec 安装）
   # 缓存目录 = opencode 实际加载源（spec 目录名即版本）
@@ -213,7 +213,7 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 8. [Warning] lark skills SHA256 校验 ----------
-  echo "【8/16·Warning】skills SHA256 校验（供应链完整性，lark + OMO）"
+  echo "【8/17·Warning】skills SHA256 校验（供应链完整性，lark + OMO）"
  
   if [ ! -f "skills.lock" ]; then
     warn "skills.lock 不存在（运行 make skills-lock 生成）"
@@ -275,7 +275,7 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 9. [Warning] oh-my-openagent 内置 skill 软链健康 ----------
-  echo "【9/16·Warning】oh-my-openagent 内置 skill 软链健康（含自愈）"
+  echo "【9/17·Warning】oh-my-openagent 内置 skill 软链健康（含自愈）"
  
   # 动态检测 OMO skill 软链是否齐全有效（数量随 OMO 版本变化），缺失/断链时自动重建
   # 软链作用：plugin 加载失败时作为 user-scope fallback（详见 plugin 缓存健康检查项）
@@ -345,7 +345,7 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 10. [Critical] opencode plugin 缓存健康（dist/skills 完整性，根因检查） ----------
-  echo "【10/16·Critical】opencode plugin 缓存健康（dist/skills 完整性）"
+  echo "【10/17·Critical】opencode plugin 缓存健康（dist/skills 完整性）"
  
   # 这是 ulw-plan/git-master 等 shared scope skill 的真实加载源
   # OMO plugin 启动时通过 discoverSharedSkills() 扫描自己的 dist/skills
@@ -405,7 +405,7 @@ fi
 
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 11. [Critical] OMO + opencode 关键字段验证 ----------
-  echo "【11/16·Critical】OMO + opencode 关键字段配置验证"
+  echo "【11/17·Critical】OMO + opencode 关键字段配置验证"
  
   # 用 node 提取字段避免 jq 依赖
   OMO_FIELDS=$(node scripts/read-omo-config.mjs 2>/dev/null || echo "{}")
@@ -493,7 +493,7 @@ fi
 
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 12. [Warning] tui.json plugin 同步 ----------
-  echo "【12/16·Warning】tui.json plugin 字段与 opencode.json 同步"
+  echo "【12/17·Warning】tui.json plugin 字段与 opencode.json 同步"
   # tui.json 是 TUI 模式的独立配置，plugin 数组必须与 opencode.json 保持同步
   # 否则 TUI 模式加载的 plugin 与 CLI 模式不一致
   TU_SYNC=$(node -e "const a=require('./opencode.json').plugin||[];const b=require('./tui.json').plugin||[];process.stdout.write(JSON.stringify(a)===JSON.stringify(b)?'sync':'mismatch')" 2>/dev/null || echo "error")
@@ -508,7 +508,7 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 if [ -z "$CHECK_FAST" ]; then
   # ---------- 13. [Warning] superpowers 版本锁定检测 ----------
-  echo "【13/16·Warning】superpowers 版本锁定检测"
+  echo "【13/17·Warning】superpowers 版本锁定检测"
  
   # 解析 opencode.json 中 superpowers 的 #vX.Y.Z
   SP_LOCKED=$(grep -oE 'superpowers@git\+https://github\.com/obra/superpowers\.git#v[0-9]+\.[0-9]+\.[0-9]+' opencode.json | head -1 | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+')
@@ -554,7 +554,7 @@ if [ -z "$CHECK_FAST" ]; then
 fi
 
 # ---------- 14. [Critical] template ↔ 生成物零漂移 ----------
-echo "【14/16·Critical】template ↔ 生成物零漂移（omo / opencode-mem）"
+echo "【14/17·Critical】template ↔ 生成物零漂移（omo / opencode-mem）"
  
 # instructions.md 工作约束 5 的自动化 enforcement：template 改了生成物没同步（或反之）= 配置不一致。
 # 规范化比较（剥注释/尾逗号、omo 排除运行时写入的 _migrations），漂移即 critical fail 阻断提交。
@@ -577,7 +577,7 @@ for pair in omo mem pluginSpec memSpecSync docRefs; do
 done
 echo ""
 # ---------- 15. [Critical] instructions 引用完整性 ----------
-echo "【15/16·Critical】instructions 引用完整性（{file:...} 目标存在）"
+echo "【15/17·Critical】instructions 引用完整性（{file:...} 目标存在）"
  
 # opencode.json instructions 数组引用的文件若丢失，系统提示注入会静默失效；检测引用目标存在性。
 INST_TOTAL=$(echo "$DRIFT_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0)).instructions.total" 2>/dev/null || echo "0")
@@ -592,9 +592,27 @@ else
   done
 fi
 echo ""
+# ---------- 16. [Critical] permission 规则回归（T1 harness） ----------
+echo "【16/17·Critical】permission 规则回归（缺口 a/c/d/e/f + 键序探针）"
+
+# T1 权限加固的回归门：scripts/check-permissions.mjs 复刻上游 v1.18.29 求值语义（findLast 键序/
+# wildcard 编译/bash 段切分），37 案例锚定裸文件名相对形态、解释器 -c/-e、docker 长格式、
+# tee -a、env.example 键序遮蔽。规则误删/错序/上游语义变更都会在此红，防配置回退。
+PERM_JSON=$(node scripts/check-permissions.mjs 2>/dev/null)
+PERM_TOTAL=$(echo "$PERM_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0)).permission.total" 2>/dev/null || echo "")
+PERM_FAILED=$(echo "$PERM_JSON" | node -pe "JSON.parse(require('fs').readFileSync(0)).permission.failed" 2>/dev/null || echo "")
+if ! is_uint "$PERM_TOTAL" || [ -z "$PERM_FAILED" ]; then
+  fail "permission harness 输出异常（脚本崩溃或 opencode.json 解析失败）— 手动跑 node scripts/check-permissions.mjs --report"
+elif [ "$PERM_FAILED" -eq 0 ]; then
+  ok "permission 规则 ${PERM_TOTAL} 案例全过（相对路径/解释器/docker 长格式/键序）"
+else
+  fail "permission 规则回归 ${PERM_FAILED}/${PERM_TOTAL} 失败 — node scripts/check-permissions.mjs --report 看缺口，修复 opencode.json 规则段"
+fi
+echo ""
+
 if [ -z "$CHECK_FAST" ]; then
-  # ---------- 16. [Warning] export 备份新鲜度 ----------
-  echo "【16/16·Warning】export 备份新鲜度（dbx.md / skills 唯一备份通道）"
+  # ---------- 17. [Warning] export 备份新鲜度 ----------
+  echo "【17/17·Warning】export 备份新鲜度（dbx.md / skills 唯一备份通道）"
  
   # dbx.md、54 个用户 skill 不在 git 内，唯一备份通道是 make export 导出包；
   # 包比关键源文件旧 = 单点丢失风险。纯本地 mtime 比较，无网络依赖。
