@@ -24,10 +24,17 @@ function readString(record: Record<string, unknown>, key: string): string | unde
   const value = record[key]
   return typeof value === "string" ? value : undefined
 }
+// segment 匹配：取 provider 前缀后的最后一段、variant 冒号前的部分做前缀判定；
+// flash 系（glm-5.3-flash 等）是独立小模型，不做 max reasoning，显式排除
+const GLM5_ALIASES = ["glm-5.2", "glm-5-2", "glm-5p2", "glm-5.3", "glm-5-3", "glm-5p3"]
+
 export function isGlm5Max(modelID: string): boolean {
   const id = modelID.toLowerCase()
-  return ["glm-5.2", "glm-5-2", "glm-5p2", "glm-5.3", "glm-5-3", "glm-5p3"].some((name) => id.includes(name))
+  const segment = id.split("/").pop() ?? id
+  const name = segment.split(":")[0]
+  return GLM5_ALIASES.some((alias) => name.startsWith(alias)) && !name.includes("flash")
 }
+
 const plugin: { id: string; server: Plugin } = {
   id: "glm-max",
   server: async () => ({
