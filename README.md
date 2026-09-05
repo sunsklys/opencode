@@ -38,7 +38,7 @@
 | 文档 | 用途 |
 |---|---|
 | [docs/quickstart.md](./docs/quickstart.md) | 新机器安装 / Makefile 命令速查 / Git Hooks / 多机同步 |
-| [docs/reference.md](./docs/reference.md) | 配置文件字段地图 / experimental 归属 / 超时对照 / 功能开关 / 角色路由 / MCP 信任边界 / @latest 缓存机制 / 升级流程 |
+| [docs/reference.md](./docs/reference.md) | 配置文件字段地图 / experimental 归属 / 超时对照 / 功能开关 / 角色路由 / MCP 信任边界 / 上下文注入量化与 MCP 收敛评估 / @latest 缓存机制 / 升级流程 |
 | [docs/troubleshooting.md](./docs/troubleshooting.md) | 常见报错和修复路径 |
 | [docs/usage.md](./docs/usage.md) | 日常使用指南 / 关键词触发 / 场景速查 / 避坑指南 / 配置事实索引 |
 

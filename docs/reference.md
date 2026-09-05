@@ -58,6 +58,12 @@
 - 已提取到 `.opencode/lang-zh.md`，用 `prompt_append: "file://~/.config/opencode/.opencode/lang-zh.md"` 单源引用
 - **必须用 `~/` 绝对锚定**，不能用相对路径 `file://.opencode/...`：相对路径依赖 opencode 启动 cwd，当 cwd ≠ `~/.config/opencode/`（如从家目录启动）时 `resolvePromptAppend` 会解析到错误位置并静默失败，agent system prompt 会嵌入 `[WARNING: Could not resolve file URI]` 而非中文指令——上游支持 tilde 展开见 `resolve-file-uri.ts:30` + 测试 `resolve-file-uri.test.ts:76`（issue #4593）
 
+**为什么不能收敛为「全局一次注入」（2026-09-05 T11 实证）**：
+
+- `opencode.json` 的 `instructions` 数组（instructions.md 3138B + dbx.md 3061B）只注入**主会话** system prompt，**不注入 task/subagent 会话**——subagent 系统提示中两者内容实测缺失（2026-09-05 以 category subagent 会话对照验证）。若把 `lang-zh.md` 从 20 处 `prompt_append` 收敛进 instructions 数组，所有 subagent（explore/librarian/category delegate 等）的中文约束即失效
+- `prompt_append` 注入形态：OMO `resolvePromptAppend`（dist/index.js ~L159551）把 `file://` URI 读成**文件正文**拼在 agent prompt 尾部；20 处引用是「每个 agent 定义各带一份」，**同一 session 只注入一份**，不存在 20 份叠加——重复的成本是每个被创建的 subagent session 各带一份（2058B ≈ 0.9k token），不是乘以 20
+- 主会话的轻微重复（instructions.md 语言简版 ~600B + lang-zh.md 完整版 2058B）是有意设计：简版全局兜底、完整版 agent 级强制，见 instructions.md L14 的交叉引用
+
 ## 超时字段作用域对照
 
 > 5 个超时相关字段分散在 opencode.json 和 ~/.omo/omo.jsonc，作用域完全不重叠。配置审查时必读。
@@ -171,6 +177,67 @@ oh-my-openagent `createBuiltinMcps()` 默认注册三条 remote MCP，不经过 
 
 `~/.zshrc` 末尾的 `launchctl setenv` 仅在 shell 启动时执行——依赖「**开过终端**」这个隐式前提。macOS 重启后到首次打开终端之间的窗口期内，GUI/Dock 启动的 opencode 进程 env 里没有 `Z_AI_API_KEY` / `FEISHU_APP_SECRET`（侧链三消费方 + lark-cli 全部静默降级或报鉴权失败；主模型链路不受影响——auth.json 不经此通道）。`KINGSOFT_DOCS_TOKEN` 无 setenv 行，GUI 域恒不可用（仅终端会话可用）。当前缓解为操作约定：重启后先开一次终端再启 opencode；是否引入 LaunchAgent 登录时自动注入（消除时窗），决策待定。
 
+## 上下文注入量化与 MCP 收敛评估（T11，2026-09-05）
+
+> 实测方法：对 7 个本地/远程 MCP server 发 initialize + tools/list（只读探针，不执行工具），统计 name + description + inputSchema 的 JSON 字符量；token 按 chars/4（英文为主）～ chars/3（混合）区间估算。
+
+### 每 session 常驻注入量化（subagent 口径）
+
+| 注入项 | 覆盖范围 | 实测 chars | token（/4～/3） |
+|---|---|---|---|
+| MCP 工具定义（opencode.json 7 server，33 工具） | 所有 session 含 subagent | 24639 | 6.2k～8.2k |
+| MCP 工具定义（OMO 内置 3 server，4 工具） | 同上 | 8449 | 2.1k～2.8k |
+| 外部 skill 描述（54 个 SKILL.md frontmatter） | 同上 | 18318 | 4.6k～6.1k |
+| lang-zh.md（prompt_append） | 每个 agent 一份 | 2058 | ~0.9k（中文） |
+| instructions.md + dbx.md（instructions 数组） | **仅主会话** | 6199 | 1.5k～2.1k |
+| 合计（subagent session） | — | ~53.5k | **~13.4k～18k** |
+
+Wave3 审计「15k+ tokens 常驻」口径成立，但归属需修正：大头是 MCP 工具定义（8.3k～11k）与 skill 描述（4.6k～6.1k），**不是**检索/浏览入口重叠本身。检索/浏览相关（web-search-prime + web-reader + zread + 内置 exa/context7/grep_app）实测合计 12018 chars ≈ 3k～4k token。
+
+### 审计移交两处事实修正
+
+- **zai-mcp-server 无 websearch 工具**：实测 8 工具全为视觉类（ui_to_artifact / extract_text_from_screenshot / diagnose_error_screenshot / understand_technical_diagram / analyze_data_visualization / ui_diff_check / analyze_image / analyze_video，合计 7670 chars），与 OMO 内置 `websearch`（exa 后端）无重叠；analyze_image 与 opencode 内置 `look_at` 部分重叠但粒度不同（精细分析 vs 快速摘要）
+- **lang-zh.md 引用是 20 处不是 12 处**：12 agent + 8 category 全挂；且同一 session 只注入一份（见上文 prompt_append 段）
+
+### MCP 保留矩阵（评估结论；配置变更停 G11）
+
+| 功能面 | 保留 | 候选禁用 | 理由 | 禁用损失 | 节省 |
+|---|---|---|---|---|---|
+| Web 搜索 | web-search-prime + 内置 websearch(exa) 双入口 | 无 | 互补非重叠：prime 强中文/中国区时效（location:cn 默认、recency 过滤、content_size 摘要粒度），exa 强英文语义与 category:people/company 检索；两者免费/付费链路也不同（Z_AI key vs 匿名） | — | 0 |
+| 网页阅读 | opencode 内置 webfetch | web-reader（1069 chars） | webfetch 覆盖 URL→markdown/text/html 主路径，免费零依赖 | retain_images / images_summary / links_summary / no_gfm 精细控制 | ~270 token |
+| GitHub 仓库阅读 | webfetch（raw.githubusercontent / api.github.com）+ 内置 grep_app | zread（1203 chars） | 结构浏览/单文件读可由 webfetch 可达 | **search_doc（zread.ai 索引的仓库文档/issue 语义搜索）无替代**——按「不删功能」红线默认保留，仅当确认低频可弃才禁 | ~300 token |
+| 视觉/图像 | zai-mcp-server 8 工具 | 无 | ui_to_artifact / ui_diff_check / analyze_video 无替代 | — | 0 |
+| 库文档 | 内置 context7 | 无 | 唯一入口 | — | 0 |
+| 数据库 | dbx 17 工具 | 无 | 生产诊断链路（hooloo 等任务高频） | — | 0 |
+| 图表渲染 | mermaid | 无 | 唯一入口 | — | 0 |
+| 本地符号索引 | codegraph | 无 | 与 grep/glob 互补（符号级 + 调用路径） | — | 0 |
+
+**结论：无一项可无条件禁用**。可议两项（web-reader / zread）合计上限 ~570 token/session，均有功能损失；lang-zh.md 正文瘦身（删反例对比段可省 ~400 token/session）同理不推荐——few-shot 示例对语言行为校准价值高，且行为退化无法本地验证，违背「宁缺毋滥」。
+
+### G11 待批 diff（若批准两项禁用；不删条目，回退 = 删 `enabled` 行）
+
+```diff
+   "web-reader": {
+     "type": "remote",
+     "url": "https://open.bigmodel.cn/api/mcp/web_reader/mcp",
+     "headers": {
+       "Authorization": "Bearer {env:Z_AI_API_KEY}"
+-    }
++    },
++    "enabled": false
+   },
+   "zread": {
+     "type": "remote",
+     "url": "https://open.bigmodel.cn/api/mcp/zread/mcp",
+     "headers": {
+       "Authorization": "Bearer {env:Z_AI_API_KEY}"
+-    }
++    },
++    "enabled": false
+   },
+```
+
+> 生效条件：改后需重启 opencode（配置非热加载）。zread 的 `search_doc` 损失评估见保留矩阵——若日常确用 zread 浏览未 clone 的仓库，建议只批 web-reader 一项（~270 token）。
 ## plugin 加载机制与钉版策略（Wave3 闭合 @latest 旁路）
 
 **omo 已钉精确版本**（2026-08-29）：`opencode.json` / `tui.json` 的 plugin spec 为 `oh-my-openagent@4.19.4`（不再是 `@latest`）。
