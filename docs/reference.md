@@ -183,6 +183,23 @@ oh-my-openagent `createBuiltinMcps()` 默认注册三条 remote MCP，不经过 
 
 `make check` 第 7 项比较：项目软链 `node_modules/opencode-mem`（全局版本，install.sh 按 spec 安装）↔ opencode 缓存目录版本；不一致警告后 `make update` 重装同步。
 
+### 缓存目录残留审计（2026-09-05 T9，全量只读，清理待 G9 批准）
+
+钉版切换后的存量残留盘点（du/stat/源码三重取证）：
+
+| 残留 | 大小 | 零引用证据 |
+|---|---|---|
+| `~/.cache/opencode/packages/` 五个 `@latest` 目录：antigravity-auth 43M（5/10）/ pty 84M（5/16）/ notify 69M、vibeguard 68K、worktree 133M（6/20 实验） | ~329M | `opencode.json` + `tui.json` 双 plugin 数组 grep 零匹配；workspace 根 `packages/package.json` 仍是老包名时代清单（`oh-my-opencode@^4.12.1` + notify/vibeguard/worktree），现三个固定 spec 均不指向它们（注意：该 manifest 属 opencode 缓存机制自管理，只删目录不动 manifest，重建时多拉 4 条依赖无害） |
+| `repos/github.com/code-yeongyu/oh-my-openagent` 裸名 checkout | 139M | references 用 `branch: dev` → materialize 走 `@dev` 后缀目录（323M，9/5 仍活跃更新）；裸名 7/27 后零触碰，属早期默认分支时期产物 |
+| LSP 死重：`packages/@vue` 52M + `bin/lua-language-server-*` 22.6M | ~75M | `lsp-install-decisions.json` 中 vue（9/1）/ lua-ls（7/22）均 declined，落盘为弹窗前旧版行为；@vue 与 lua 均不在 core `config/lsp.ts` 内置清单 |
+| `~/.cache/opencode/skills/security-research/` + `security-review/` 明名双文件 | 15K | opencode 现 skill 发现机制只认 `cache/skills/<Bun.hash(base)>/` + `.opencode-version` 结构（core/src/skill/discovery.ts L113）；4.19.4 的 skill 定义内联在 `dist/index.js`（grep `
+Team Mode security`
+命中），明名目录无消费者 |
+| `bin/kotlin-ls` 0B 空目录、`.superpowers/` 空目录、zshrc L120 `/usr/local/sbin`（目录不存在） | ~0 | 占位残留；kotlin-ls 非 core 内置 LSP |
+| 可选项：`bin/vscode-eslint` 106M | 106M | 非 core 内置 LSP、本仓库无 eslint 配置、6/23 后零触碰；但无 declined 决策记录（区别于 @vue/lua），若近期打开过含 eslint 的前端项目则保留 |
+
+补充事实：① `opencode.log` 按启动重置（当前仅覆盖当日），T6 统计的 materialize 失败（token mismatch 258 / overwritten 210）已无日志证据可复现；② 四个 checkout（anomalyco / omo@dev / omo 裸名 / superpowers）当前全部干净（`status --porcelain` 空、stash 0）——T6 的「脏 checkout 重置」移交项经实证无需任何 git 操作；③ `packages/list@latest`（300K）9/5 仍被触碰，活跃，保留。
+
 ## plugin git 源版本锁定（superpowers）
 
 `opencode.json` 第 3 行的 superpowers plugin 用 git 源（`superpowers@git+https://...`），不像 `@latest` 的 npm 包有 npm registry 做 semver 网关。为保证可复现性，**显式锁定到 git tag**：
