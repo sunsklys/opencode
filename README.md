@@ -16,7 +16,7 @@
 | `opencode-mem.jsonc.template` | 智谱直连模板（`make mem` 生成 `opencode-mem.jsonc`） |
 | `omo.jsonc.template` | OMO 统一配置模板（`make omo-config` 生成 `~/.omo/omo.jsonc`，含 12 agent + 8 category 路由） |
 | `opencode-export.sh` | 配置导出脚本（`make export` 交互 / `HEADLESS=1` 无人值守三硬约束：强制排除 auth.json、落 ~/Backups/opencode/ 非 iCloud、retention 保 5；含 git 外四类内容） |
-| `launchd/` | 周导出 + 月度 db-check + 月度日志轮转三个 launchd 任务模板（`make install-export-job` / `install-dbcheck-job` / `install-logrotate-job` 装载） |
+| `launchd/` | 周导出 + 月度 db-check + 月度日志轮转 + 登录 GUI key 注入四个 launchd 任务模板（`make install-export-job` / `install-dbcheck-job` / `install-logrotate-job` / `install-guikeys-job` 装载） |
 | `docs/` | 详细文档（见下） |
 
 **不包含**（已被 .gitignore 排除）：
