@@ -131,24 +131,25 @@ const CASES = [
   { gap: 'a', tool: 'read', input: 'secrets.yaml', expected: 'deny' },
   { gap: 'a', tool: 'read', input: 'foo.pem', expected: 'deny' },
   { gap: 'a', tool: 'read', input: '.npmrc', expected: 'deny' },
-  // 缺口 c：解释器 -c/-e 内联代码（"sh":deny 只匹配裸命令名，带参数即失配）
-  { gap: 'c', tool: 'bash', input: 'sh -c "rm x"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'bash -c "y"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'zsh -c "y2"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'node -e "z"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'node --eval "z2"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'python -c "w"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'python3 -c "v"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'ruby -e "u"', expected: 'deny' },
-  { gap: 'c', tool: 'bash', input: 'perl -e "t"', expected: 'deny' },
+  // 放宽锚定 c（2026-09-05 用户批准 A 档）：解释器 -c/-e 系已删——防误触黑名单实测纸防线，expected allow 锚定防误加回
+  { gap: 'c', tool: 'bash', input: 'sh -c "rm x"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'bash -c "y"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'zsh -c "y2"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'node -e "z"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'node --eval "z2"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'python -c "w"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'python3 -c "v"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'ruby -e "u"', expected: 'allow' },
+  { gap: 'c', tool: 'bash', input: 'perl -e "t"', expected: 'allow' },
   // 缺口 d：*.env.example allow 被 findLast 更晚的 *.env.* deny 遮蔽
   { gap: 'd', tool: 'read', input: 'foo.env.example', expected: 'allow' },
-  // 缺口 e：tee -a 追加写（现有 tee 规则只匹配无 -a 形态；重定向规则不含 tee 路径）
+  // 缺口 e：tee -a 敏感文件窄版 deny（全局 tee -a * 已删，2026-09-05 A 档）；非敏感路径放宽
   { gap: 'e', tool: 'bash', input: 'tee -a ~/.zshrc', expected: 'deny' },
-  { gap: 'e', tool: 'bash', input: 'tee -a .env.prod', expected: 'deny' },
-  // 缺口 f：docker 长格式 flag 与 exec（-f 短格式规则不覆盖 --force/exec）
-  { gap: 'f', tool: 'bash', input: 'docker rm --force x', expected: 'deny' },
-  { gap: 'f', tool: 'bash', input: 'docker exec c sh', expected: 'deny' },
+  { gap: 'e', tool: 'bash', input: 'tee -a .env.prod', expected: 'allow' },
+  // 缺口 f（2026-09-05 调整）：docker rm/rmi 长短格式统一 ask（B 档）；exec 已删放宽
+  { gap: 'f', tool: 'bash', input: 'docker rm --force x', expected: 'ask' },
+  { gap: 'f', tool: 'bash', input: 'docker exec c sh', expected: 'allow' },
+  { gap: 'f', tool: 'bash', input: 'docker rm -f x', expected: 'ask' },
   // anchor：当前已正确的行为（防止修复时被破坏）
   { gap: 'anchor', tool: 'read', input: '.ssh/id_rsa', expected: 'deny' },
   { gap: 'anchor', tool: 'read', input: '.env', expected: 'deny' },
@@ -164,7 +165,7 @@ const CASES = [
   { gap: 'anchor', tool: 'edit', input: '../../.zshrc', expected: 'deny' },
   { gap: 'a', tool: 'read', input: '.ssh/config', expected: 'deny' },
   { gap: 'a', tool: 'read', input: 'id_ed25519', expected: 'deny' },
-  { gap: 'a', tool: 'edit', input: '.env', expected: 'deny' },
+  { gap: 'a', tool: 'edit', input: '.env', expected: 'ask' },
   { gap: 'a', tool: 'edit', input: '.ssh/config', expected: 'deny' },
   { gap: 'a', tool: 'edit', input: 'foo.pem', expected: 'deny' },
   { gap: 'anchor', tool: 'edit', input: 'src/foo.ts', expected: 'allow' },

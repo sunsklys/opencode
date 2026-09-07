@@ -30,7 +30,7 @@
 
 - 12 agent + 8 category 的模型路由（GLM-5.3 主 + GLM-5.2 降级，`models` 链单写，智谱单栈）
 - 7 MCP 配置（6 启用 / 1 停用：web-reader 已 enabled:false，URL→markdown 由内置 webfetch 覆盖）
-- 140 条 permission deny（bash 70 + read 32 + edit 38，三层纵深防御；bash 含裸解释器 sh/bash/zsh、-c/-e 内联与 stdin 模式 deny，read/edit 含根级敏感文件裸形态）
+- 125 条 permission deny + 6 条 ask（bash 57+4 / read 32 / edit 36+2，三层纵深；灾难线 deny：sudo/rm -rf //git push --force/敏感文件读写；2026-09-05 A+B 档放宽：解释器 -c/-e、docker exec、tee -a 全局已删，docker rm/rmi 与 edit .env 降 ask）
 - OMO 4.19.4
 
 详细字段地图见 `docs/reference.md` 的「配置文件结构」段；新机器上手见 `docs/quickstart.md`；灾备恢复见 `docs/quickstart.md`「灾备 / 恢复」段。
