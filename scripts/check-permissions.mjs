@@ -146,14 +146,14 @@ const CASES = [
   // 缺口 e：tee -a 敏感文件窄版 deny（全局 tee -a * 已删，2026-09-05 A 档）；非敏感路径放宽
   { gap: 'e', tool: 'bash', input: 'tee -a ~/.zshrc', expected: 'deny' },
   { gap: 'e', tool: 'bash', input: 'tee -a .env.prod', expected: 'allow' },
-  // 缺口 f（2026-09-05 调整）：docker rm/rmi 长短格式统一 ask（B 档）；exec 已删放宽
-  { gap: 'f', tool: 'bash', input: 'docker rm --force x', expected: 'ask' },
+  // 缺口 f（2026-09-05 二次调整）：docker 全家 allow（用户批准直放，个人机容器可重建）；exec 已删
+  { gap: 'f', tool: 'bash', input: 'docker rm --force x', expected: 'allow' },
   { gap: 'f', tool: 'bash', input: 'docker exec c sh', expected: 'allow' },
-  { gap: 'f', tool: 'bash', input: 'docker rm -f x', expected: 'ask' },
+  { gap: 'f', tool: 'bash', input: 'docker rm -f x', expected: 'allow' },
   // anchor：当前已正确的行为（防止修复时被破坏）
   { gap: 'anchor', tool: 'read', input: '.ssh/id_rsa', expected: 'deny' },
-  { gap: 'anchor', tool: 'read', input: '.env', expected: 'deny' },
-  { gap: 'anchor', tool: 'read', input: 'foo.env', expected: 'deny' },
+  { gap: 'anchor', tool: 'read', input: '.env', expected: 'ask' },
+  { gap: 'anchor', tool: 'read', input: 'foo.env', expected: 'ask' },
   { gap: 'anchor', tool: 'read', input: '/Users/u/.ssh/id_rsa', expected: 'deny' },
   { gap: 'anchor', tool: 'read', input: 'src/main.ts', expected: 'allow' },
   { gap: 'anchor', tool: 'bash', input: 'sudo rm x', expected: 'deny' },
@@ -162,7 +162,7 @@ const CASES = [
   { gap: 'anchor', tool: 'bash', input: 'rm -rf /', expected: 'deny' },
   { gap: 'anchor', tool: 'bash', input: 'sh', expected: 'deny' },
   { gap: 'anchor', tool: 'bash', input: 'git status', expected: 'allow' },
-  { gap: 'anchor', tool: 'edit', input: '../../.zshrc', expected: 'deny' },
+  { gap: 'anchor', tool: 'edit', input: '../../.zshrc', expected: 'ask' },
   { gap: 'a', tool: 'read', input: '.ssh/config', expected: 'deny' },
   { gap: 'a', tool: 'read', input: 'id_ed25519', expected: 'deny' },
   { gap: 'a', tool: 'edit', input: '.env', expected: 'ask' },
