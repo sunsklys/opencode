@@ -125,49 +125,30 @@ export function segmentBash(cmd) {
 // --- 案例表：gap=审计缺口编号（a 相对路径/c 解释器/d 遮蔽/e tee/f docker/anchor 防回归锚点）---
 // expected = 修复后期望的正确行为；修复前 RED（actual≠expected 的即缺口证据）。
 const CASES = [
-  // 缺口 a：裸文件名相对路径（无斜杠 → **/x 规则全部失配 → 回落 *:allow）
-  { gap: 'a', tool: 'read', input: 'id_rsa', expected: 'deny' },
-  { gap: 'a', tool: 'read', input: 'credentials.json', expected: 'deny' },
-  { gap: 'a', tool: 'read', input: 'secrets.yaml', expected: 'deny' },
-  { gap: 'a', tool: 'read', input: 'foo.pem', expected: 'deny' },
-  { gap: 'a', tool: 'read', input: '.npmrc', expected: 'deny' },
-  // 放宽锚定 c（2026-09-05 用户批准 A 档）：解释器 -c/-e 系已删——防误触黑名单实测纸防线，expected allow 锚定防误加回
+  // 2026-09-08 第六轮（用户批准）：ask 全清——read/bash/edit 仅留灾难级 deny（mkfs/dd/rm -rf 系）
+  // 前置事实：DEFAULTS 的 read *.env ask 被用户 read *:allow 覆盖（findLast 用户规则在后）
+  { gap: 'a', tool: 'read', input: 'id_rsa', expected: 'allow' },
+  { gap: 'a', tool: 'read', input: 'credentials.json', expected: 'allow' },
+  { gap: 'a', tool: 'read', input: 'foo.pem', expected: 'allow' },
+  { gap: 'a', tool: 'read', input: '.npmrc', expected: 'allow' },
+  { gap: 'a', tool: 'read', input: '.ssh/config', expected: 'allow' },
+  { gap: 'a', tool: 'read', input: '.env', expected: 'allow' },
+  { gap: 'a', tool: 'read', input: 'foo.env', expected: 'allow' },
+  { gap: 'a', tool: 'read', input: 'src/main.ts', expected: 'allow' },
   { gap: 'c', tool: 'bash', input: 'sh -c "rm x"', expected: 'allow' },
-  { gap: 'c', tool: 'bash', input: 'bash -c "y"', expected: 'allow' },
-  { gap: 'c', tool: 'bash', input: 'zsh -c "y2"', expected: 'allow' },
   { gap: 'c', tool: 'bash', input: 'node -e "z"', expected: 'allow' },
-  { gap: 'c', tool: 'bash', input: 'node --eval "z2"', expected: 'allow' },
-  { gap: 'c', tool: 'bash', input: 'python -c "w"', expected: 'allow' },
-  { gap: 'c', tool: 'bash', input: 'python3 -c "v"', expected: 'allow' },
-  { gap: 'c', tool: 'bash', input: 'ruby -e "u"', expected: 'allow' },
-  { gap: 'c', tool: 'bash', input: 'perl -e "t"', expected: 'allow' },
-  // 缺口 d：*.env.example allow 被 findLast 更晚的 *.env.* deny 遮蔽
-  { gap: 'd', tool: 'read', input: 'foo.env.example', expected: 'allow' },
-  // 缺口 e：tee -a 敏感文件窄版 deny（全局 tee -a * 已删，2026-09-05 A 档）；非敏感路径放宽
-  { gap: 'e', tool: 'bash', input: 'tee -a ~/.zshrc', expected: 'deny' },
-  { gap: 'e', tool: 'bash', input: 'tee -a .env.prod', expected: 'allow' },
-  // 缺口 f（2026-09-05 二次调整）：docker 全家 allow（用户批准直放，个人机容器可重建）；exec 已删
+  { gap: 'e', tool: 'bash', input: 'tee -a ~/.zshrc', expected: 'allow' },
   { gap: 'f', tool: 'bash', input: 'docker rm --force x', expected: 'allow' },
-  { gap: 'f', tool: 'bash', input: 'docker exec c sh', expected: 'allow' },
-  { gap: 'f', tool: 'bash', input: 'docker rm -f x', expected: 'allow' },
-  // anchor：当前已正确的行为（防止修复时被破坏）
-  { gap: 'anchor', tool: 'read', input: '.ssh/id_rsa', expected: 'deny' },
-  { gap: 'anchor', tool: 'read', input: '.env', expected: 'ask' },
-  { gap: 'anchor', tool: 'read', input: 'foo.env', expected: 'ask' },
-  { gap: 'anchor', tool: 'read', input: '/Users/u/.ssh/id_rsa', expected: 'deny' },
-  { gap: 'anchor', tool: 'read', input: 'src/main.ts', expected: 'allow' },
-  { gap: 'anchor', tool: 'bash', input: 'sudo rm x', expected: 'deny' },
-  { gap: 'anchor', tool: 'bash', input: 'git push --force origin main', expected: 'deny' },
-  { gap: 'anchor', tool: 'bash', input: 'git push --force-with-lease origin main', expected: 'allow' },
-  { gap: 'anchor', tool: 'bash', input: 'rm -rf /', expected: 'deny' },
-  { gap: 'anchor', tool: 'bash', input: 'sh', expected: 'deny' },
+  { gap: 'anchor', tool: 'bash', input: 'sudo rm x', expected: 'allow' },
+  { gap: 'anchor', tool: 'bash', input: 'git push --force origin main', expected: 'allow' },
+  { gap: 'anchor', tool: 'bash', input: 'sh', expected: 'allow' },
   { gap: 'anchor', tool: 'bash', input: 'git status', expected: 'allow' },
-  { gap: 'anchor', tool: 'edit', input: '../../.zshrc', expected: 'ask' },
-  { gap: 'a', tool: 'read', input: '.ssh/config', expected: 'deny' },
-  { gap: 'a', tool: 'read', input: 'id_ed25519', expected: 'deny' },
-  { gap: 'a', tool: 'edit', input: '.env', expected: 'ask' },
-  { gap: 'a', tool: 'edit', input: '.ssh/config', expected: 'deny' },
-  { gap: 'a', tool: 'edit', input: 'foo.pem', expected: 'deny' },
+  { gap: 'anchor', tool: 'bash', input: 'rm -rf /', expected: 'deny' },
+  { gap: 'anchor', tool: 'bash', input: 'mkfs.ext4 /dev/disk2', expected: 'deny' },
+  { gap: 'anchor', tool: 'bash', input: 'dd if=/dev/zero of=/dev/disk2', expected: 'deny' },
+  { gap: 'anchor', tool: 'edit', input: '../../.zshrc', expected: 'allow' },
+  { gap: 'anchor', tool: 'edit', input: '.env', expected: 'allow' },
+  { gap: 'anchor', tool: 'edit', input: 'foo.pem', expected: 'allow' },
   { gap: 'anchor', tool: 'edit', input: 'src/foo.ts', expected: 'allow' },
 ];
 
@@ -176,16 +157,16 @@ function runCase(c, rules) {
   return askVerdict(c.tool, [c.input], rules);
 }
 
-// --- 缺口 g 探针：交换 read 块 *.env.example 与其后冲突规则的相对位置，断言结果翻转 ---
-// （证明 findLast 键序敏感；常绿结构断言——上游若改语义此探针翻红）
+// --- 缺口 g 探针：交换 bash 块 * 与 mkfs* 的相对位置，断言结果翻转 ---
+// （证明 findLast 键序敏感；常绿结构断言——上游若改语义此探针翻红；第六轮改为用现存规则）
 function probeKeyOrder(rules) {
-  const idxExample = rules.findLastIndex((r) => r.permission === 'read' && r.pattern === '*.env.example');
-  const idxStar = rules.findLastIndex((r) => r.permission === 'read' && r.pattern === '*.env.*');
-  if (idxExample < 0 || idxStar < 0) return { ok: false, note: '探针前置条件缺失（*.env.example / *.env.* 规则不存在）' };
+  const idxDeny = rules.findLastIndex((r) => r.permission === 'bash' && r.pattern === 'mkfs*');
+  const idxStar = rules.findLastIndex((r) => r.permission === 'bash' && r.pattern === '*');
+  if (idxDeny < 0 || idxStar < 0) return { ok: false, note: '探针前置条件缺失（bash mkfs* / * 规则不存在）' };
   const swapped = rules.slice();
-  [swapped[idxExample], swapped[idxStar]] = [swapped[idxStar], swapped[idxExample]];
-  const a = evaluate('read', 'foo.env.example', rules).action;
-  const b = evaluate('read', 'foo.env.example', swapped).action;
+  [swapped[idxDeny], swapped[idxStar]] = [swapped[idxStar], swapped[idxDeny]];
+  const a = evaluate('bash', 'mkfs.ext4 /dev/disk2', rules).action;
+  const b = evaluate('bash', 'mkfs.ext4 /dev/disk2', swapped).action;
   return { ok: a !== b, note: `原序=${a} 交换后=${b}（键序敏感=${a !== b}）` };
 }
 // --- 静态 lint：规则 pattern 内双空格（编译后静默失配陷阱，防御性）---
