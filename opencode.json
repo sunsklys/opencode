@@ -64,6 +64,12 @@
     }
   },
   "lsp": true,
+  "agent": {
+    "build": { "variant": "max" },
+    "plan": { "variant": "max" },
+    "general": { "variant": "max" },
+    "sisyphus": { "variant": "max" }
+  },
   "default_agent": "sisyphus",
   "share": "manual",
   "autoupdate": true,
