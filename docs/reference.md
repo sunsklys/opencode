@@ -103,7 +103,7 @@
 | LSP 工具链（`lsp_diagnostics` / `lsp_goto_definition` / `lsp_find_references` / `lsp_rename`） | `opencode.json` → `"lsp": true` | ✅ 已启用（自动检测内置 LSP） |
 | opencode-mem 本地持久记忆 | `opencode.json` plugin 字段 + `opencode-mem.jsonc` | ✅ 已启用（智谱 glm-5.3-flash auto-capture） |
 | 7 个 MCP（智谱 web 工具 / mermaid / codegraph / dbx，全部启用） | `opencode.json` mcp 字段 | ✅ 已启用（另有 4 个插件注入：websearch / context7 / grep_app / lsp） |
-| permission 加固（read + bash + edit 三层 deny，92 条，含裸解释器 sh/bash/zsh、stdin 模式、`eval` / `: > .env*` / `: > .ssh/*` / `: > .aws/*`） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（护栏非防线，见「shell 权限信任边界」） |
+| permission 最小化（第六轮后仅 bash 14 条灾难 deny：mkfs / dd / rm -rf 系；read / edit `*:allow` 全放，含凭证/env/解释器/sudo/force push） | `opencode.json` permission.{read,bash,edit} | ✅ 已启用（2026-09-08 四~六轮逐步放开，纵深定位见「shell 权限信任边界」） |
 | MCP 供应链钉版（npx 通道：`@z_ai/mcp-server@0.1.5` 精确 / `@dbx-app/mcp-server@0.4` minor；全局 bin：check 第 4 项版本比对） | `opencode.json` mcp 字段 + check.sh 常量 | ✅ 三通道分层（remote URL 豁免） |
 | Web UI（查看记忆） | `opencode-mem.jsonc` webServerEnabled | ✅ http://127.0.0.1:4747 |
 | 一键安装 / 体检 / 更新 | `Makefile` + `scripts/*.sh` | ✅ `make install` / `make check` / `make update` |
@@ -306,28 +306,29 @@ make upgrade-superpowers   # 查远端最新 → 改 opencode.json → 清缓存
 
 ## shell 权限信任边界（护栏非防线）
 
-2026-08-29 Wave2 安全加固确立的定位声明，实测探针矩阵支撑（opencode run 真实引擎验证）：
+2026-08-29 Wave2 安全加固确立的定位声明；**2026-09-08 第四~六轮用户决策逐步放开**：deny 从 92 条收缩到 14 条灾难级（mkfs / dd / rm -rf 系），read / edit `*:allow` 全放。当前定位：permission 只防灾难级不可逆操作，防误触与注入的第一通拦截职责移交 skills.lock 供应链校验 + MCP 钉版 + 会话人工警觉。
 
-- **引擎匹配语义**：bash permission 按 tree-sitter AST 拆 command 节点后逐节点匹配 pattern；含管道符的 pattern（如曾经的 `curl * | *sh*`）不匹配任何节点——该类规则是死规则，已于本轮删除，改为拦截管道尾部的裸解释器节点（`sh` / `bash` / `zsh` deny）与 stdin 模式（`sh -s` / `bash -s`）。
-- **拦截面（实测 7 变体全拦）**：`curl X | sh` / `echo ... | bash` / `curl X | zsh` / `wget X | sh` 等管道注入；裸解释器交互也拦。
-- **明确不拦（设计边界非遗漏）**：`sh <(curl ...)` 进程替换变体、`npm run <script>` 间接执行、`git config core.hooksPath` + hook 文件写入的组合链。~~`bash -c '...'` / `sh -c '...'`~~ 已于 2026-09-05 T1 转为 deny（解释器 -c/-e 内联代码 10 条：sh/bash/zsh -c*、node -e*/--eval*、python/python3 -c*、ruby -e*、perl -e*，见下节「权限残留风险」）——原「正当用途过宽」判断经四人对审推翻：正当路径可逐条 allow 豁免，不应以放弃拦截换便利。
-- **威胁模型定位**：deny 列表是**误操作护栏 + prompt injection 的第一通拦截**，不是对抗性防线——对手若已能诱导 agent 写文件，上述间接执行面无法靠 permission 黑名单封死。纵深依赖：文件 edit 层 deny（.ssh/.env/.aws）+ skills.lock 供应链校验 + MCP 钉版。
+- **引擎匹配语义**：bash permission 按 tree-sitter AST 拆 command 节点后逐节点匹配 pattern；含管道符的 pattern（如曾经的 `curl * | *sh*`）不匹配任何节点——该类规则是死规则，已删。
+- **当前拦截面（仅 14 条 deny）**：`mkfs*` / `dd*` / `rm -rf|fr / ~ $HOME /* ~/* ..` 系灾难命令——误批一次即不可逆，agent 无合法场景。
+- **已放开（第四~六轮，历史决策链见 git log）**：凭证读写（.ssh/.aws/*.pem/.npmrc 系）、`.env` 读写、裸解释器与 stdin 模式（sh/bash/zsh/-s）、解释器 -c/-e、eval、sudo、git push --force、git clean、npm publish、rc 文件重定向/tee、zshenv/zprofile。放开的真实代价：read 凭证一旦发生即进上下文并落 opencode.db（不可撤回）；`bash -c` 内联代码不再逐条过规则表。
+- **威胁模型定位**：deny 列表已收缩为灾难兑底；对手若已能诱导 agent 写文件，间接执行面无法靠 permission 黑名单封死。纵深依赖：skills.lock 供应链校验 + MCP 钉版 + 会话人工警觉（批 read 凭证/裸 shell 时看清全文）。
 - **MCP 供应链三通道**：npx 通道钉版本（zai 精确 0.1.5——持 API key 且低频发布；dbx 钉 minor 0.4——连生产库但 5 天 5 版高频修复节奏，全精确钉有「钉住坏版本」反效果）；全局 bin 通道（claude-mermaid/codegraph）由 check 第 4 项版本常量比对；remote URL 通道（智谱 web 工具 3 条）豁免——供应链风险在服务端，本地不可钉。
 
-## 权限残留风险（2026-09-05 T1 加固后）
 
-T1（fix/security-permissions 分支）闭合缺口 a/c/d/e/f 后，经 opencode v1.18.29 源码逐行验证仍存的残留面（每条附复现路径与上游证据行号；升级 opencode 时按此表复核是否已被上游修复）：
+## 权限残留风险（上游引擎行为观察；2026-09-08 第六轮后缓解列已复核）
+
+T1 后经 opencode v1.18.29 源码逐行验证的上游引擎残留面（每条附复现路径与上游证据行号；升级 opencode 时按此表复核是否已被上游修复）。注：第六轮后 read/edit 全放，原表中「read 层拦截」系缓解已不存在，相应风险从「纵深依赖」降级为「接受面」：
 
 | # | 残留 | 根因（v1.18.29 源码） | 复现路径 | 缓解 |
 |---|---|---|---|---|
-| 1 | bash 横向读敏感文件 | `cd` 在 CWD 表被跳过权限评估（shell.ts L28、L407），`cat` 段文本只匹配 bash 规则不匹配 read 规则 | `cd ~/.ssh && cat id_rsa` → cd 段跳过、cat 段命中 `*`:allow，仅触发一次 external_directory 询问（习惯性批准即绕过 read 层 deny） | 直接 read 被 `**/id_rsa*` 拦；交互警觉 |
-| 2 | symlink 逃逸 external_directory | containsPath / resolvePath 均为字符串路径判断不解析 realpath（instance-context.ts L18-24、shell.ts L366） | worktree 内 `ln -s ~/.ssh lnk` 后 `cat lnk/id_rsa` → 字符串路径在 worktree 内跳过 external_directory，cat 段 allow，OS 层 follow symlink 读到目标 | read 层按文件名仍拦（`lnk/id_rsa` 含 `/id_rsa`）；bash 侧不拦 |
-| 3 | FILES 表覆盖面 | external_directory 路径提取仅对 FILES 表命令（shell.ts L29-50：rm/cp/mv/mkdir/touch/chmod/chown/cat + PowerShell 系），python/awk/sed/tee 不在表内 | `python -c` 已 deny；但 `python wr.py`（脚本内 open 写任意路径）不提取路径、不询问 external_directory | 解释器 -c/-e deny 已缩小面；脚本写入属纵深依赖 |
-| 4 | 会话内 always 覆盖配置 deny | ask() 求值 approved 在 ruleset 之后 + findLast 后者优先（permission/index.ts L73、L32-L33）；read/edit 的 always pattern 为 `*`（read.ts L258、edit.ts L105）、bash 为前缀通配（shell.ts L409） | 对任意一次 read 选「always」→ approved 加 `read:*:allow` → 同会话后续 read `id_rsa` / `.env` 全部 allow（覆盖配置 deny）；bash 一次 `git push` always → `git push *` allow 覆盖 `git push --force*` deny | 会话内交互慎选 always；上游修复后副此表 |
+| 1 | bash 横向读敏感文件 | `cd` 在 CWD 表被跳过权限评估（shell.ts L28、L407），`cat` 段文本只匹配 bash 规则不匹配 read 规则 | `cd ~/.ssh && cat id_rsa` → cd 段跳过、cat 段命中 `*`:allow，仅触发一次 external_directory 询问 | 第六轮后 read 层已全放，此路径与直接 read 等价——接受面（人工警觉） |
+| 2 | symlink 逃逸 external_directory | containsPath / resolvePath 均为字符串路径判断不解析 realpath（instance-context.ts L18-24、shell.ts L366） | worktree 内 `ln -s ~/.ssh lnk` 后 `cat lnk/id_rsa` → 字符串路径在 worktree 内跳过 external_directory，OS 层 follow symlink 读到目标 | 同 #1：read 层已全放，接受面 |
+| 3 | FILES 表覆盖面 | external_directory 路径提取仅对 FILES 表命令（shell.ts L29-50），python/awk/sed/tee 不在表内 | `python wr.py`（脚本内 open 写任意路径）不提取路径、不询问 external_directory | 脚本写入属纵深依赖（同第六轮前定位不变） |
+| 4 | 会话内 always 覆盖配置 deny | ask() 求值 approved 在 ruleset 之后 + findLast 后者优先（permission/index.ts L73、L32-L33）；always pattern 为 `*` | （历史场景）read 选 always → 同会话后续全 allow | 第六轮后仅剩 14 条灾难 deny 可被 always 覆盖——面极窄，接受 |
 | 5 | patterns 为空整体放行 | for-of 空 patterns 不执行 + `!needsAsk` 提前 return（permission/index.ts L72、L84）；bash 侧 `scan.patterns.size === 0` 直接 return（shell.ts L282） | 纯 `cd ~/.ssh` 命令（CWD-only）不产生任何 permission 事件 | 单独 cd 无危害；配合 #1 横向才成链 |
 | 6 | ask/run 不对称 | 混合 patterns 一旦含 ask 整体升级交互（L75-L84，allow 不豁免）；disabled() 单条件匹配与 evaluate 双条件不对称（L210 vs L32） | 多段命令一段无规则 → 整条询问（含已 allow 段） | 方向安全（多问不少问），仅体验成本 |
 
-键序规范（缺口 g 落地）：opencode.json 为纯 JSON 不支持注释，键序敏感声明落在本节——**permission 规则对象内后声明优先（findLast），通配更宽的规则必须放窄规则之后，allow 豁免（如 `*.env.example`）必须放对应 deny（`*.env.*`）之后**；harness 键序探针（scripts/check-permissions.mjs probeKeyOrder）持续锁定该语义，上游改求值语义即红。
+键序规范（缺口 g 落地）：opencode.json 为纯 JSON 不支持注释，键序敏感声明落在本节——**permission 规则对象内后声明优先（findLast），通配更宽的规则必须放窄规则之后（如 bash `"*": "allow"` 在前、`"mkfs*": "deny"` 在后）**；harness 键序探针（scripts/check-permissions.mjs probeKeyOrder，第六轮改用 bash `*`/`mkfs*` 交换验证）持续锁定该语义，上游改求值语义即红。
 
 ## 上游版本观察项（2026-08-28 体检）
 
@@ -336,6 +337,7 @@ T1（fix/security-permissions 分支）闭合缺口 a/c/d/e/f 后，经 opencode
 - **omo 4.19.4 的 reasoning 规范**：`models` 链是 canonical 形式，`fallback_models` / `variant` / `reasoningEffort` 已 deprecated（back-compat 窗口内仍可读，运行时归一优先级 reasoning > reasoningEffort > variant）。2026-08-28 已全量清理为 `models` 链 + `reasoning` key，升级 5.0 时无需再动。
 - **`omo doctor` 的已知误报**：它会用旧版 schema 校验 `agents.*.models` 为 Unknown key（实际运行时与 `config migrate` 均支持），升级后如仍见此类告警可忽略 `Unknown config key: agents.*.models` 条目。
 - **glm-max.ts 与 reasoning 归一的关系**：plugin 在最终 chat.params 层无条件强制 `reasoningEffort=max`，与配置层 key 形式无关，两者独立生效、互不依赖。
+- **opencode-mem 2.26.0（2026-09-06 发布）已评估，不升级**：9 项变更中唯一 tags 相关的 #249 是 compaction 恢复时 footer 去重，非「tags 入库无兜底」；四缺陷（入库兑底/detect 零容忍/run-batch 内存态/turso 迁移重跑）均无对应 PR——摘除判据未满足，继续 pin 2.25.0 + patch（评估日 2026-09-08，依据 GitHub release v2.26.0）。
 ## 如何升级 oh-my-openagent 主版本
 
 > **升级前必读**：major 跨越（如 4→5）时 `make upgrade` 自带防跳闸（默认拒绝，`FORCE=1` 或交互 y 放行）；spec 钉版后 4c 步骤自动同步双 json。

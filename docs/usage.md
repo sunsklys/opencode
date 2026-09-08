@@ -132,10 +132,10 @@
 - 实现任务默认走 RED→GREEN→REFACTOR
 - **豁免场景**：纯 prompt 文本、注释、版本号 bump、rename-only、一次性脚本、配置文件——明确说「不要 TDD」
 
-### 5. 权限安全网（53 条 bash deny，`opencode.json` → `permission.bash`）
-- 拦：sudo / rm -rf / force push / npm publish / docker prune/rm / curl|sh / eval / .env / ~/.ssh / ~/.aws / ~/.zshrc 等敏感文件 / 私钥读取（注：kill / git reset --hard 默认放行）
-- 放：chmod / chown / git restore / git config alias（日常开发常用，但需注意 chmod 可改 ~/.ssh 权限、git restore 会丢未提交工作）
-- 放手让 agent 跑命令
+### 5. 权限（第六轮后仅 14 条灾难 deny，`opencode.json` → `permission`）
+- 拦：仅 `mkfs` / `dd` / `rm -rf|fr / ~ $HOME /* ~/* ..` 系灾难命令（不可逆，agent 无合法场景）
+- 放：其余全部直接放行——read/edit `*:allow`（凭证、.env、rc 文件均不问）；bash 除灾难 deny 外全 allow（sudo / force push / npm publish / eval / 裸解释器均直跑）
+- 放开历史（四~六轮，2026-09-08）：deny 92→54→14 条，决策链见 git log 与 docs/reference.md「shell 权限信任边界」
 
 ### 6. LSP 工具链（`opencode.json` → `lsp: true`）
 - 自动检测内置 LSP（TS/Pyright/gopls/ESLint）
